@@ -1,0 +1,23 @@
+import { Meta } from '@storybook/blocks';
+import layoutFigmaDoc from './doc/layout-from-figma.md?raw';
+import { FigmaDoc } from './FigmaDoc';
+import { LayoutScale } from './LayoutScale';
+
+<Meta title="Structure/Layout" />
+
+# Layout
+
+Contrato estructural de layout alineado con `Layout App` en Figma.  
+Esta sección incluye solo variables nativas y documentación (sin ejemplos de pantallas).
+
+```bash
+npm run tokens:layout
+# o
+npm run tokens:all
+```
+
+## Notas de Figma
+
+<FigmaDoc content={layoutFigmaDoc} />
+
+<LayoutScale />

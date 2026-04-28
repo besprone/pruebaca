@@ -1,0 +1,22 @@
+import { Meta } from '@storybook/blocks';
+import stateFigmaDoc from './doc/state-from-figma.md?raw';
+import { FigmaDoc } from './FigmaDoc';
+import { StateSwatches } from './StateSwatches';
+
+<Meta title="Foundations/State" />
+
+# State (capa interactiva)
+
+Tokens `semantic/color/state/*` para overlays y foco, según Figma. CSS: `src/styles/states-from-figma.css` (generado desde `src/tokens/figma-state-tokens.ts`).
+
+```bash
+npm run tokens:state
+# o
+npm run tokens:all
+```
+
+## Notas de Figma
+
+<FigmaDoc content={stateFigmaDoc} />
+
+<StateSwatches />

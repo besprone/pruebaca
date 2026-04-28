@@ -1,0 +1,22 @@
+import { Meta } from '@storybook/blocks';
+import spacingFigmaDoc from './doc/spacing-from-figma.md?raw';
+import { FigmaDoc } from './FigmaDoc';
+import { SpacingScale } from './SpacingScale';
+
+<Meta title="Foundations/Spacing" />
+
+# Spacing
+
+Escala de spacing alineada con `kubo.spacing` en Figma, para padding, margin y gap en App/Web.
+
+```bash
+npm run tokens:spacing
+# o
+npm run tokens:all
+```
+
+## Notas de Figma
+
+<FigmaDoc content={spacingFigmaDoc} />
+
+<SpacingScale />

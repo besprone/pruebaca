@@ -2,7 +2,14 @@
  * Valores resueltos (modo actual) desde Figma — frame kubo.color
  * https://www.figma.com/design/XhvIIW42BM1u2ViM0MaBR0/Calipso-2.0?node-id=2080-939
  * Sincronizar cuando cambien variables en Figma.
+ *
+ * ref white-alpha / black-alpha: opacidad = sufijo/1000 en el canal alpha (hex 8 dígitos #RRGGBBAA),
+ * alineado con la colección Palette; comprobar en Figma si un token concreto difiere.
  */
+import { figmaPathToCssVar } from "./figma-path-to-css";
+
+export { figmaPathToCssVar } from "./figma-path-to-css";
+
 export const figmaColorTokens: Record<string, string> = {
   "ref/color/brand/50": "#e6f5e6",
   "ref/color/brand/100": "#ddf0dd",
@@ -76,6 +83,29 @@ export const figmaColorTokens: Record<string, string> = {
   "ref/color/feedback/success/700": "#1f6f40",
   "ref/color/feedback/success/800": "#175631",
   "ref/color/feedback/success/900": "#0f3d23",
+  // Blanco/negro con opacidad (Figma: Palette / ref). Valor: step/1000 = opacidad; p. ej. 200 → 20% → #ffffff33.
+  "ref/color/white-alpha/0": "#ffffff00",
+  "ref/color/white-alpha/50": "#ffffff0d",
+  "ref/color/white-alpha/100": "#ffffff1a",
+  "ref/color/white-alpha/200": "#ffffff33",
+  "ref/color/white-alpha/300": "#ffffff4d",
+  "ref/color/white-alpha/400": "#ffffff66",
+  "ref/color/white-alpha/500": "#ffffff80",
+  "ref/color/white-alpha/600": "#ffffff99",
+  "ref/color/white-alpha/700": "#ffffffb3",
+  "ref/color/white-alpha/800": "#ffffffcc",
+  "ref/color/white-alpha/900": "#ffffffe6",
+  "ref/color/black-alpha/0": "#00000000",
+  "ref/color/black-alpha/50": "#0000000d",
+  "ref/color/black-alpha/100": "#0000001a",
+  "ref/color/black-alpha/200": "#00000033",
+  "ref/color/black-alpha/300": "#0000004d",
+  "ref/color/black-alpha/400": "#00000066",
+  "ref/color/black-alpha/500": "#00000080",
+  "ref/color/black-alpha/600": "#00000099",
+  "ref/color/black-alpha/700": "#000000b3",
+  "ref/color/black-alpha/800": "#000000cc",
+  "ref/color/black-alpha/900": "#000000e6",
   "semantic/color/text/primary": "#1c1b20",
   "semantic/color/text/onBrand": "#ffffff",
   "semantic/color/text/secondary": "#57585e",
@@ -124,9 +154,9 @@ export const figmaColorTokens: Record<string, string> = {
   "semantic/color/bg/accent": "#8fcfcf",
   "semantic/color/icon/tertiary": "#9a9ba1",
   "semantic/color/icon/inverse": "#1c1b20",
-  "semantic/color/icon/disabled": "#57585e",
-  "semantic/color/icon/brand": "#e6f5e6",
-  "semantic/color/icon/onBrand": "#1c1b20",
+  "semantic/color/icon/disabled": "#9a9ba1",
+  "semantic/color/icon/brand": "#1f6f21",
+  "semantic/color/icon/onBrand": "#ffffff",
   "semantic/color/icon/accent": "#c7e8e8",
   "semantic/color/icon/onAccent": "#1c1b20",
   "semantic/color/icon/danger": "#f5b8b8",
@@ -157,11 +187,6 @@ export const figmaColorTokens: Record<string, string> = {
   "semantic/color/border/disabled": "#bfc0c5",
   "semantic/color/border/overlay": "#0000008f",
 };
-
-/** CSS custom property: ref/color/brand/50 → --ref-color-brand-50 */
-export function figmaPathToCssVar(path: string): string {
-  return `--${path.replaceAll("/", "-")}`;
-}
 
 export function colorCssBlock(): string {
   const lines = Object.entries(figmaColorTokens).map(

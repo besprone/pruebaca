@@ -10,8 +10,16 @@ Esta instancia de **Storybook** documenta primero **foundations** (tokens y regl
 
 Archivo de referencia: **Calipso 2.0** (variables y foundations alineados en el lienzo).
 
+## Documentación que viene de Figma
+
+En cada foundation de Figma (frames Color, State, Typography, …) hay **copy de diseño** (objetivo, arquitectura, reglas, accesibilidad). Ese texto se mantiene en `src/stories/foundations/doc/`, un archivo `*-from-figma.md` por tema, y se importa con `?raw` en el MDX de la página y se renderiza con el componente `FigmaDoc`. Así Storybook y Figma se actualizan en el mismo lenguaje (nombres de variable y criterio).
+
+1. Añade o edita el `.md` en `doc/`.
+2. En el `.mdx` de la foundation: `import x from './doc/…-from-figma.md?raw'` y `<FigmaDoc content={x} />`.
+3. Opcional: al final del `.md` incluye enlace al frame de Figma (`node-id`).
+
 ## Próximos pasos sugeridos
 
 1. Volcar tokens de color / spacing / radius a `tokens.css` o a un paquete `@calipso/tokens` consumido aquí.
-2. Añadir una página MDX por foundation (Color, Typography, Spacing, …) con tablas generadas o enlaces al Figma.
+2. Añadir una página MDX por foundation (Color, Typography, Spacing, …) con tablas generadas o enlaces al Figma, siguiendo el patrón `doc/*-from-figma.md` + `FigmaDoc`.
 3. Primera story de componente (p. ej. botón) cuando exista el primer componente en `src/`.

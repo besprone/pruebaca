@@ -1,0 +1,22 @@
+import { Meta } from '@storybook/blocks';
+import motionFigmaDoc from './doc/motion-from-figma.md?raw';
+import { FigmaDoc } from './FigmaDoc';
+import { MotionScale } from './MotionScale';
+
+<Meta title="Foundations/Motion" />
+
+# Motion
+
+Sistema de motion alineado con `kubo.motion` de Figma para overlays, sheets y transiciones de superficies.
+
+```bash
+npm run tokens:motion
+# o
+npm run tokens:all
+```
+
+## Notas de Figma
+
+<FigmaDoc content={motionFigmaDoc} />
+
+<MotionScale />

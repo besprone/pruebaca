@@ -1,12 +1,32 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 import { figmaColorTokens, figmaPathToCssVar } from "../../tokens/figma-color-tokens";
+import { resolveThemeAliasValue, semanticThemeAliases, type SemanticFamily } from "./semantic-theme-aliases";
 
 type Grouped = Record<string, Record<string, string>>;
 
-function groupTokens(): { ref: Grouped; semantic: Grouped } {
+const inlineCode: CSSProperties = {
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+  fontSize: 12,
+  color: "#141218",
+  background: "#e8e8ec",
+  padding: "1px 5px",
+  borderRadius: 4,
+  wordBreak: "break-all",
+};
+
+function colorNeedsAlphaCheckered(hex: string): boolean {
+  return /^#([0-9a-fA-F]{8})$/.test(hex) && parseInt(hex.slice(7, 9), 16) < 255;
+}
+
+function isInverseSemanticPath(path: string): boolean {
+  return path.startsWith("semantic/color/") && path.includes("/inverse");
+}
+
+function groupTokens(): { ref: Grouped; semantic: Grouped; semanticInverse: Grouped } {
   const ref: Grouped = {};
   const semantic: Grouped = {};
+  const semanticInverse: Grouped = { inverse: {} };
   for (const [path, hex] of Object.entries(figmaColorTokens)) {
     if (path.startsWith("ref/color/")) {
       const rest = path.slice("ref/color/".length);
@@ -14,44 +34,81 @@ function groupTokens(): { ref: Grouped; semantic: Grouped } {
       if (!ref[family]) ref[family] = {};
       ref[family][path] = hex;
     } else if (path.startsWith("semantic/color/")) {
+      if (isInverseSemanticPath(path)) {
+        semanticInverse.inverse[path] = hex;
+        continue;
+      }
       const rest = path.slice("semantic/color/".length);
       const family = rest.split("/")[0] ?? "other";
       if (!semantic[family]) semantic[family] = {};
       semantic[family][path] = hex;
     }
   }
-  return { ref, semantic };
+  return { ref, semantic, semanticInverse };
 }
 
 function Swatch({ path, hex }: { path: string; hex: string }) {
   const cssVar = figmaPathToCssVar(path);
+  const showChecker = colorNeedsAlphaCheckered(hex);
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "48px 1fr",
-        gap: "12px",
-        alignItems: "center",
-        padding: "8px 0",
-        borderBottom: "1px solid #eee",
+        gridTemplateColumns: "56px 1fr",
+        gap: "10px",
+        alignItems: "start",
+        padding: "10px",
+        border: "1px solid #e7e8ec",
+        borderRadius: 10,
+        background: "#fff",
         fontFamily: "system-ui, sans-serif",
         fontSize: "12px",
       }}
     >
       <div
-        title={hex}
         style={{
+          position: "relative",
           width: 40,
           height: 40,
           borderRadius: 8,
-          backgroundColor: hex,
-          border: "1px solid rgba(0,0,0,0.08)",
+          flexShrink: 0,
+          overflow: "hidden",
+          border: "1px solid rgba(0,0,0,0.1)",
         }}
-      />
+        title={hex}
+      >
+        {showChecker ? (
+          <div
+            aria-hidden
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: `
+                linear-gradient(45deg, #c8c8d0 25%, transparent 25%),
+                linear-gradient(-45deg, #c8c8d0 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #c8c8d0 75%),
+                linear-gradient(-45deg, transparent 75%, #c8c8d0 75%)
+              `,
+              backgroundSize: "8px 8px",
+              backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0",
+              backgroundColor: "#e8e8ec",
+            }}
+          />
+        ) : null}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            borderRadius: 6,
+            margin: 1,
+            backgroundColor: hex,
+          }}
+        />
+      </div>
       <div>
-        <div style={{ fontWeight: 600, color: "#111" }}>{path}</div>
+        <div style={{ fontWeight: 600, color: "#111", wordBreak: "break-all" }}>{path}</div>
         <div style={{ color: "#555", marginTop: 4 }}>{hex}</div>
-        <code style={{ color: "#666", fontSize: 11 }}>{cssVar}</code>
+        <code style={{ color: "#666", fontSize: 11, wordBreak: "break-all" }}>{cssVar}</code>
       </div>
     </div>
   );
@@ -83,7 +140,13 @@ function FamilyBlock({ family, entries }: { family: string; entries: Record<stri
       <h3 style={{ fontFamily: "system-ui, sans-serif", fontSize: 14, margin: "0 0 8px", color: "#333" }}>
         {family}
       </h3>
-      <div>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          gap: 10,
+        }}
+      >
         {rows.map(([path, hex]) => (
           <Swatch key={path} path={path} hex={hex} />
         ))}
@@ -92,19 +155,133 @@ function FamilyBlock({ family, entries }: { family: string; entries: Record<stri
   );
 }
 
+function ThemeModeGrid({
+  family,
+  mode,
+  entries,
+}: {
+  family: SemanticFamily;
+  mode: "light" | "inverse";
+  entries: Record<string, { light: string; inverse: string }>;
+}) {
+  const rows = Object.entries(entries).sort(([a], [b]) => a.localeCompare(b));
+  return (
+    <div
+      style={{
+        border: "1px solid #dfe1e5",
+        borderRadius: 12,
+        background: mode === "light" ? "#fcfcfd" : "#1f2228",
+        padding: 12,
+      }}
+    >
+      <div
+        style={{
+          fontFamily: "system-ui, sans-serif",
+          fontSize: 13,
+          fontWeight: 700,
+          marginBottom: 10,
+          color: mode === "light" ? "#1c1b20" : "#f5f6f8",
+        }}
+      >
+        Theme {mode} · {family}
+      </div>
+      <div style={{ display: "grid", gap: 8 }}>
+        {rows.map(([token, aliases]) => {
+          const alias = mode === "light" ? aliases.light : aliases.inverse;
+          const hex = resolveThemeAliasValue(alias);
+          return (
+            <div
+              key={`${mode}-${token}`}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "24px 1fr",
+                gap: 8,
+                alignItems: "start",
+                borderBottom: "1px solid rgba(128,128,128,0.16)",
+                paddingBottom: 7,
+              }}
+            >
+              <div
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 6,
+                  border: "1px solid rgba(0,0,0,0.15)",
+                  background: hex,
+                }}
+                title={`${token} = ${hex}`}
+              />
+              <div style={{ minWidth: 0 }}>
+                <div
+                  style={{
+                    fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+                    fontSize: 11,
+                    color: mode === "light" ? "#1e2025" : "#e8eaee",
+                    wordBreak: "break-all",
+                  }}
+                >
+                  {token}
+                </div>
+                <div
+                  style={{
+                    marginTop: 3,
+                    fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+                    fontSize: 10,
+                    color: mode === "light" ? "#50545f" : "#b5bac4",
+                    wordBreak: "break-all",
+                  }}
+                >
+                  {alias}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function SemanticThemeBoard() {
+  const families: SemanticFamily[] = ["text", "bg", "border", "icon"];
+  return (
+    <div style={{ marginBottom: 28 }}>
+      <h3 style={{ fontFamily: "system-ui, sans-serif", fontSize: 16, margin: "0 0 10px", color: "#222" }}>
+        Semantic por tema (Light / Inverse)
+      </h3>
+      <p style={{ fontFamily: "system-ui, sans-serif", color: "#444", lineHeight: 1.5 }}>
+        Vista en grid por familia, similar al frame de Figma: cada token semántico se resuelve por modo nativo.
+      </p>
+      {families.map((family) => (
+        <div key={family} style={{ marginBottom: 22 }}>
+          <h3 style={{ fontFamily: "system-ui, sans-serif", fontSize: 14, margin: "0 0 8px", color: "#333" }}>
+            {family}
+          </h3>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 12 }}>
+            <ThemeModeGrid family={family} mode="light" entries={semanticThemeAliases[family]} />
+            <ThemeModeGrid family={family} mode="inverse" entries={semanticThemeAliases[family]} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function ColorSwatches() {
-  const { ref, semantic } = groupTokens();
-  const refOrder = ["brand", "neutral", "accent", "feedback"];
-  const semOrder = ["text", "bg", "border", "icon"];
+  const { ref } = groupTokens();
+  const refOrder = ["brand", "neutral", "accent", "feedback", "white-alpha", "black-alpha"];
 
   return (
     <div style={{ maxWidth: 960, padding: "0 8px 48px" }}>
       <p style={{ fontFamily: "system-ui, sans-serif", color: "#444", lineHeight: 1.5 }}>
-        Valores del modo actual exportados desde Figma (frame{" "}
+        Valores del modo actual (incluye <code style={inlineCode}>ref/color/white-alpha</code> y{" "}
+        <code style={inlineCode}>black-alpha</code> de la librería Palette) — frame{" "}
         <a href="https://www.figma.com/design/XhvIIW42BM1u2ViM0MaBR0/Calipso-2.0?node-id=2080-939">
           kubo.color
         </a>
-        ). Los gradientes no están en variables de color; ver foundations en Figma.
+        . Los gradientes no van en variables de color sólido; ver foundations en Figma. En "Notas de Figma"
+        {" "}se documentan los temas nativos <strong>light</strong> e <strong>inverse</strong> por capa semántica
+        (text/bg/border/icon), además de los tokens que terminan en <code style={inlineCode}>/inverse</code>.
       </p>
 
       <Section title="Ref (paleta base)">
@@ -121,16 +298,7 @@ export function ColorSwatches() {
       </Section>
 
       <Section title="Semantic (roles UI)">
-        {semOrder
-          .filter((f) => semantic[f])
-          .map((f) => (
-            <FamilyBlock key={f} family={f} entries={semantic[f]!} />
-          ))}
-        {Object.keys(semantic)
-          .filter((f) => !semOrder.includes(f))
-          .map((f) => (
-            <FamilyBlock key={f} family={f} entries={semantic[f]!} />
-          ))}
+        <SemanticThemeBoard />
       </Section>
     </div>
   );

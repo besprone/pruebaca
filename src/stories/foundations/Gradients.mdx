@@ -1,0 +1,23 @@
+import { Meta } from '@storybook/blocks';
+import gradientsFigmaDoc from './doc/gradients-from-figma.md?raw';
+import { FigmaDoc } from './FigmaDoc';
+import { GradientSwatches } from './GradientSwatches';
+
+<Meta title="Foundations/Gradients" />
+
+# Gradients
+
+Gradientes semánticos alineados al frame `kubo.gradients` de Figma.  
+CSS generado en `src/styles/gradients-from-figma.css` a partir de `src/tokens/figma-gradient-tokens.ts`.
+
+```bash
+npm run tokens:gradients
+# o
+npm run tokens:all
+```
+
+## Notas de Figma
+
+<FigmaDoc content={gradientsFigmaDoc} />
+
+<GradientSwatches />

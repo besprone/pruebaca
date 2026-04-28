@@ -9,11 +9,24 @@
     "preview": "vite preview",
     "storybook": "CI=1 STORYBOOK_DISABLE_TELEMETRY=1 storybook dev -p 6006",
     "build-storybook": "CI=1 STORYBOOK_DISABLE_TELEMETRY=1 storybook build",
-    "tokens:colors": "tsx scripts/write-color-css.ts"
+    "tokens:colors": "tsx scripts/write-color-css.ts",
+    "tokens:state": "tsx scripts/write-state-css.ts",
+    "tokens:gradients": "tsx scripts/write-gradient-css.ts",
+    "tokens:spacing": "tsx scripts/write-spacing-css.ts",
+    "tokens:radius": "tsx scripts/write-radius-css.ts",
+    "tokens:elevation": "tsx scripts/write-elevation-css.ts",
+    "tokens:iconography": "tsx scripts/write-iconography-css.ts",
+    "tokens:motion": "tsx scripts/write-motion-css.ts",
+    "tokens:layout": "tsx scripts/write-layout-css.ts",
+    "tokens:grid": "tsx scripts/write-grid-css.ts",
+    "tokens:all": "npm run tokens:colors && npm run tokens:state && npm run tokens:gradients && npm run tokens:spacing && npm run tokens:radius && npm run tokens:elevation && npm run tokens:iconography && npm run tokens:motion && npm run tokens:layout && npm run tokens:grid"
   },
   "dependencies": {
+    "@carbon/icons-react": "^11.68.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-markdown": "^9.0.1",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^8.4.7",

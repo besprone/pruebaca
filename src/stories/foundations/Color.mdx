@@ -1,4 +1,6 @@
 import { Meta } from '@storybook/blocks';
+import colorFigmaDoc from './doc/color-from-figma.md?raw';
+import { FigmaDoc } from './FigmaDoc';
 import { ColorSwatches } from './ColorSwatches';
 
 <Meta title="Foundations/Color" />
@@ -12,5 +14,9 @@ Para regenerar el CSS tras editar el mapa TS:
 ```bash
 npm run tokens:colors
 ```
+
+## Notas de Figma
+
+<FigmaDoc content={colorFigmaDoc} />
 
 <ColorSwatches />
