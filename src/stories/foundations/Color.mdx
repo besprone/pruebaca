@@ -1,0 +1,16 @@
+import { Meta } from '@storybook/blocks';
+import { ColorSwatches } from './ColorSwatches';
+
+<Meta title="Foundations/Color" />
+
+# Color
+
+Tokens de color alineados con variables Figma **Calipso 2.0** (`ref/color/*`, `semantic/color/*`). CSS generado en `src/styles/colors-from-figma.css` a partir de `src/tokens/figma-color-tokens.ts`.
+
+Para regenerar el CSS tras editar el mapa TS:
+
+```bash
+npm run tokens:colors
+```
+
+<ColorSwatches />

@@ -1,0 +1,5 @@
+/**
+ * Tokens globales — importa colores sincronizados con Figma (kubo.color).
+ * Regenerar: npm run tokens:colors
+ */
+@import "./colors-from-figma.css";
