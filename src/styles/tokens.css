@@ -2,6 +2,7 @@
  * Tokens globales — Figma (Calipso 2.0).
  * Regenerar: npm run tokens:all
  */
+@import "./typography-from-figma.css";
 @import "./colors-from-figma.css";
 @import "./states-from-figma.css";
 @import "./gradients-from-figma.css";

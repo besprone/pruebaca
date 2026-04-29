@@ -1,0 +1,74 @@
+/* ── SVG math ───────────────────────────────────────────────────────────
+   viewBox="0 0 24 24", cx=cy=12, r=10.5, stroke-width=3
+   Outer edge = 10.5 + 1.5 = 12  → justo en el borde del viewBox
+   Circumferencia = 2π × 10.5 ≈ 65.97
+   Ciclo completo = 4 estados × var(--linear-200-duration-ms) = 800ms
+──────────────────────────────────────────────────────────────────────── */
+
+/* ── base ───────────────────────────────────────────────────────────── */
+.circular-progress {
+  display: block;
+  flex-shrink: 0;
+  overflow: visible;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: circular-progress-rotate
+    calc(var(--linear-200-duration-ms) * 4)
+    var(--linear-200-easing)
+    infinite;
+}
+
+/* ── tamaños ────────────────────────────────────────────────────────── */
+.circular-progress[data-size="xs"] { width: 16px; height: 16px; }
+.circular-progress[data-size="sm"] { width: 20px; height: 20px; }
+.circular-progress[data-size="md"] { width: 24px; height: 24px; }
+
+/* ── track (anillo base) ────────────────────────────────────────────── */
+.circular-progress__track {
+  fill: none;
+  stroke: var(--semantic-color-bg-subtle);
+  stroke-width: 3;
+}
+
+/* ── arco activo ────────────────────────────────────────────────────── */
+.circular-progress__arc {
+  fill: none;
+  stroke: var(--semantic-color-bg-brand);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 1, 65.97;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: circular-progress-dash
+    calc(var(--linear-200-duration-ms) * 4)
+    var(--linear-200-easing)
+    infinite;
+}
+
+/* ── keyframes ──────────────────────────────────────────────────────── */
+@keyframes circular-progress-rotate {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes circular-progress-dash {
+  0% {
+    stroke-dasharray: 1, 65.97;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 49, 65.97;
+    stroke-dashoffset: -16;
+  }
+  100% {
+    stroke-dasharray: 49, 65.97;
+    stroke-dashoffset: -65.97;
+  }
+}
+
+/* ── accesibilidad: reduce motion ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .circular-progress,
+  .circular-progress__arc {
+    animation-play-state: paused;
+  }
+}
