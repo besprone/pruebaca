@@ -294,6 +294,13 @@ export function ColorSwatches() {
         {" "}se documentan los temas nativos <strong>light</strong> e <strong>inverse</strong> por capa semántica
         (text/bg/border/icon), además de los tokens que terminan en <code style={inlineCode}>/inverse</code>.
       </p>
+      <p style={{ fontFamily: "system-ui, sans-serif", color: "#444", lineHeight: 1.5 }}>
+        Las familias <code style={inlineCode}>brand</code>, <code style={inlineCode}>accentPrimary</code> y{" "}
+        <code style={inlineCode}>accentSecondary</code> dependen de la marca (aquí resueltas con{" "}
+        <strong>kubo</strong>: brand&nbsp;=&nbsp;green, accentPrimary&nbsp;=&nbsp;mint,
+        accentSecondary&nbsp;=&nbsp;orchid). <code style={inlineCode}>neutral</code> es el gris de sistema
+        para chips/tags y no cambia con la marca. Detalle y equivalencias kubo/maestro en "Notas de Figma".
+      </p>
 
       <Section title="Ref (paleta base)">
         {refOrder

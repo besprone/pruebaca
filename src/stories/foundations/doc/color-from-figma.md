@@ -34,6 +34,24 @@ El sistema se construye bajo **roles semánticos**. Los colores *ref* son base y
 
 Son pigmentos del sistema. **No** se aplican directamente en la UI; alimentan la capa semántica. Las rampas **`ref/whiteAlpha`** y **`ref/blackAlpha`** son `ref` (blanco o negro con alpha); resolución documentada: **sufijo /0 … /900** donde el número representa opacidad en la escala 0–1000 (p. ej. `/200` ≈ 20% → hex `#_ _ _ _ _ _33` en 8 caracteres).
 
+## Marca (kubo · maestro)
+
+En Figma la colección **`_ Color · brand`** tiene dos modos de marca — **kubo** y **maestro**. Solo tres familias semánticas dependen de la marca: **`brand`**, **`accentPrimary`** y **`accentSecondary`** (con sus variantes `Soft` / `Muted` / `Strong` / `on*`). El resto de la semántica (`neutral`, feedback, `text/bg/border` estructurales) es igual en las dos marcas.
+
+Este repo **shippea kubo**. Los `--semantic-color-*` y `colors-from-figma.css` están resueltos con kubo; `figma-color-tokens.ts` y `semantic-theme-aliases.ts` lo dicen en el encabezado. maestro todavía no está en el repo (escalas `ref/accent/yellow` y `ref/accent/red` + el modo maestro): entra cuando se aborde la tematización por marca.
+
+| Rol | Ref en **kubo** | Ref en **maestro** |
+| --- | --- | --- |
+| `brand` (`bg` / `text` / `border` / `icon`) | `ref/green/700` | `ref/neutral/800` |
+| `brand/Soft` · `brand/Muted` | `ref/green/100` · `/50` | `ref/neutral/100` · `/50` |
+| `accentPrimary` (`bg`) | `ref/accent/mint/300` | `ref/accent/yellow/300` |
+| `accentPrimary` (`text` / `icon`) | `ref/accent/mint/700` | `ref/accent/yellow/900` |
+| `accentPrimary/border` · `/borderStrong` | `ref/accent/mint/400` · `/600` | `ref/accent/yellow/400` · `/600` |
+| `accentSecondary` (`bg`) | `ref/accent/orchid/300` | `ref/accent/red/300` |
+| `accentSecondary` (`text` / `icon`) | `ref/accent/orchid/700` | `ref/accent/red/700` |
+
+> La familia **`neutral`** (`bg/neutral`, `bg/neutralSoft/Muted`, `text/neutral`, `icon/neutral`, `on*`) **no es de marca**: siempre resuelve de `ref/neutral`. Es el gris de sistema para chips / badges / tags sin carga semántica.
+
 ## Semántica (consumo)
 
 Solo los **tokens semánticos** se usan en diseño y código. Los `ref` son internos.
@@ -43,6 +61,17 @@ Solo los **tokens semánticos** se usan en diseño y código. Los `ref` son inte
 `semantic.color.text` · `semantic.color.bg` · `semantic.color.border` · `semantic.color.icon` · `semantic.color.state`
 
 Los nombres expresan **rol** (ej. “texto principal”, “fondo de tarjeta”), no un color decorativo suelto.
+
+### Familias de acento y neutral
+
+| Familia | Para qué | Nota |
+| --- | --- | --- |
+| `brand` | Acción principal, foco de marca (CTA, selección, énfasis). | De marca. |
+| `accentPrimary` | Acento decorativo de marca — badges/pills destacados, ilustración, realce visual secundario. | De marca (kubo: mint). No es una acción. |
+| `accentSecondary` | Segundo acento decorativo para contraste/variedad frente a `accentPrimary`. | De marca (kubo: orchid). |
+| `neutral` | Elementos neutros sin carga semántica — chips, tags, badges informativos de baja prioridad. | No es de marca; gris de sistema. |
+
+`accentPrimary` / `accentSecondary` **no** sustituyen a `brand` para acciones ni a los tokens de feedback (`success` / `warning` / `danger` / `info`) para estado.
 
 ### Temas nativos de variables (Light e Inverse)
 
