@@ -1,0 +1,77 @@
+/* ── CalendarYearCell ──────────────────────────────────────────────────────
+   Building block interno del Calendar. Figma: `_building_blocks_calendar_cell_year`.
+   6 variantes = 2 type (default · selected) × 3 state (default · disabled · pressed),
+   solo size xs.
+
+   Capas:
+     .calendar-year-cell           <button>, h40
+     .calendar-year-cell__content  pill (circular-items/radius-round) — bg por type
+     .calendar-year-cell__label    año (Typography/Body/lg) · padding space-100
+──────────────────────────────────────────────────────────────────────────── */
+
+.calendar-year-cell {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.calendar-year-cell__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--internalLayout-space-100); /* 8px */
+  border-radius: var(--circular-items-radius-round);
+  transition: background-color calc(var(--linear-200-duration-ms)) var(--linear-200-easing);
+}
+
+.calendar-year-cell__label {
+  font-family: var(--typography-font-family);
+  font-size: var(--typography-body-lg-size);
+  line-height: var(--typography-body-lg-line-height);
+  font-weight: var(--typography-body-lg-weight);
+  color: var(--semantic-color-text-primary);
+}
+
+/* ── type: selected ────────────────────────────────────────────────────── */
+.calendar-year-cell[data-type='selected'] .calendar-year-cell__content {
+  background-color: var(--semantic-color-bg-brand);
+}
+.calendar-year-cell[data-type='selected'] .calendar-year-cell__label {
+  color: var(--semantic-color-text-onBrand);
+}
+
+/* ── state: pressed (transitorio, no persistente) ──────────────────────── */
+.calendar-year-cell:active:not(:disabled) .calendar-year-cell__content {
+  background-color: var(--semantic-color-state-pressed);
+}
+.calendar-year-cell[data-type='selected']:active:not(:disabled) .calendar-year-cell__content {
+  background-color: var(--semantic-color-bg-brand);
+}
+
+/* ── state: disabled (años fuera de rango) ─────────────────────────────── */
+.calendar-year-cell:disabled {
+  cursor: default;
+}
+.calendar-year-cell:disabled .calendar-year-cell__label {
+  color: var(--semantic-color-text-disabled);
+}
+.calendar-year-cell[data-type='selected']:disabled .calendar-year-cell__content {
+  background-color: var(--semantic-color-state-disabled);
+}
+
+.calendar-year-cell:focus-visible .calendar-year-cell__content {
+  outline: 2px solid var(--semantic-color-state-focusRing);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calendar-year-cell__content {
+    transition: none;
+  }
+}

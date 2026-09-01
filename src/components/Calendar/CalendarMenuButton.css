@@ -1,0 +1,83 @@
+/* ── CalendarMenuButton ────────────────────────────────────────────────────
+   Building block interno del Calendar. Figma: `_building_blocks_menu_button`.
+   3 states = default · pressed · disabled.
+
+   Capas:
+     .calendar-menu-button          <button>, h40, pill
+     .calendar-menu-button__content overlay de estado · px space-150 · gap space-100
+     .calendar-menu-button__label   Typography/Body/lg-semiemphasized (600)
+     .calendar-menu-button__chevron ic_chevron_down 20px (icon/secondary)
+──────────────────────────────────────────────────────────────────────────── */
+
+.calendar-menu-button {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  cursor: pointer;
+  border-radius: var(--circular-items-radius-round);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.calendar-menu-button__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--internalLayout-space-100); /* 8px */
+  height: 40px;
+  padding: 0 var(--internalLayout-space-150); /* 12px */
+  border-radius: var(--circular-items-radius-round);
+  transition: background-color calc(var(--linear-200-duration-ms)) var(--linear-200-easing);
+}
+
+.calendar-menu-button__label {
+  font-family: var(--typography-font-family);
+  font-size: var(--typography-body-lg-semiemphasized-size); /* 16 */
+  line-height: var(--typography-body-lg-semiemphasized-line-height); /* 24 */
+  font-weight: var(--typography-body-lg-semiemphasized-weight); /* 600 */
+  color: var(--semantic-color-text-primary);
+  white-space: nowrap;
+}
+
+.calendar-menu-button__chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--semantic-color-icon-secondary);
+  transition: transform calc(var(--linear-200-duration-ms)) var(--linear-200-easing);
+}
+.calendar-menu-button__chevron > svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+.calendar-menu-button[data-expanded] .calendar-menu-button__chevron {
+  transform: rotate(180deg);
+}
+
+/* ── state: pressed ────────────────────────────────────────────────────── */
+.calendar-menu-button:active:not(:disabled) .calendar-menu-button__content {
+  background-color: var(--semantic-color-state-pressed);
+}
+
+/* ── state: disabled ──────────────────────────────────────────────────── */
+.calendar-menu-button:disabled {
+  cursor: default;
+}
+.calendar-menu-button:disabled .calendar-menu-button__label {
+  color: var(--semantic-color-text-disabled);
+}
+.calendar-menu-button:disabled .calendar-menu-button__chevron {
+  color: var(--semantic-color-icon-disabled);
+}
+
+.calendar-menu-button:focus-visible .calendar-menu-button__content {
+  outline: 2px solid var(--semantic-color-state-focusRing);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calendar-menu-button__content,
+  .calendar-menu-button__chevron {
+    transition: none;
+  }
+}
