@@ -44,17 +44,17 @@
   height: var(--_circle);
   border-radius: var(--circular-items-radius-round);
   border: 1px solid transparent;
-  overflow: hidden;
   transition:
     background-color calc(var(--linear-200-duration-ms)) var(--linear-200-easing),
     border-color calc(var(--linear-200-duration-ms)) var(--linear-200-easing);
 }
 
-/* capa de estado — se compone ENCIMA del fondo (transparente / brand / outline) */
+/* capa de estado — se compone ENCIMA del fondo (transparente / brand / outline).
+   inset -1px para cubrir hasta el borde exterior (mismo diámetro que el fondo). */
 .calendar-day-cell__content::after {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: -1px;
   border-radius: inherit;
   background-color: transparent;
   transition: background-color calc(var(--linear-200-duration-ms)) var(--linear-200-easing);
