@@ -5,7 +5,7 @@ import type { CircularIndeterminateProgressSize } from '../../components/Circula
 import { IconButton } from '../../components/IconButton/IconButton';
 
 const meta: Meta<typeof CircularIndeterminateProgress> = {
-  title: 'Components/CircularIndeterminateProgress',
+  title: 'Components/Progress/Circular indeterminate',
   component: CircularIndeterminateProgress,
   parameters: { layout: 'centered' },
   argTypes: {
