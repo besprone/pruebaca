@@ -1,10 +1,11 @@
 /* ── CalendarMenuButton ────────────────────────────────────────────────────
    Building block interno del Calendar. Figma: `_building_blocks_menu_button`.
-   3 states = default · pressed · disabled.
+   state = default · hover · pressed · disabled. El `hover` es extensión web
+   (no está en Figma).
 
    Capas:
      .calendar-menu-button          <button>, h40, pill
-     .calendar-menu-button__content overlay de estado · px space-150 · gap space-100
+     .calendar-menu-button__content pill · capa de estado (::after) · px space-150 · gap space-100
      .calendar-menu-button__label   Typography/Body/lg-semiemphasized (600)
      .calendar-menu-button__chevron ic_chevron_down 20px (icon/secondary)
 ──────────────────────────────────────────────────────────────────────────── */
@@ -19,6 +20,7 @@
 }
 
 .calendar-menu-button__content {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,7 +28,23 @@
   height: 40px;
   padding: 0 var(--internalLayout-space-150); /* 12px */
   border-radius: var(--circular-items-radius-round);
+  overflow: hidden;
   transition: background-color calc(var(--linear-200-duration-ms)) var(--linear-200-easing);
+}
+
+.calendar-menu-button__content::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-color: transparent;
+  transition: background-color calc(var(--linear-200-duration-ms)) var(--linear-200-easing);
+}
+
+/* label + chevron por encima de la capa de estado */
+.calendar-menu-button__content > * {
+  position: relative;
+  z-index: 1;
 }
 
 .calendar-menu-button__label {
@@ -54,8 +72,15 @@
   transform: rotate(180deg);
 }
 
+/* ── state: hover (solo dispositivos con puntero) ──────────────────────── */
+@media (hover: hover) {
+  .calendar-menu-button:hover:not(:disabled) .calendar-menu-button__content::after {
+    background-color: var(--semantic-color-state-hover);
+  }
+}
+
 /* ── state: pressed ────────────────────────────────────────────────────── */
-.calendar-menu-button:active:not(:disabled) .calendar-menu-button__content {
+.calendar-menu-button:active:not(:disabled) .calendar-menu-button__content::after {
   background-color: var(--semantic-color-state-pressed);
 }
 
@@ -77,6 +102,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .calendar-menu-button__content,
+  .calendar-menu-button__content::after,
   .calendar-menu-button__chevron {
     transition: none;
   }
