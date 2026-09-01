@@ -28,9 +28,11 @@ function groupTokens(): { ref: Grouped; semantic: Grouped; semanticInverse: Grou
   const semantic: Grouped = {};
   const semanticInverse: Grouped = { inverse: {} };
   for (const [path, hex] of Object.entries(figmaColorTokens)) {
-    if (path.startsWith("ref/color/")) {
-      const rest = path.slice("ref/color/".length);
-      const family = rest.split("/")[0] ?? "other";
+    if (path.startsWith("ref/")) {
+      const rest = path.slice("ref/".length);
+      const segs = rest.split("/");
+      // familia = todo menos el último segmento numérico (green, neutral, accent/mint, whiteAlpha…)
+      const family = segs.length > 1 ? segs.slice(0, -1).join("/") : (segs[0] ?? "other");
       if (!ref[family]) ref[family] = {};
       ref[family][path] = hex;
     } else if (path.startsWith("semantic/color/")) {
@@ -269,17 +271,26 @@ function SemanticThemeBoard() {
 
 export function ColorSwatches() {
   const { ref } = groupTokens();
-  const refOrder = ["brand", "neutral", "accent", "feedback", "white-alpha", "black-alpha"];
+  const refOrder = [
+    "green",
+    "neutral",
+    "accent/mint",
+    "accent/orchid",
+    "success",
+    "error",
+    "warning",
+    "info",
+    "whiteAlpha",
+    "blackAlpha",
+  ];
 
   return (
     <div style={{ maxWidth: 960, padding: "0 8px 48px" }}>
       <p style={{ fontFamily: "system-ui, sans-serif", color: "#444", lineHeight: 1.5 }}>
-        Valores del modo actual (incluye <code style={inlineCode}>ref/color/white-alpha</code> y{" "}
-        <code style={inlineCode}>black-alpha</code> de la librería Palette) — frame{" "}
-        <a href="https://www.figma.com/design/XhvIIW42BM1u2ViM0MaBR0/Calipso-2.0?node-id=2080-939">
-          kubo.color
-        </a>
-        . Los gradientes no van en variables de color sólido; ver foundations en Figma. En "Notas de Figma"
+        Valores del tema <strong>light</strong> / marca <strong>kubo</strong> (incluye{" "}
+        <code style={inlineCode}>ref/whiteAlpha</code> y <code style={inlineCode}>ref/blackAlpha</code>) —
+        colección <strong>Color</strong> de Calipso 2.0. Los gradientes no van en variables de color
+        sólido; ver foundations en Figma. En "Notas de Figma"
         {" "}se documentan los temas nativos <strong>light</strong> e <strong>inverse</strong> por capa semántica
         (text/bg/border/icon), además de los tokens que terminan en <code style={inlineCode}>/inverse</code>.
       </p>
