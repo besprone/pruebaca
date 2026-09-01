@@ -14,7 +14,7 @@ El sistema se construye bajo **roles semánticos**. Los colores *ref* son base y
 
 ### Estructura (nivel sistema)
 
-- **Ref:** paletas (brand, neutral, accent, feedback) más **`ref/color/white-alpha`** y **`ref/color/black-alpha`** (tintes con opacidad para overlays y composición, según Figma *Palette*).
+- **Ref:** paletas `ref/green` (brand), `ref/neutral`, `ref/success` · `ref/error` · `ref/warning` · `ref/info` (feedback), `ref/accent/mint` y `ref/accent/orchid` (acentos de marca kubo; maestro usa `ref/accent/yellow` y `ref/accent/red`), más **`ref/whiteAlpha`** y **`ref/blackAlpha`** (tintes con opacidad para overlays y composición).
 - **Semántica:** Text, Background, Border, Icon, **State** (overlays de interacción)
 
 ### Accesibilidad
@@ -32,7 +32,7 @@ El sistema se construye bajo **roles semánticos**. Los colores *ref* son base y
 
 ## Ref (base)
 
-Son pigmentos del sistema. **No** se aplican directamente en la UI; alimentan la capa semántica. Las rampas **white-alpha** y **black-alpha** son `ref` (blanco o negro con alpha); resolución documentada: **sufijo /0 … /900** donde el número representa opacidad en la escala 0–1000 (p. ej. `/200` ≈ 20% → hex `#_ _ _ _ _ _33` en 8 caracteres).
+Son pigmentos del sistema. **No** se aplican directamente en la UI; alimentan la capa semántica. Las rampas **`ref/whiteAlpha`** y **`ref/blackAlpha`** son `ref` (blanco o negro con alpha); resolución documentada: **sufijo /0 … /900** donde el número representa opacidad en la escala 0–1000 (p. ej. `/200` ≈ 20% → hex `#_ _ _ _ _ _33` en 8 caracteres).
 
 ## Semántica (consumo)
 
@@ -50,28 +50,28 @@ En Figma, `text`, `bg`, `border` e `icon` tienen **dos tablas de tema** (light e
 
 | Capa | Ejemplos en **theme light** | Equivalentes en **theme inverse** |
 | --- | --- | --- |
-| **Text** | `text/primary → ref/neutral/900`, `secondary → neutral/600`, `brand → brand/700`, `linkDefault → brand/600` | `text/primary → ref/neutral/0`, `secondary → neutral/100`, `brand → brand/50`, `linkDefault → brand/400` |
-| **Background** | `bg/surface → ref/neutral/0`, `canvas → neutral/50`, `brand → brand/700`, `accent → accent/700` | `bg/surface → ref/white-alpha/200`, `canvas → neutral/800`, `brand → brand/400`, `accent → accent/400` |
-| **Border** | `border/subtle → ref/neutral/100`, `default → neutral/200`, `brand → brand/700`, `danger → error/600` | `border/subtle → ref/neutral/600`, `default → neutral/500`, `brand → brand/200`, `danger → error/200` |
-| **Icon** | `icon/primary → ref/neutral/900`, `secondary → neutral/600`, `brand → brand/700`, `success → success/700` | `icon/primary → ref/neutral/0`, `secondary → neutral/100`, `brand → brand/50`, `success → success/200` |
+| **Text** | `text/primary → ref/neutral/900`, `secondary → neutral/600`, `brand → green/700`, `linkDefault → green/700` | `text/primary → ref/neutral/0`, `secondary → neutral/100`, `brand → green/50`, `linkDefault → green/400` |
+| **Background** | `bg/surface → ref/neutral/0`, `canvas → neutral/50`, `brand → green/700`, `accentPrimary → accent/mint/300` | `bg/surface → ref/whiteAlpha/200`, `canvas → neutral/800`, `brand → green/400`, `accentPrimary → accent/mint/400` |
+| **Border** | `border/subtle → ref/neutral/100`, `default → neutral/200`, `brand → green/700`, `danger → error/600` | `border/subtle → ref/neutral/600`, `default → neutral/500`, `brand → green/200`, `danger → error/400` |
+| **Icon** | `icon/primary → ref/neutral/900`, `secondary → neutral/600`, `brand → green/700`, `success → success/700` | `icon/primary → ref/neutral/0`, `secondary → neutral/100`, `brand → green/50`, `success → green/200` |
 
 Notas:
 - `bg/inverse`, `text/inverse`, `border/inverse`, `icon/inverse` siguen existiendo y se usan como roles explícitos de inversión.
-- `bg/inverseElevated` y overlays usan alpha (`white-alpha` / `black-alpha`) según contexto.
+- Los overlays (`bg/overlay`, `border/overlay`) usan negro con alpha; en inverse, `bg/surface/subtle/brandSoft…` resuelven vía `ref/whiteAlpha` / `ref/blackAlpha`.
 - `state` se mantiene como capa aparte (`semantic.color.state/*`), no en esta tabla.
+- Familias nuevas de marca: `neutral` (chips/badges neutros), `accentPrimary` (kubo: mint) y `accentSecondary` (kubo: orchid), cada una con `bg` · `bgSoft/bgMuted` · `border` · `text` · `icon` · `on*`.
 
 ### Tokens con nombre `*inverse*` (en ambos temas)
 
-Aquí se agrupa la familia de tokens cuyo path contiene `inverse` (más `inverseElevated` en `bg`).  
+Aquí se agrupa la familia de tokens cuyo path contiene `inverse`.  
 Importante: estos tokens **también tienen valor por tema nativo** (light e inverse). Es decir, `text/inverse`, `bg/inverse`, `border/inverse`, `icon/inverse` no son “fijos”; cambian con el modo igual que el resto de semánticos.
 
-No existe `ref/.../inverse`; el soporte de alpha base vive en `ref/color/white-alpha` y `ref/color/black-alpha`.
+No existe `ref/.../inverse`; el soporte de alpha base vive en `ref/whiteAlpha` y `ref/blackAlpha`.
 
 | Rol | Token (path) | Uso resumido |
 | --- | --- | --- |
 | Texto en superficie inversa | `semantic/color/text/inverse` | Copy principal claro sobre `bg/inverse` u otras capas oscuras. |
 | Fondo inverso sólido | `semantic/color/bg/inverse` | Contenedor o pieza con bloque inverso. |
-| Elevación inversa (overlay) | `semantic/color/bg/inverseElevated` | Sombreado/elevación con alpha sobre inverso. |
 | Icono en contexto inverso | `semantic/color/icon/inverse` | Pictos en piezas o slots con inversión según sistema. |
 | Contorno inverso | `semantic/color/border/inverse` | Bordes en UI oscura. |
 
