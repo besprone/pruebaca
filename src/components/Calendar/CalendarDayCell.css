@@ -1,12 +1,14 @@
 /* ── CalendarDayCell ────────────────────────────────────────────────────────
    Building block interno del Calendar. Figma: `_building_blocks_calendar_cell_day`.
-   18 variantes = 3 type (default · today · selected) × 3 state
-   (default · pressed · disabled) × 2 size (sm · xs).
+   type (default · today · selected) × state (default · hover · pressed · disabled)
+   × size (sm · xs). El `hover` es extensión web (no está en Figma) — usa la capa
+   de estado global igual que Checkbox/Radio/Button.
 
    Capas (espeja Figma):
-     .calendar-day-cell           target 48×48 (sm) / 40×40 (xs), <button>
-     .calendar-day-cell__content  círculo 40 (sm) / 32 (xs) — bg/borde por type
-     .calendar-day-cell__label    número (Typography/Body/lg)
+     .calendar-day-cell            target 48×48 (sm) / 40×40 (xs), <button>
+     .calendar-day-cell__content   círculo 40 (sm) / 32 (xs) — bg/borde por type
+       ::after                     capa de estado (hover/pressed/disabled)
+     .calendar-day-cell__label     número (Typography/Body/lg)
 ──────────────────────────────────────────────────────────────────────────── */
 
 .calendar-day-cell {
@@ -34,6 +36,7 @@
 
 /* ── content (círculo) ──────────────────────────────────────────────────── */
 .calendar-day-cell__content {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -41,13 +44,26 @@
   height: var(--_circle);
   border-radius: var(--circular-items-radius-round);
   border: 1px solid transparent;
+  overflow: hidden;
   transition:
     background-color calc(var(--linear-200-duration-ms)) var(--linear-200-easing),
     border-color calc(var(--linear-200-duration-ms)) var(--linear-200-easing);
 }
 
+/* capa de estado — se compone ENCIMA del fondo (transparente / brand / outline) */
+.calendar-day-cell__content::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-color: transparent;
+  transition: background-color calc(var(--linear-200-duration-ms)) var(--linear-200-easing);
+}
+
 /* ── label ──────────────────────────────────────────────────────────────── */
 .calendar-day-cell__label {
+  position: relative;
+  z-index: 1;
   font-family: var(--typography-font-family);
   font-size: var(--typography-body-lg-size); /* 16 */
   line-height: var(--typography-body-lg-line-height); /* 24 */
@@ -76,25 +92,29 @@
   color: var(--semantic-color-text-tertiary);
 }
 
-/* ── state: pressed ─────────────────────────────────────────────────────── */
-.calendar-day-cell:active:not(:disabled) .calendar-day-cell__content {
-  background-color: var(--semantic-color-state-pressed);
+/* ── state: hover (solo dispositivos con puntero) ──────────────────────── */
+@media (hover: hover) {
+  .calendar-day-cell:hover:not(:disabled) .calendar-day-cell__content::after {
+    background-color: var(--semantic-color-state-hover);
+  }
 }
-.calendar-day-cell[data-type='selected']:active:not(:disabled) .calendar-day-cell__content {
-  background-color: var(--semantic-color-bg-brand);
+
+/* ── state: pressed ─────────────────────────────────────────────────────── */
+.calendar-day-cell:active:not(:disabled) .calendar-day-cell__content::after {
+  background-color: var(--semantic-color-state-pressed);
 }
 
 /* ── state: disabled (días fuera de rango / fuera de mes) ────────────────── */
 .calendar-day-cell:disabled {
   cursor: default;
 }
-.calendar-day-cell:disabled .calendar-day-cell__label {
+.calendar-day-cell:disabled:not([data-type='selected']) .calendar-day-cell__label {
   color: var(--semantic-color-text-disabled);
 }
 .calendar-day-cell[data-type='today']:disabled .calendar-day-cell__content {
   border-color: var(--semantic-color-border-disabled);
 }
-.calendar-day-cell[data-type='selected']:disabled .calendar-day-cell__content {
+.calendar-day-cell:disabled .calendar-day-cell__content::after {
   background-color: var(--semantic-color-state-disabled);
 }
 
@@ -105,7 +125,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .calendar-day-cell__content {
+  .calendar-day-cell__content,
+  .calendar-day-cell__content::after {
     transition: none;
   }
 }
