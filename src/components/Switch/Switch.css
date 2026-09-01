@@ -21,13 +21,11 @@
   flex-shrink: 0;
 }
 
-/* <input> real: cubre el hit target (≥44px de alto), invisible */
+/* <input> real: cubre el hit target (52×44, centrado en el track), invisible */
 .switch__input {
   position: absolute;
-  left: 0;
-  top: -6px;
+  inset: -6px 0; /* +6px arriba/abajo del track de 32 → 44px de alto */
   width: 100%;
-  height: 44px;
   margin: 0;
   padding: 0;
   opacity: 0;
@@ -45,6 +43,9 @@
   border-radius: var(--circular-items-radius-round);
   background-color: var(--semantic-color-icon-tertiary); /* off */
   transition: background-color calc(var(--linear-200-duration-ms)) var(--linear-200-easing);
+  /* deja pasar los eventos de puntero al <input> de abajo (cascadea a thumb y
+     state-layer) — sin esto solo se podía alternar en los 6px de overhang */
+  pointer-events: none;
 }
 
 .switch:has(.switch__input:checked) .switch__track {
