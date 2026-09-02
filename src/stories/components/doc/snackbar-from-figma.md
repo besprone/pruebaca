@@ -61,13 +61,38 @@ acciones. `action` = `Button` **ghost** `xs` (pill 32px, nunca primario). `close
 `lg`/24px de Figma para equilibrar la jerarquía visual del row. `all` = ambos,
 `gap` 8. Sin fondo propio.
 
-## Comportamiento (fuera del alcance de este componente)
+## Comportamiento
 
-El `Snackbar` aquí es el **card presentacional**. El posicionamiento (portal,
-`fixed`, gutter de safe-area de 16px), el auto-cierre por tiempo y la cola de
-**uno a la vez** los gestiona quien lo monta.
+### Animación de entrada / salida — prop `open`
 
-- Aparece temporalmente; puede autocerrarse o cerrarse manualmente.
+Con la prop `open`, el `Snackbar` anima su ciclo de vida (eje **bottom**, Figma
+prototype):
+
+- **Entrada** (al montar): desliza desde `-16px` arriba + fade in.
+- **Salida** (`open` → `false`): desliza hacia abajo (su alto + 16px) + fade out;
+  al terminar llama a `onExited` → ahí el padre lo desmonta.
+- `prefers-reduced-motion: reduce` → sin movimiento (duración 1 ms, el ciclo
+  sigue funcionando).
+
+Sin `open`, se renderiza estático (para composición / documentación).
+
+```tsx
+{mounted && (
+  <Snackbar open={open} onExited={() => setMounted(false)} message="…" />
+)}
+```
+
+### Posición y cola (responsabilidad de quien lo monta)
+
+El `Snackbar` es el **card**. El portal / `position: fixed`, la safe-area y la
+cola de **uno a la vez** las pone la app. Patrón de la story *En contexto*:
+
+- **Móvil** (`<600px`, breakpoint del grid): abajo, centrado en el ancho.
+- **Tablet / desktop** (`≥600px`): abajo-derecha.
+- Margen `16px` (`--mobile-margin`) al borde.
+
+### Tiempos
+
 - **Duración recomendada: 3–5 s** para `neutral` / `success`.
 - **`error` puede permanecer hasta que haya acción** (no auto-dismiss).
 - No debe bloquear la interacción principal.
