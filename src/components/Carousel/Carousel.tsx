@@ -1,5 +1,11 @@
 import { Children, forwardRef, useCallback, useEffect, useRef, useState } from 'react';
-import type { HTMLAttributes, KeyboardEvent, ReactNode } from 'react';
+import type {
+  HTMLAttributes,
+  KeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  PointerEvent as ReactPointerEvent,
+  ReactNode,
+} from 'react';
 import { ChevronLeft, ChevronRight } from '@carbon/icons-react';
 import { IconButton } from '../IconButton/IconButton';
 import './Carousel.css';
@@ -9,9 +15,9 @@ export type CarouselItemsPerView = 1 | 2 | 3;
 export type CarouselProps = {
   /** Slots visibles por página (Figma: `# slots * block` / `configuration`). Default `1`. */
   itemsPerView?: CarouselItemsPerView;
-  /** Dots de paginación. Default `true`. */
+  /** Dots indicadores de paginación (no interactivos). Default `true`. */
   pagination?: boolean;
-  /** Flechas prev/next (afordancia de desktop; en touch se usa swipe). Default `false`. */
+  /** Flechas prev/next (afordancia de desktop; en touch/mouse se usa swipe). Default `false`. */
   controls?: boolean;
   /** Nombre de la región para lectores de pantalla. Requerido. */
   'aria-label': string;
@@ -27,6 +33,8 @@ function chunk<T>(arr: T[], size: number): T[][] {
   return out;
 }
 
+const DRAG_THRESHOLD = 5;
+
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
@@ -34,10 +42,12 @@ const prefersReducedMotion = () =>
  * Carousel — contenido secuencial desplazable horizontalmente. Figma:
  * `components_carousel`. Encapsula el layout y controla la página activa.
  *
+ * Navegación: **swipe** táctil (scroll-snap nativo), **arrastre con mouse**
+ * (se simula el swipe), teclado **←/→** con el viewport enfocado, y las
+ * **flechas** opcionales (`controls`). Los dots **solo indican**, no navegan.
+ *
  * Los slots son `children` (páginas derivadas por `itemsPerView`); no replica
- * los building blocks de Figma (`blocks` / `# slots * block` / `pagination_dot`),
- * que son andamiaje de diseño. El desplazamiento usa scroll-snap nativo (swipe
- * + momentum físico); las flechas y los dots hacen `scrollTo` suave.
+ * los building blocks de Figma, que son andamiaje de diseño.
  *
  * No usar con un solo ítem ni cuando se necesita comparación simultánea.
  */
@@ -60,6 +70,22 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(function Carou
     [onPageChange],
   );
 
+  const nearestPage = useCallback(() => {
+    const vp = viewportRef.current;
+    if (!vp) return 0;
+    let best = 0;
+    let min = Infinity;
+    pageRefs.current.forEach((el, i) => {
+      if (!el) return;
+      const d = Math.abs(el.offsetLeft - vp.scrollLeft);
+      if (d < min) {
+        min = d;
+        best = i;
+      }
+    });
+    return best;
+  }, []);
+
   const goTo = useCallback((i: number) => {
     const vp = viewportRef.current;
     const el = pageRefs.current[i];
@@ -74,26 +100,63 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(function Carou
     let raf = 0;
     const onScroll = () => {
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        let best = 0;
-        let min = Infinity;
-        pageRefs.current.forEach((el, i) => {
-          if (!el) return;
-          const d = Math.abs(el.offsetLeft - vp.scrollLeft);
-          if (d < min) {
-            min = d;
-            best = i;
-          }
-        });
-        setPage(best);
-      });
+      raf = requestAnimationFrame(() => setPage(nearestPage()));
     };
     vp.addEventListener('scroll', onScroll, { passive: true });
     return () => {
       vp.removeEventListener('scroll', onScroll);
       cancelAnimationFrame(raf);
     };
-  }, [setPage, pageCount]);
+  }, [setPage, nearestPage, pageCount]);
+
+  // ── arrastre con mouse (simula el swipe; el táctil usa el scroll nativo) ──
+  const drag = useRef({ active: false, startX: 0, startScroll: 0, moved: false });
+
+  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== 'mouse') return;
+    const vp = viewportRef.current;
+    if (!vp) return;
+    drag.current = { active: true, startX: e.clientX, startScroll: vp.scrollLeft, moved: false };
+    vp.setPointerCapture(e.pointerId);
+    vp.style.scrollSnapType = 'none';
+    vp.style.scrollBehavior = 'auto';
+    vp.style.cursor = 'grabbing';
+    vp.style.userSelect = 'none';
+  };
+
+  const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d.active) return;
+    const dx = e.clientX - d.startX;
+    if (Math.abs(dx) > DRAG_THRESHOLD) d.moved = true;
+    viewportRef.current!.scrollLeft = d.startScroll - dx;
+  };
+
+  const endDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d.active) return;
+    d.active = false;
+    const vp = viewportRef.current!;
+    try {
+      vp.releasePointerCapture(e.pointerId);
+    } catch {
+      /* no-op */
+    }
+    vp.style.scrollSnapType = '';
+    vp.style.scrollBehavior = '';
+    vp.style.cursor = '';
+    vp.style.userSelect = '';
+    if (d.moved) goTo(nearestPage());
+  };
+
+  // si hubo arrastre, anula el click que dispararían los interactivos del slot
+  const onClickCapture = (e: ReactMouseEvent<HTMLDivElement>) => {
+    if (drag.current.moved) {
+      e.stopPropagation();
+      e.preventDefault();
+      drag.current.moved = false;
+    }
+  };
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'ArrowRight' && active < pageCount - 1) {
@@ -120,6 +183,14 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(function Carou
         aria-label={props['aria-label']}
         tabIndex={0}
         onKeyDown={onKeyDown}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onClickCapture={onClickCapture}
+        onDragStartCapture={(e) => {
+          if (drag.current.active) e.preventDefault();
+        }}
       >
         <div className="carousel__track">
           {pages.map((items, i) => (
@@ -143,6 +214,12 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(function Carou
           ))}
         </div>
       </div>
+
+      {multi && (
+        <span className="carousel__status" aria-live="polite">
+          Página {active + 1} de {pageCount}
+        </span>
+      )}
 
       {controls && multi && (
         <>
@@ -168,17 +245,9 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(function Carou
       )}
 
       {pagination && multi && (
-        <div className="carousel__dots" role="group" aria-label="Páginas">
+        <div className="carousel__dots" aria-hidden="true">
           {pages.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              className="carousel__dot"
-              aria-label={`Ir a la página ${i + 1} de ${pageCount}`}
-              aria-current={i === active ? 'true' : undefined}
-              data-active={i === active || undefined}
-              onClick={() => goTo(i)}
-            />
+            <span key={i} className="carousel__dot" data-active={i === active || undefined} />
           ))}
         </div>
       )}
