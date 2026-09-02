@@ -115,61 +115,89 @@ export const MensajeLargo: Story = {
   ),
 };
 
-// ── En contexto: auto-dismiss + posición ──────────────────────────────────
+// ── En contexto: auto-dismiss + posición + animación ──────────────────────
+
+/**
+ * Viewport de demo: `position: fixed` respecto al iframe de Storybook.
+ * Móvil (`<600px`, breakpoint del grid): abajo, centrado en el ancho.
+ * Tablet / desktop (`≥600px`): abajo-derecha. Margen 16px (`--mobile-margin`).
+ * Cambia el viewport de Storybook para ver el salto de posición.
+ */
+const viewportCss = `
+.sb-snackbar-viewport {
+  position: fixed;
+  z-index: 60;
+  bottom: var(--mobile-margin, 16px);
+  left: var(--mobile-margin, 16px);
+  right: var(--mobile-margin, 16px);
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.sb-snackbar-viewport > * { pointer-events: auto; }
+@media (min-width: 600px) {
+  .sb-snackbar-viewport { left: auto; justify-content: flex-end; }
+}
+`;
+
+function AutoDismissDemo() {
+  const [mounted, setMounted] = useState(false);
+  const [open, setOpen] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const show = useCallback(() => {
+    clearTimeout(timer.current);
+    setMounted(true);
+    setOpen(true);
+    timer.current = setTimeout(() => setOpen(false), 3500);
+  }, []);
+  const dismiss = useCallback(() => {
+    clearTimeout(timer.current);
+    setOpen(false);
+  }, []);
+
+  return (
+    <div style={{ minHeight: 320, padding: 24, position: 'relative' }}>
+      <style>{viewportCss}</style>
+      <button
+        type="button"
+        onClick={show}
+        style={{
+          font: 'inherit',
+          padding: '8px 14px',
+          borderRadius: 8,
+          border: '1px solid var(--semantic-color-border-default)',
+          background: 'var(--semantic-color-bg-surface)',
+          cursor: 'pointer',
+        }}
+      >
+        Descargar detalle
+      </button>
+      <p style={{ ...label, marginTop: 12, maxWidth: 420 }}>
+        Aparece deslizando desde arriba, se auto-cierra a los 3.5 s deslizando hacia abajo y se
+        desmonta. Móvil: abajo centrado · tablet/desktop: abajo-derecha (cambia el viewport de
+        Storybook para verlo).
+      </p>
+
+      {mounted && (
+        <div className="sb-snackbar-viewport">
+          <Snackbar
+            open={open}
+            onExited={() => setMounted(false)}
+            message="Detalle de inversión descargado"
+            action={{ label: 'Abrir', onClick: dismiss }}
+            onClose={dismiss}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
 
 export const EnContexto: Story = {
   name: 'En contexto (auto-dismiss)',
   parameters: { controls: { disable: true }, layout: 'fullscreen' },
-  render: () => {
-    function Demo() {
-      const [open, setOpen] = useState(false);
-      const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-      const show = useCallback(() => {
-        setOpen(true);
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => setOpen(false), 3500);
-      }, []);
-      return (
-        <div style={{ minHeight: 260, padding: 24, position: 'relative' }}>
-          <button
-            type="button"
-            onClick={show}
-            style={{
-              font: 'inherit',
-              padding: '8px 14px',
-              borderRadius: 8,
-              border: '1px solid var(--semantic-color-border-default)',
-              background: 'var(--semantic-color-bg-surface)',
-              cursor: 'pointer',
-            }}
-          >
-            Descargar detalle
-          </button>
-          <p style={{ ...label, marginTop: 12 }}>Auto-cierre a los 3.5 s (neutral/success). Un snackbar a la vez.</p>
-
-          {open && (
-            <div
-              style={{
-                position: 'absolute',
-                left: 16,
-                right: 16,
-                bottom: 16,
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            >
-              <Snackbar
-                message="Detalle de inversión descargado"
-                action={{ label: 'Abrir', onClick: () => setOpen(false) }}
-                onClose={() => setOpen(false)}
-              />
-            </div>
-          )}
-        </div>
-      );
-    }
-    return <Demo />;
-  },
+  render: () => <AutoDismissDemo />,
 };
 
 // ── Building blocks (documentación — no exportados) ────────────────────────
