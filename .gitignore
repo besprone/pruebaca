@@ -6,3 +6,7 @@ storybook-static
 .env
 .env.*
 .claude
+
+# Spec PDFs (local reference, not tracked)
+pdf/
+*.pdf
