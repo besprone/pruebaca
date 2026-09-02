@@ -101,13 +101,14 @@ export const Composiciones: Story = {
 // ── Mensaje largo (envuelve; acciones bajan a su fila) ─────────────────────
 
 export const MensajeLargo: Story = {
+  name: 'Mensaje de dos líneas',
   parameters: { controls: { disable: true } },
   render: () => (
-    <div style={{ maxWidth: 360 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 360 }}>
+      <Snackbar variant="warning" message="Tu sesión expira en 2 minutos. Guarda los cambios." action={{ label: 'Extender', onClick: noop }} />
       <Snackbar
-        variant="warning"
-        message="Tu sesión expira en 2 minutos. Guarda los cambios pendientes para no perder tu progreso."
-        action={{ label: 'Extender', onClick: noop }}
+        variant="info"
+        message="Se aplicaron los cambios. Algunos ajustes tardan unos minutos en propagarse."
         onClose={noop}
       />
     </div>
