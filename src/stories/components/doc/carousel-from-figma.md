@@ -58,15 +58,20 @@ Los dots **solo indican** (como en Figma: `_building_blocks_carousel_pagination_
 | **Teclado** | viewport enfocado (`tabIndex={0}`) → **←/→** salto de página |
 | **Flechas** (`controls`) | `scrollTo` suave; `disabled` en los extremos (salvo `loop`) |
 
-Con **`loop`**: "siguiente" en la última página vuelve a la primera (y viceversa)
-con un salto **instantáneo** (`behavior: 'auto'`) para que lea como "reinicia" y
-no recorra todo el track. No está en la spec de Figma — es una extensión del DS.
-El swipe/arrastre no cicla (el scroll nativo se frena en el borde).
+### `loop` — infinito sin costura
+
+Técnica estándar de la industria (Swiper/Embla/Slick), **sin dependencias**:
+
+- Se clona **una página en cada extremo**: DOM = `[clon-último] · páginas reales · [clon-primero]`. Los clones van `inert` + `aria-hidden` (teclado y lector de pantalla los saltan).
+- El scroll arranca sobre la **primera página real** (`useLayoutEffect`, antes del paint).
+- Swipe / arrastre / flecha / tecla pasan del último slot **hacia el clon** (misma dirección, animado). Al asentar (evento **`scrollend`**, o `setTimeout(120ms)` de fallback para Safari < 18.2) se hace un `scrollTo({ behavior: 'instant' })` a la página real equivalente — invisible porque los pixeles son idénticos y el scroll ya paró.
+- Mientras se está sobre un clon, `active` (dots + región live) ya muestra el índice real, así que no hay parpadeo tras el salto.
+- No está en la spec de Figma — extensión del DS. Los slides de un carrusel `loop` deben ser **sin estado** (se clonan).
 
 La **página activa** se calcula del `scrollLeft` (página más cercana al borde
-izquierdo) → actualiza el dot + `onPageChange`. `scrollTo` usa `auto` con
-`prefers-reduced-motion`. El contenido fuera del viewport se recorta; no se
-alteran los tokens internos de los slots ni el layout vertical.
+izquierdo) → actualiza el dot + `onPageChange` (índice real). `scrollTo` usa
+`instant` con `prefers-reduced-motion`. El contenido fuera del viewport se
+recorta; no se alteran los tokens internos de los slots ni el layout vertical.
 
 ## Accesibilidad
 
