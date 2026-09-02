@@ -39,8 +39,8 @@ export function SnackbarActions({ action, onClose, closeLabel = 'Cerrar' }: Snac
       {onClose && (
         <IconButton
           emphasis="ghost"
-          size="lg"
-          icon={<Close size={24} />}
+          size="md"
+          icon={<Close size={20} />}
           aria-label={closeLabel}
           onClick={onClose}
         />
