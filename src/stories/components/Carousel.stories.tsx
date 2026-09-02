@@ -107,11 +107,11 @@ export const DosColumnas: Story = {
 // ── Loop (flechas/teclado ciclan) ───────────────────────────────────────
 
 export const Loop: Story = {
-  name: 'Loop (flechas ciclan)',
+  name: 'Loop (infinito sin costura)',
   parameters: { controls: { disable: true } },
   render: () => (
     <Carousel aria-label="Destacados" controls loop>
-      {Array.from({ length: 3 }, (_, i) => (
+      {Array.from({ length: 4 }, (_, i) => (
         <Slide key={i} n={i + 1} tone={tones[i % tones.length]} />
       ))}
     </Carousel>
