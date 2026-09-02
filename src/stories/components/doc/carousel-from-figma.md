@@ -21,6 +21,7 @@ No replica los building blocks de Figma (`blocks`, `# slots * block`,
 | `itemsPerView` | `1` · `2` · `3` | `1` | slots visibles por página (Figma: `configuration` / `# slots * block`) |
 | `pagination` | `boolean` | `true` | muestra los dots |
 | `controls` | `boolean` | `false` | flechas prev/next (afordancia de desktop; en touch se usa swipe) |
+| `loop` | `boolean` | `false` | flechas/teclado ciclan en los extremos (el swipe **no** cicla) |
 | `aria-label` | `string` | — | **requerido**, nombra la región |
 | `onPageChange` | `(page: number) => void` | — | página activa (0-based) al cambiar |
 | `children` | `ReactNode` | — | los slides |
@@ -55,7 +56,12 @@ Los dots **solo indican** (como en Figma: `_building_blocks_carousel_pagination_
 | **Swipe táctil** | `scroll-snap-type: x mandatory` + `scroll-snap-align: start` por página → momentum físico nativo (equivalente web del `motion/spring` del prototipo) |
 | **Arrastre con mouse** | pointer events en el viewport, **solo `pointerType === 'mouse'`**: `pointerdown` fija `scrollLeft` inicial y desactiva el snap; `pointermove` mueve el scroll 1:1; `pointerup` reactiva el snap y hace `scrollTo` suave a la página más cercana. Umbral de 5px: por debajo es un click (los interactivos del slot siguen funcionando); si hubo arrastre se anula ese click. `cursor: grab / grabbing` (solo mouse) |
 | **Teclado** | viewport enfocado (`tabIndex={0}`) → **←/→** salto de página |
-| **Flechas** (`controls`) | `scrollTo` suave; `disabled` en los extremos |
+| **Flechas** (`controls`) | `scrollTo` suave; `disabled` en los extremos (salvo `loop`) |
+
+Con **`loop`**: "siguiente" en la última página vuelve a la primera (y viceversa)
+con un salto **instantáneo** (`behavior: 'auto'`) para que lea como "reinicia" y
+no recorra todo el track. No está en la spec de Figma — es una extensión del DS.
+El swipe/arrastre no cicla (el scroll nativo se frena en el borde).
 
 La **página activa** se calcula del `scrollLeft` (página más cercana al borde
 izquierdo) → actualiza el dot + `onPageChange`. `scrollTo` usa `auto` con

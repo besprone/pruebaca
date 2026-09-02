@@ -19,6 +19,12 @@ export type CarouselProps = {
   pagination?: boolean;
   /** Flechas prev/next (afordancia de desktop; en touch/mouse se usa swipe). Default `false`. */
   controls?: boolean;
+  /**
+   * Cicla con **flechas y teclado**: en la última página, "siguiente" vuelve a
+   * la primera (y viceversa) con un salto instantáneo. El swipe/arrastre **no**
+   * cicla — se frena en los extremos. Default `false`.
+   */
+  loop?: boolean;
   /** Nombre de la región para lectores de pantalla. Requerido. */
   'aria-label': string;
   /** Se llama al cambiar de página (0-based). */
@@ -52,7 +58,7 @@ const prefersReducedMotion = () =>
  * No usar con un solo ítem ni cuando se necesita comparación simultánea.
  */
 export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(function Carousel(
-  { itemsPerView = 1, pagination = true, controls = false, onPageChange, children, className, ...props },
+  { itemsPerView = 1, pagination = true, controls = false, loop = false, onPageChange, children, className, ...props },
   ref,
 ) {
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -86,12 +92,32 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(function Carou
     return best;
   }, []);
 
-  const goTo = useCallback((i: number) => {
+  const goTo = useCallback((i: number, instant = false) => {
     const vp = viewportRef.current;
     const el = pageRefs.current[i];
     if (!vp || !el) return;
-    vp.scrollTo({ left: el.offsetLeft, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+    vp.scrollTo({ left: el.offsetLeft, behavior: instant || prefersReducedMotion() ? 'auto' : 'smooth' });
   }, []);
+
+  // salto de página con flechas/teclado; `loop` cicla en los extremos (instantáneo)
+  const step = useCallback(
+    (delta: number) => {
+      const last = pageCount - 1;
+      let target = active + delta;
+      let instant = false;
+      if (target > last) {
+        if (!loop) return;
+        target = 0;
+        instant = true;
+      } else if (target < 0) {
+        if (!loop) return;
+        target = last;
+        instant = true;
+      }
+      goTo(target, instant);
+    },
+    [active, pageCount, loop, goTo],
+  );
 
   // página activa a partir del scroll (la más cercana al borde izquierdo del viewport)
   useEffect(() => {
@@ -159,12 +185,12 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(function Carou
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'ArrowRight' && active < pageCount - 1) {
+    if (e.key === 'ArrowRight') {
       e.preventDefault();
-      goTo(active + 1);
-    } else if (e.key === 'ArrowLeft' && active > 0) {
+      step(1);
+    } else if (e.key === 'ArrowLeft') {
       e.preventDefault();
-      goTo(active - 1);
+      step(-1);
     }
   };
 
@@ -229,8 +255,8 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(function Carou
             size="sm"
             icon={<ChevronLeft size={16} />}
             aria-label="Anterior"
-            disabled={active === 0}
-            onClick={() => goTo(active - 1)}
+            disabled={!loop && active === 0}
+            onClick={() => step(-1)}
           />
           <IconButton
             className="carousel__arrow carousel__arrow--next"
@@ -238,8 +264,8 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(function Carou
             size="sm"
             icon={<ChevronRight size={16} />}
             aria-label="Siguiente"
-            disabled={active === pageCount - 1}
-            onClick={() => goTo(active + 1)}
+            disabled={!loop && active === pageCount - 1}
+            onClick={() => step(1)}
           />
         </>
       )}

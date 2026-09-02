@@ -11,6 +11,7 @@ const meta: Meta<typeof Carousel> = {
     itemsPerView: { control: 'inline-radio', options: [1, 2, 3] },
     pagination: { control: 'boolean' },
     controls: { control: 'boolean' },
+    loop: { control: 'boolean' },
     onPageChange: { action: 'pageChange' },
     children: { control: false },
   },
@@ -18,6 +19,7 @@ const meta: Meta<typeof Carousel> = {
     itemsPerView: 1,
     pagination: true,
     controls: false,
+    loop: false,
     'aria-label': 'Ofertas',
   },
   decorators: [
@@ -99,6 +101,20 @@ export const DosColumnas: Story = {
         ))}
       </Carousel>
     </div>
+  ),
+};
+
+// ── Loop (flechas/teclado ciclan) ───────────────────────────────────────
+
+export const Loop: Story = {
+  name: 'Loop (flechas ciclan)',
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <Carousel aria-label="Destacados" controls loop>
+      {Array.from({ length: 3 }, (_, i) => (
+        <Slide key={i} n={i + 1} tone={tones[i % tones.length]} />
+      ))}
+    </Carousel>
   ),
 };
 
