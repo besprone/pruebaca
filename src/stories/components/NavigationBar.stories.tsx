@@ -107,6 +107,7 @@ export const ConEmphasis: Story = {
       {
         value: 'escanear',
         type: 'emphasis',
+        label: 'Escanear',
         icon: <ScanAlt />,
         'aria-label': 'Escanear código',
         onSelect: () => setScans((n) => n + 1),
@@ -190,12 +191,22 @@ export const BuildingBlocks: Story = {
   name: 'Building blocks',
   parameters: { controls: { disable: true } },
   render: () => (
-    <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start', background: 'var(--semantic-color-bg-surface)', padding: 16, borderRadius: 12 }}>
+    <div
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 16,
+        alignItems: 'flex-start',
+        background: 'var(--semantic-color-bg-surface)',
+        padding: 16,
+        borderRadius: 12,
+      }}
+    >
       <NavigationBarItem type="icon" icon={<Home />} label="Inicio" selected />
       <NavigationBarItem type="icon" icon={<Analytics />} label="Inversión" />
       <NavigationBarItem type="avatar" avatar={<DemoAvatar />} label="Perfil" selected aria-label="Perfil seleccionado" />
       <NavigationBarItem type="avatar" avatar={<DemoAvatar />} label="Perfil" aria-label="Perfil" />
-      <NavigationBarItem type="emphasis" icon={<ScanAlt />} aria-label="Escanear" />
+      <NavigationBarItem type="emphasis" icon={<ScanAlt />} label="Escanear" aria-label="Escanear" />
     </div>
   ),
 };

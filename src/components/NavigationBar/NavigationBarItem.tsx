@@ -4,7 +4,7 @@ import './NavigationBarItem.css';
 export type NavigationBarItemType = 'icon' | 'avatar' | 'emphasis';
 
 export type NavigationBarItemProps = {
-  /** Texto bajo el icono. Se omite en `type="emphasis"`. */
+  /** Texto bajo el icono. */
   label?: string;
   /** Glifo del icono (24px). Para `icon` y `emphasis`. */
   icon?: ReactNode;
@@ -24,7 +24,7 @@ export type NavigationBarItemProps = {
  *
  *   type="icon"      icono 24px + label; recolorea a `brand` cuando `selected`
  *   type="avatar"    imagen de perfil circular + label
- *   type="emphasis"  círculo `bg/brand` con icono `onBrand`, sin label, sin estado
+ *   type="emphasis"  círculo `bg/brand` con icono `onBrand` + label; sin estado activo
  */
 export function NavigationBarItem({
   label,
@@ -52,7 +52,7 @@ export function NavigationBarItem({
           <span className="nav-bar-item__glyph">{icon}</span>
         )}
       </span>
-      {!isEmphasis && label != null && <span className="nav-bar-item__label">{label}</span>}
+      {label != null && <span className="nav-bar-item__label">{label}</span>}
     </button>
   );
 }

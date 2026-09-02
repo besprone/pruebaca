@@ -45,17 +45,18 @@ story **En contexto**.
 | Campo | Valores | |
 |---|---|---|
 | `value` | `string` | id único / valor de selección |
-| `label` | `string` | texto bajo el icono (obligatorio salvo `emphasis`) |
+| `label` | `string` | texto bajo el icono |
 | `icon` | `ReactNode` | glifo 24px (`icon`, `emphasis`) |
 | `avatar` | `ReactNode` | imagen de perfil (`type: 'avatar'`) |
 | `type` | `icon` · `avatar` · `emphasis` | default `icon` |
-| `aria-label` | `string` | nombre accesible si no hay `label` (avatar / emphasis) |
+| `aria-label` | `string` | nombre accesible si el item no tiene `label` |
 | `onSelect` | `() => void` | se dispara al activar (después de cambiar selección, si aplica) |
 | `disabled` | `boolean` | |
 
 **`type: 'emphasis'`** — acción destacada (círculo `bg/brand` con icono
-`onBrand`, sin label). **No es navegable**: no cambia la selección ni recibe
-indicador; solo dispara su `onSelect`. Patrón de botón central (escanear, pagar).
+`onBrand` + label debajo, igual que los demás). **No es navegable**: no cambia
+la selección ni recibe indicador; solo dispara su `onSelect`. Patrón de botón
+central (escanear, pagar).
 
 ## Anatomía
 
