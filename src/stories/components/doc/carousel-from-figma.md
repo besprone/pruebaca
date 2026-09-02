@@ -36,8 +36,8 @@ Spread de `HTMLAttributes<HTMLDivElement>`.
       .carousel__page  flex 0 0 100% · scroll-snap-align:start · flex row · gap 16
         .carousel__slot  flex 1 → reparte el ancho entre los slots de la página
   .carousel__arrow     IconButton ghost `sm` absoluto en las esquinas (solo `controls`)
-  .carousel__dots      grupo de botones-punto
-    .carousel__dot     `size/6` círculo · hit area ampliada (::after inset -9)
+  .carousel__dots      fila de indicadores (aria-hidden) — NO interactivos
+    .carousel__dot     `size/6` círculo · <span> · sin foco ni click
 ```
 
 | dot | fill |
@@ -45,31 +45,32 @@ Spread de `HTMLAttributes<HTMLDivElement>`.
 | activo | `semantic/color/icon/brand` |
 | inactivo | `semantic/color/icon/tertiary` |
 
-`size/6` es token nuevo de iconography (añadido con este componente).
+Los dots **solo indican** (como en Figma: `_building_blocks_carousel_pagination_dot`
+= 6px, fill por `active`, nada más). `size/6` es token nuevo de iconography.
 
-## Comportamiento / motion
+## Navegación
 
-- **Swipe** nativo vía `scroll-snap-type: x mandatory` + `scroll-snap-align: start`
-  por página → momentum físico, sin overshoot excesivo (equivalente web del
-  `motion/spring` del prototipo de Figma).
-- La **página activa** se calcula del `scrollLeft` (la página más cercana al borde
-  izquierdo del viewport) y actualiza el dot + `onPageChange`.
-- **Dots** y **flechas** hacen `scrollTo({ behavior: 'smooth' })` (o `auto` con
-  `prefers-reduced-motion`).
-- El contenido fuera del viewport se recorta; no se alteran los tokens internos
-  de los slots ni el layout vertical.
+| Entrada | Cómo |
+|---|---|
+| **Swipe táctil** | `scroll-snap-type: x mandatory` + `scroll-snap-align: start` por página → momentum físico nativo (equivalente web del `motion/spring` del prototipo) |
+| **Arrastre con mouse** | pointer events en el viewport, **solo `pointerType === 'mouse'`**: `pointerdown` fija `scrollLeft` inicial y desactiva el snap; `pointermove` mueve el scroll 1:1; `pointerup` reactiva el snap y hace `scrollTo` suave a la página más cercana. Umbral de 5px: por debajo es un click (los interactivos del slot siguen funcionando); si hubo arrastre se anula ese click. `cursor: grab / grabbing` (solo mouse) |
+| **Teclado** | viewport enfocado (`tabIndex={0}`) → **←/→** salto de página |
+| **Flechas** (`controls`) | `scrollTo` suave; `disabled` en los extremos |
+
+La **página activa** se calcula del `scrollLeft` (página más cercana al borde
+izquierdo) → actualiza el dot + `onPageChange`. `scrollTo` usa `auto` con
+`prefers-reduced-motion`. El contenido fuera del viewport se recorta; no se
+alteran los tokens internos de los slots ni el layout vertical.
 
 ## Accesibilidad
 
 - `.carousel__viewport` = `role="group"` + `aria-roledescription="carrusel"` +
-  `aria-label`, `tabIndex={0}`: navegable con **↑/↓ del scroll** y **←/→**
-  (salto de página).
+  `aria-label`, `tabIndex={0}`; navegable con **←/→** (salto de página).
 - Cada página: `role="group"` + `aria-roledescription="diapositiva"` +
   `aria-label="N de M"`; `aria-hidden` en las no activas.
-- **Dots como `<button>`** (`aria-current` en el activo) — afordancia accesible
-  además del swipe. Diverge de Figma, donde el dot "no es interactivo de forma
-  independiente"; se hace interactivo por accesibilidad.
-- El estado activo no depende solo del color (posición del dot + `aria-current`).
+- Los **dots** van `aria-hidden` (decorativos). La posición se anuncia con una
+  región `aria-live="polite"` visualmente oculta ("Página N de M").
+- El estado activo no depende solo del color (región live + `aria-hidden` por página).
 
 ## Guías de uso
 

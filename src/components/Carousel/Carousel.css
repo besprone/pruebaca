@@ -36,6 +36,12 @@
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/old Edge */
 }
+/* cursor de arrastre solo para mouse (el táctil usa el scroll nativo) */
+@media (hover: hover) and (pointer: fine) {
+  .carousel__viewport {
+    cursor: grab;
+  }
+}
 .carousel__viewport::-webkit-scrollbar {
   display: none;
 }
@@ -80,38 +86,41 @@
   padding-inline: 44px; /* ancho del IconButton sm */
 }
 
-/* ── dots ───────────────────────────────────────────────────────────────── */
+/* ── dots (solo indicadores — no interactivos) ─────────────────────────── */
 .carousel__dots {
   display: flex;
   align-items: center;
   gap: var(--internalLayout-space-50); /* 4px */
   min-height: 32px; /* alinea con las flechas de 32px */
 }
+.carousel[data-controls] .carousel__dots {
+  padding-inline: 44px; /* deja hueco a las flechas */
+}
 
 .carousel__dot {
-  all: unset;
-  box-sizing: border-box;
-  position: relative;
   width: var(--size-6); /* 6px */
   height: var(--size-6);
   border-radius: var(--circular-items-radius-round);
   background-color: var(--semantic-color-icon-tertiary);
-  cursor: pointer;
   flex-shrink: 0;
   transition: background-color calc(var(--linear-200-duration-ms)) var(--linear-200-easing);
-}
-/* área táctil ampliada sin cambiar el tamaño visual */
-.carousel__dot::after {
-  content: '';
-  position: absolute;
-  inset: -9px;
 }
 .carousel__dot[data-active] {
   background-color: var(--semantic-color-icon-brand);
 }
-.carousel__dot:focus-visible {
-  outline: 2px solid var(--semantic-color-state-focusRing);
-  outline-offset: 3px;
+
+/* estado accesible para lectores de pantalla (visualmente oculto) */
+.carousel__status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
