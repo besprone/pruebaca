@@ -4,6 +4,7 @@ import { Snackbar } from '../../components/Snackbar/Snackbar';
 import type { SnackbarVariant } from '../../components/Snackbar/Snackbar';
 import { SnackbarLayout } from '../../components/Snackbar/SnackbarLayout';
 import { SnackbarActions } from '../../components/Snackbar/SnackbarActions';
+import { Button } from '../../components/Button/Button';
 
 const VARIANTS: SnackbarVariant[] = ['neutral', 'success', 'warning', 'error', 'info'];
 
@@ -159,20 +160,9 @@ function AutoDismissDemo() {
   return (
     <div style={{ minHeight: 320, padding: 24, position: 'relative' }}>
       <style>{viewportCss}</style>
-      <button
-        type="button"
-        onClick={show}
-        style={{
-          font: 'inherit',
-          padding: '8px 14px',
-          borderRadius: 8,
-          border: '1px solid var(--semantic-color-border-default)',
-          background: 'var(--semantic-color-bg-surface)',
-          cursor: 'pointer',
-        }}
-      >
+      <Button emphasis="secondary" size="sm" onClick={show}>
         Descargar detalle
-      </button>
+      </Button>
       <p style={{ ...label, marginTop: 12, maxWidth: 420 }}>
         Aparece deslizando desde arriba, se auto-cierra a los 3.5 s deslizando hacia abajo y se
         desmonta. Móvil: abajo centrado · tablet/desktop: abajo-derecha (cambia el viewport de

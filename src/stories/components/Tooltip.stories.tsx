@@ -3,6 +3,7 @@ import { Information } from '@carbon/icons-react';
 import { Tooltip } from '../../components/Tooltip/Tooltip';
 import type { TooltipSide, TooltipAlign } from '../../components/Tooltip/Tooltip';
 import { IconButton } from '../../components/IconButton/IconButton';
+import { Button } from '../../components/Button/Button';
 
 const SIDES: TooltipSide[] = ['top', 'right', 'bottom', 'left'];
 const ALIGNS: TooltipAlign[] = ['start', 'center', 'end'];
@@ -31,24 +32,15 @@ const meta: Meta<typeof Tooltip> = {
 export default meta;
 type Story = StoryObj<typeof Tooltip>;
 
-const anchorStyle: React.CSSProperties = {
-  font: 'inherit',
-  padding: '8px 14px',
-  borderRadius: 10,
-  border: '1px solid var(--semantic-color-border-default)',
-  background: 'var(--semantic-color-bg-surface)',
-  cursor: 'default',
-};
-
 // ── Playground ──────────────────────────────────────────────────────────────
 
 export const Playground: Story = {
   render: (args) => (
     <div style={{ padding: 80 }}>
       <Tooltip {...args}>
-        <button type="button" style={anchorStyle}>
+        <Button emphasis="secondary" size="sm">
           Interés compuesto
-        </button>
+        </Button>
       </Tooltip>
     </div>
   ),
@@ -71,9 +63,9 @@ export const Placements: Story = {
     >
       {SIDES.map((s) => (
         <Tooltip key={s} open side={s} content={`side = ${s}`} heading="Placement">
-          <button type="button" style={anchorStyle}>
+          <Button emphasis="secondary" size="sm">
             {s}
-          </button>
+          </Button>
         </Tooltip>
       ))}
     </div>
@@ -88,9 +80,9 @@ export const Align: Story = {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 72, padding: '72px 24px' }}>
       {ALIGNS.map((a) => (
         <Tooltip key={a} open side="bottom" align={a} content={`align = ${a} · texto un poco más largo para notar la alineación`}>
-          <button type="button" style={{ ...anchorStyle, alignSelf: 'flex-start' }}>
+          <Button emphasis="secondary" size="sm" style={{ alignSelf: 'flex-start' }}>
             align {a}
-          </button>
+          </Button>
         </Tooltip>
       ))}
     </div>
@@ -127,9 +119,9 @@ export const Composiciones: Story = {
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 96, padding: 72 }}>
         {items.map(({ label, props }) => (
           <Tooltip key={label} {...props} open side="bottom">
-            <button type="button" style={anchorStyle}>
+            <Button emphasis="secondary" size="sm">
               {label}
-            </button>
+            </Button>
           </Tooltip>
         ))}
       </div>
@@ -162,9 +154,9 @@ export const Flip: Story = {
     <div style={{ minHeight: 200, position: 'relative' }}>
       <div style={{ position: 'absolute', top: 8, left: 8 }}>
         <Tooltip open side="top" content="Pedías arriba, pero no hay espacio → flip a bottom.">
-          <button type="button" style={anchorStyle}>
+          <Button emphasis="secondary" size="sm">
             side=top cerca del borde superior
-          </button>
+          </Button>
         </Tooltip>
       </div>
     </div>
