@@ -1,13 +1,13 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
-import { CircularIndeterminateProgress } from '../CircularIndeterminateProgress/CircularIndeterminateProgress';
-import type { CircularIndeterminateProgressSize } from '../CircularIndeterminateProgress/CircularIndeterminateProgress';
+import { CircularProgress } from '../CircularProgress/CircularProgress';
+import type { CircularProgressSize } from '../CircularProgress/CircularProgress';
 import './IconButton.css';
 
 export type IconButtonEmphasis = 'primary' | 'secondary' | 'ghost';
 export type IconButtonSize = 'sm' | 'md' | 'lg';
 
 // Mapeo de tamaño del botón al tamaño del spinner (según Figma)
-const spinnerSize: Record<IconButtonSize, CircularIndeterminateProgressSize> = {
+const spinnerSize: Record<IconButtonSize, CircularProgressSize> = {
   sm: 'xs',
   md: 'sm',
   lg: 'md',
@@ -43,7 +43,7 @@ export function IconButton({
       <span className="icon-button__btn">
         <span className="icon-button__state">
           {isLoading ? (
-            <CircularIndeterminateProgress size={spinnerSize[size]} aria-label="Cargando" />
+            <CircularProgress indeterminate size={spinnerSize[size]} aria-label="Cargando" />
           ) : (
             icon
           )}

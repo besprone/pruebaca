@@ -1,13 +1,13 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
-import { CircularIndeterminateProgress } from '../CircularIndeterminateProgress/CircularIndeterminateProgress';
-import type { CircularIndeterminateProgressSize } from '../CircularIndeterminateProgress/CircularIndeterminateProgress';
+import { CircularProgress } from '../CircularProgress/CircularProgress';
+import type { CircularProgressSize } from '../CircularProgress/CircularProgress';
 import './Button.css';
 
 export type ButtonEmphasis = 'primary' | 'secondary' | 'ghost' | 'destructive';
 export type ButtonSize = 'xs' | 'sm' | 'md';
 
 // Spinner por tamaño de botón (Figma: icono siempre 20px en xs/sm, 24px en md)
-const spinnerSize: Record<ButtonSize, CircularIndeterminateProgressSize> = {
+const spinnerSize: Record<ButtonSize, CircularProgressSize> = {
   xs: 'xs',
   sm: 'sm',
   md: 'md',
@@ -44,7 +44,8 @@ export function Button({
       <span className="button__btn">
         <span className="button__state">
           {isLoading ? (
-            <CircularIndeterminateProgress
+            <CircularProgress
+              indeterminate
               size={spinnerSize[size]}
               aria-label="Cargando"
             />
