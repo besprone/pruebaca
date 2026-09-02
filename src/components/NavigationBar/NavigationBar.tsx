@@ -46,8 +46,6 @@ export type NavigationBarProps = {
   className?: string;
 };
 
-const PILL_W = 40;
-const PILL_H = 32;
 const SPRING = { stiffness: 100, damping: 15, mass: 1 };
 
 const prefersReducedMotion = () =>
@@ -132,10 +130,14 @@ export function NavigationBar({
 
       const barRect = bar.getBoundingClientRect();
       const iconRect = iconEl.getBoundingClientRect();
-      const targetLeft = iconRect.left - barRect.left + iconRect.width / 2 - PILL_W / 2;
-      const targetTop = iconRect.top - barRect.top + iconRect.height / 2 - PILL_H / 2;
+      // el pill (absolute) se posiciona desde el borde de padding del nav;
+      // restamos el borde para que calce exactamente el contenedor del icono
+      // (40×32 en Figma).
+      const targetLeft = iconRect.left - barRect.left - bar.clientLeft;
+      pill.style.top = `${iconRect.top - barRect.top - bar.clientTop}px`;
+      pill.style.width = `${iconRect.width}px`;
+      pill.style.height = `${iconRect.height}px`;
 
-      pill.style.top = `${Math.round(targetTop)}px`;
       cancelRef.current?.();
 
       const from = currentLeftRef.current;
@@ -152,18 +154,33 @@ export function NavigationBar({
     [items, selectedValue, hasIndicator],
   );
 
+  // ref siempre-fresca de positionPill para observers de vida larga
+  const positionPillRef = useRef(positionPill);
+  positionPillRef.current = positionPill;
+
+  // reposiciona (con animación si ya montó) al cambiar la selección
   useLayoutEffect(() => {
     positionPill(mountedRef.current);
     mountedRef.current = true;
   }, [positionPill]);
 
+  // el bar cambia de tamaño (rotación, resize) → recolocar sin animar.
+  // Se crea UNA vez: recrearlo por cambio de selección haría que el callback
+  // inicial de `observe()` cancele el spring recién arrancado.
   useEffect(() => {
     const bar = barRef.current;
     if (!bar || typeof ResizeObserver === 'undefined') return;
-    const ro = new ResizeObserver(() => positionPill(false));
+    let first = true;
+    const ro = new ResizeObserver(() => {
+      if (first) {
+        first = false; // fire síncrono inicial — ya lo cubre el layout effect
+        return;
+      }
+      positionPillRef.current(false);
+    });
     ro.observe(bar);
     return () => ro.disconnect();
-  }, [positionPill]);
+  }, []);
 
   useEffect(() => () => cancelRef.current?.(), []);
 
