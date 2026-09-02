@@ -56,8 +56,10 @@ propia fila alineadas a la derecha. Altura adaptable; padding por spacing tokens
 (no configurable en instancia). No define color contextual — lo hereda del card.
 
 **`SnackbarActions`** (`type`: `all` · `action` · `close affordance`): fila de
-acciones. `action` = `Button` **ghost** (nunca primario). `close` = `IconButton`
-ghost con la X (24px, hit 48px). `all` = ambos, `gap` 8. Sin fondo propio.
+acciones. `action` = `Button` **ghost** `xs` (pill 32px, nunca primario). `close`
+= `IconButton` **ghost** `md` (caja 44px, ícono X 20px) — un paso por debajo del
+`lg`/24px de Figma para equilibrar la jerarquía visual del row. `all` = ambos,
+`gap` 8. Sin fondo propio.
 
 ## Comportamiento (fuera del alcance de este componente)
 
