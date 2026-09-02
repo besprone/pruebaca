@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
+import { ArrowLeft } from '@carbon/icons-react';
 import { SearchField } from '../../components/SearchField/SearchField';
 import type { SearchFieldVariant } from '../../components/SearchField/SearchField';
+import { IconButton } from '../../components/IconButton/IconButton';
 
 const meta: Meta<typeof SearchField> = {
   title: 'Components/SearchField',
@@ -139,19 +141,12 @@ export const EnAppBar: Story = {
             boxShadow: 'var(--elevation-200, 0 1px 2px rgba(0,0,0,0.12))',
           }}
         >
-          <button
+          <IconButton
+            emphasis="ghost"
+            size="sm"
             aria-label="Cerrar búsqueda"
-            style={{
-              all: 'unset',
-              cursor: 'pointer',
-              padding: 8,
-              color: 'var(--semantic-color-icon-primary)',
-              fontSize: 18,
-              lineHeight: 1,
-            }}
-          >
-            ←
-          </button>
+            icon={<ArrowLeft />}
+          />
           <div style={{ flex: 1 }}>
             <SearchField
               variant="appbar"

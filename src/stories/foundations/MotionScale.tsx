@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { figmaPathToCssVar } from "../../tokens/figma-path-to-css";
+import { Button } from "../../components/Button/Button";
 import {
   figmaMotionLinear200Tokens,
   figmaMotionSpringTokens,
@@ -84,20 +85,9 @@ function MotionDemo({
       </div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
         <span style={{ fontFamily: "system-ui, sans-serif", fontSize: 12, color: "#4a5160" }}>{label}</span>
-        <button
-          type="button"
-          onClick={() => setActive((prev) => !prev)}
-          style={{
-            border: "1px solid #d5d9e2",
-            borderRadius: 8,
-            padding: "4px 8px",
-            background: "#fff",
-            cursor: "pointer",
-            fontSize: 12,
-          }}
-        >
+        <Button emphasis="secondary" size="xs" onClick={() => setActive((prev) => !prev)}>
           {active ? "Reset" : "Play"}
-        </button>
+        </Button>
       </div>
     </div>
   );
