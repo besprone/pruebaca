@@ -1,3 +1,6 @@
+export { ItemLeading } from './ItemLeading';
+export type { ItemLeadingProps, ItemLeadingType, ItemLeadingSize } from './ItemLeading';
+
 export { ItemContent } from './ItemContent';
 export type { ItemContentProps, ItemContentSize, ItemContentLayout } from './ItemContent';
 
