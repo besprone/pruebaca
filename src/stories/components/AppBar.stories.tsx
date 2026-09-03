@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Menu, Settings, ChartLine, View, Search, Close, Notification } from '@carbon/icons-react';
 import { AppBar } from '../../components/AppBar/AppBar';
-import type { AppBarSize, AppBarLayout } from '../../components/AppBar/AppBar';
+import type { AppBarSize, AppBarLayout, AppBarConfiguration } from '../../components/AppBar/AppBar';
 import { IconButton } from '../../components/IconButton/IconButton';
 import { SearchField } from '../../components/SearchField/SearchField';
 import { Avatar } from '../../components/Avatar/Avatar';
@@ -11,6 +11,16 @@ import { Brand } from '../../components/Brand/Brand';
 
 const SIZES: AppBarSize[] = ['sm', 'md', 'lg'];
 const LAYOUTS: AppBarLayout[] = ['inline', 'stacked'];
+const CONFIGS: AppBarConfiguration[] = [
+  'home',
+  'home-settings',
+  'navigation',
+  'dialog',
+  'search',
+  'section',
+  'resumen-de-saldos',
+  'dos-columnas',
+];
 
 const meta: Meta<typeof AppBar> = {
   title: 'Components/AppBar',
@@ -18,14 +28,15 @@ const meta: Meta<typeof AppBar> = {
   parameters: { layout: 'fullscreen' },
   argTypes: {
     size: { control: 'inline-radio', options: SIZES },
-    layout: { control: 'inline-radio', options: LAYOUTS },
-    elevation: { control: 'inline-radio', options: ['flat', 'raised'] },
+    layout: { control: 'inline-radio', options: [undefined, ...LAYOUTS] },
+    elevation: { control: 'inline-radio', options: [undefined, 'flat', 'raised'] },
+    configuration: { control: 'select', options: [undefined, ...CONFIGS] },
     leading: { control: false },
     trailing: { control: false },
     headline: { control: 'text' },
     supporting: { control: 'text' },
   },
-  args: { size: 'md', layout: 'inline', elevation: 'flat', headline: 'Inversiones', supporting: 'kubo.plazofijo' },
+  args: { size: 'md', headline: 'Inversiones', supporting: 'kubo.plazofijo' },
 };
 
 export default meta;
@@ -57,11 +68,13 @@ export const Playground: Story = {
 };
 
 export const Configuraciones: Story = {
+  name: 'Configuraciones (prop configuration)',
   parameters: { controls: { disable: true } },
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', background: 'var(--semantic-color-bg-canvas)' }}>
-      <p style={legend}>home settings · sm · inline</p>
+      <p style={legend}>configuration="home-settings" · sm</p>
       <AppBar
+        configuration="home-settings"
         size="sm"
         leading={<Brand type="secondary" size="md" />}
         trailing={
@@ -73,8 +86,9 @@ export const Configuraciones: Story = {
         }
       />
 
-      <p style={legend}>home · md · inline</p>
+      <p style={legend}>configuration="home" · md</p>
       <AppBar
+        configuration="home"
         size="md"
         leading={<IconButton emphasis="ghost" size="lg" aria-label="Menú" icon={<Menu />} />}
         headline="Inicio"
@@ -82,20 +96,29 @@ export const Configuraciones: Story = {
         trailing={threeActions}
       />
 
-      <p style={legend}>navigation · lg · stacked</p>
+      <p style={legend}>configuration="navigation" · lg · layout="stacked" (columna centrada)</p>
       <AppBar
+        configuration="navigation"
         size="lg"
         layout="stacked"
         leading={back}
         headline="Detalle del contrato"
         supporting="kubo.plazofijo · #4821"
-        trailing={
-          <IconButton emphasis="ghost" size="lg" aria-label="Buscar" icon={<Search />} />
-        }
+        trailing={<IconButton emphasis="ghost" size="lg" aria-label="Buscar" icon={<Search />} />}
       />
 
-      <p style={legend}>search · sm · inline</p>
+      <p style={legend}>configuration="dialog" · lg (fuerza stacked · centrado · pt 12 / pb 16)</p>
       <AppBar
+        configuration="dialog"
+        size="lg"
+        headline="Nueva inversión"
+        supporting="Configura tu plazo y monto"
+        trailing={<IconButton emphasis="ghost" size="lg" aria-label="Cerrar" icon={<Close />} />}
+      />
+
+      <p style={legend}>configuration="search" · sm (sin bloque de texto)</p>
+      <AppBar
+        configuration="search"
         size="sm"
         leading={back}
         trailing={
@@ -108,16 +131,22 @@ export const Configuraciones: Story = {
         }
       />
 
-      <p style={legend}>section · lg · inline (sin leading)</p>
+      <p style={legend}>configuration="section" · lg (inset ancho · sin leading)</p>
       <AppBar
+        configuration="section"
         size="lg"
         headline="Movimientos"
         supporting="Últimos 30 días"
-        trailing={<Button emphasis="secondary" size="sm">Exportar</Button>}
+        trailing={
+          <Button emphasis="secondary" size="sm">
+            Exportar
+          </Button>
+        }
       />
 
-      <p style={legend}>resumen de saldos · md · inline</p>
+      <p style={legend}>configuration="resumen-de-saldos" · md</p>
       <AppBar
+        configuration="resumen-de-saldos"
         size="md"
         leading={back}
         headline="$142,500.00"
@@ -132,8 +161,15 @@ export const Configuraciones: Story = {
         }
       />
 
-      <p style={legend}>raised (on-scroll)</p>
-      <AppBar size="md" elevation="raised" leading={back} headline="Inversiones" supporting="kubo.plazofijo" trailing={threeActions} />
+      <p style={legend}>configuration="dos-columnas" · md (centrado ancho · raised por defecto)</p>
+      <AppBar
+        configuration="dos-columnas"
+        size="md"
+        leading={back}
+        headline="Inversiones"
+        supporting="kubo.plazofijo"
+        trailing={threeActions}
+      />
     </div>
   ),
 };

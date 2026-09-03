@@ -208,6 +208,39 @@
   line-height: var(--typography-body-lg-line-height); /* 24 */
 }
 
+/* ── configuration (capa opcional · presets de Figma) ────────────────────────
+   `home` · `home-settings` · `resumen-de-saldos` → shell plano, sin overrides.
+   El resto solo ajusta padding / ancho del contenido. */
+
+/* dialog → más aire vertical (Figma: pt 12 / pb 16 · frame 156) */
+.app-bar[data-configuration='dialog'] {
+  padding-block-start: var(--internalLayout-space-150); /* 12px */
+  padding-block-end: var(--componentSpacing-space-200); /* 16px */
+}
+
+/* dialog + navigation(stacked) → contenido en columna centrada.
+   El pipeline aún no trae token de ancho de pantalla → literal 480. */
+.app-bar[data-configuration='dialog'][data-layout='stacked'],
+.app-bar[data-configuration='navigation'][data-layout='stacked'] {
+  align-items: center;
+}
+.app-bar[data-configuration='dialog'][data-layout='stacked'] > *,
+.app-bar[data-configuration='navigation'][data-layout='stacked'] > * {
+  inline-size: 100%;
+  max-inline-size: 480px;
+}
+
+/* section → inset ancho (Figma: block px 40) */
+.app-bar[data-configuration='section'] {
+  padding-inline: var(--sectionSpacing-space-500); /* 40px */
+}
+
+/* dos columnas → contenido centrado ancho (Figma: px 130 en frame de 1011).
+   `max()` degrada al padding normal en pantallas angostas. */
+.app-bar[data-configuration='dos-columnas'] {
+  padding-inline: max(var(--internalLayout-space-150), calc((100% - 752px) / 2));
+}
+
 @media (prefers-reduced-motion: reduce) {
   .app-bar {
     transition: none;
