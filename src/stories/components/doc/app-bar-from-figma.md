@@ -25,7 +25,7 @@ on-scroll son responsabilidad del consumidor.
 | Prop | Valores | |
 |---|---|---|
 | `size` | `sm` (def.) · `md` · `lg` | escala la ramp de tipografía (ver abajo) y la altura |
-| `layout` | `inline` (def.) · `stacked` | `inline` = leading · texto · trailing en una fila; el texto se corta con ellipsis (estado **colapsado**) · `stacked` = fila de acciones + el texto a lo ancho debajo; el supporting hace **wrap** (estado **expandido**) |
+| `layout` | `inline` (def.) · `stacked` | `inline` = leading · texto · trailing en una fila; headline **y** supporting a **1 línea con ellipsis** (estado **colapsado**) · `stacked` = fila de acciones + el texto a lo ancho debajo; headline **y** supporting hacen **wrap** (estado **expandido**) |
 | `elevation` | `flat` (def.) · `raised` | `flat` = **sin fondo** (transparente; la barra está en el top, nada se scrollea debajo) · `raised` (on-scroll) = fondo `bg/surface` opaco + sombra `elevation-2`. El consumidor lo alterna al hacer scroll |
 | `leading` | `ReactNode` | slot izquierdo: `IconButton` (back/menú) o `Brand` |
 | `headline` / `supporting` | `ReactNode` | título + texto secundario (ellipsis, una línea) |
@@ -76,8 +76,24 @@ composiciones distintas. Se reproducen con los slots:
 | `stacked` `sm` | Headline/sm-se (24/32) | Body/md (14/20) | 4 | **132** (fila 48 + texto 56) |
 | `stacked` `md`/`lg` | Display/sm-se (28/36) | Body/lg (16/24) | 8 | **144** (fila 48 + texto 68) |
 
-Las alturas de `stacked` son con supporting de **1 línea**; si hace wrap, la barra
-crece (estado expandido de onboarding).
+Las alturas de `stacked` son con headline + supporting de **1 línea**; ambos
+hacen wrap y la barra crece (estado expandido de onboarding).
+
+### `stacked` — validado contra Figma `navigation stacked lg` (4088:36395)
+
+| | Figma | componente |
+|---|---|---|
+| padding-block | 8 / 8 (`sm` pb 12) | ✓ |
+| fila de acciones | 48 (fija) | `min-block-size: 48` ✓ |
+| gap fila ↔ texto | `lg` 12 · `sm` 8 | ✓ |
+| texto: Label lh + gap + Supporting lh | `lg` 36 + 8 + 24 = 68 · `sm` 32 + 4 + 20 = 56 | ✓ |
+| headline ⟷ glifo del ícono leading | ambos a 24 (`px` 12 + 12 interno del IconButton) | ✓ — `.app-bar__text { padding-inline: 12 }` |
+| total (1 línea) | `lg` 144 · `sm` 132 | ✓ |
+
+> `dialog stacked lg` (4664:29242) usa pt 12 / pb 16 → 156, y `navigation
+> stacked lg` **centra** el contenido en una columna de ~480px (layout desktop
+> ancho). El componente usa los valores de `navigation` (pt/pb 8, 144) y va a lo
+> ancho; para la columna centrada el consumidor pone `max-width` + centrado.
 
 ## Tokens
 
