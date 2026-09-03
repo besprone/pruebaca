@@ -30,8 +30,8 @@
      (12px interno), así el ícono queda a 16 (sm) / 24 (md·lg) del borde — como
      en Figma. El texto sin ícono leading recupera esos 12px (ver __text). */
   padding-inline: var(--internalLayout-space-50); /* 4px */
-  background-color: var(--semantic-color-bg-surface);
   font-family: var(--typography-font-family);
+  /* solo la sombra hace fade; el fondo se vuelve opaco al instante al scrollear */
   transition: box-shadow var(--linear-200-duration-ms) var(--linear-200-easing);
 }
 .app-bar[data-size='md'],
@@ -39,7 +39,13 @@
   padding-inline: var(--internalLayout-space-150); /* 12px */
 }
 
+/* elevation=flat → SIN fondo (la barra está en el top, nada se scrollea debajo).
+   elevation=raised (on-scroll) → fondo `bg/surface` opaco + sombra. */
+.app-bar[data-elevation='flat'] {
+  background-color: transparent;
+}
 .app-bar[data-elevation='raised'] {
+  background-color: var(--semantic-color-bg-surface);
   box-shadow: var(--Elevation-elevation-2);
 }
 
