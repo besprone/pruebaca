@@ -2,15 +2,22 @@
    Barra de navegación superior. Figma: `patterns_app_bar`.
 
    <header.app-bar data-size data-layout data-elevation>
-     <div.app-bar__row>
+     <div.app-bar__row>            fila de acciones (min-block-size 48 = IconButton)
        .app-bar__leading    slot (IconButton / Brand)
-       .app-bar__text       headline + supporting   (solo en layout=inline)
-       .app-bar__trailing   slot (acciones · flex:1 · justify-end)
-     .app-bar__text         (solo en layout=stacked, a lo ancho, bajo la fila)
+       .app-bar__text       headline + supporting   (solo layout=inline)
+       .app-bar__trailing   slot · flex:1 · justify-end
+     .app-bar__text                (solo layout=stacked, a lo ancho, bajo la fila)
 
-   layout=inline  → una fila (leading · texto · trailing).
-   layout=stacked → fila de acciones + texto debajo.
+   Alturas Figma (frame): inline sm 64 · md/lg 84 · stacked sm 132 · stacked lg 144.
+   layout=inline  → una fila (leading · texto · trailing); el texto se corta (ellipsis).
+   layout=stacked → fila de acciones + texto debajo; el supporting hace wrap.
    elevation=raised → sombra elevation-2 (estado on-scroll).
+
+   Ramp de tipografía por (layout × size):
+     inline  sm → Headline/xs (22/30) · Body/sm (12/17)  · gap texto 0
+     inline  md/lg → Display/sm (28/36) · Body/lg (16/24) · gap texto 8
+     stacked sm → Headline/sm (24/32) · Body/md (14/20)   · gap texto 4
+     stacked md/lg → Display/sm (28/36) · Body/lg (16/24)  · gap texto 8
 ──────────────────────────────────────────────────────────────────────────── */
 
 .app-bar {
@@ -25,46 +32,48 @@
   transition: box-shadow var(--linear-200-duration-ms) var(--linear-200-easing);
 }
 
-.app-bar[data-size='sm'] {
-  min-block-size: 64px;
-  gap: var(--internalLayout-space-50); /* 4px */
-}
-.app-bar[data-size='md'],
-.app-bar[data-size='lg'] {
-  min-block-size: 84px;
-  gap: var(--componentSpacing-space-200); /* 16px */
-}
-.app-bar[data-size='lg'] {
-  padding-inline: var(--componentSpacing-space-300); /* 24px — más aire */
-}
-
 .app-bar[data-elevation='raised'] {
   box-shadow: var(--Elevation-elevation-2);
 }
 
-/* ── layout ──────────────────────────────────────────────────────────────── */
-/* inline: la fila desaparece y sus hijos son items flex del header */
+/* ── layout: inline ──────────────────────────────────────────────────────── */
+/* la fila desaparece y sus hijos son items flex del header */
+.app-bar[data-layout='inline'] {
+  min-block-size: 64px; /* piso: 48 (IconButton) + 16 (padding-block) */
+}
+.app-bar[data-layout='inline'][data-size='md'],
+.app-bar[data-layout='inline'][data-size='lg'] {
+  min-block-size: 84px;
+}
 .app-bar[data-layout='inline'] .app-bar__row {
   display: contents;
 }
+.app-bar[data-layout='inline'][data-size='sm'] {
+  gap: var(--internalLayout-space-50); /* 4px */
+}
+.app-bar[data-layout='inline'][data-size='md'],
+.app-bar[data-layout='inline'][data-size='lg'] {
+  gap: var(--componentSpacing-space-200); /* 16px */
+}
 
-/* stacked: header en columna, la fila es el flex de acciones */
+/* ── layout: stacked ─────────────────────────────────────────────────────── */
 .app-bar[data-layout='stacked'] {
   flex-direction: column;
   align-items: stretch;
-  gap: var(--internalLayout-space-150); /* 12px entre fila y texto */
+}
+.app-bar[data-layout='stacked'][data-size='sm'] {
+  gap: var(--internalLayout-space-100); /* 8px fila↔texto */
+  padding-block-end: var(--internalLayout-space-150); /* 12px */
+}
+.app-bar[data-layout='stacked'][data-size='md'],
+.app-bar[data-layout='stacked'][data-size='lg'] {
+  gap: var(--internalLayout-space-150); /* 12px fila↔texto */
 }
 .app-bar[data-layout='stacked'] .app-bar__row {
   display: flex;
   align-items: center;
-  gap: inherit;
-}
-.app-bar[data-layout='stacked'][data-size='sm'] .app-bar__row {
-  gap: var(--internalLayout-space-50);
-}
-.app-bar[data-layout='stacked'][data-size='md'] .app-bar__row,
-.app-bar[data-layout='stacked'][data-size='lg'] .app-bar__row {
-  gap: var(--componentSpacing-space-200);
+  min-block-size: 48px;
+  gap: var(--componentSpacing-space-200); /* 16px */
 }
 
 /* ── slots ───────────────────────────────────────────────────────────────── */
@@ -82,35 +91,44 @@
   flex: 1 1 auto;
   min-inline-size: 0;
 }
-.app-bar[data-layout='stacked'] .app-bar__trailing {
-  flex: 1 1 0;
-}
 
 /* ── texto ───────────────────────────────────────────────────────────────── */
 .app-bar__text {
   display: flex;
   flex-direction: column;
-  gap: var(--internalLayout-space-100); /* 8px */
   min-inline-size: 0;
 }
 .app-bar[data-layout='inline'] .app-bar__text {
   flex: 1 1 0;
 }
+.app-bar[data-size='sm'][data-layout='inline'] .app-bar__text {
+  gap: 0;
+}
+.app-bar[data-size='sm'][data-layout='stacked'] .app-bar__text {
+  gap: var(--internalLayout-space-50); /* 4px */
+}
+.app-bar[data-size='md'] .app-bar__text,
+.app-bar[data-size='lg'] .app-bar__text {
+  gap: var(--internalLayout-space-100); /* 8px */
+}
 
 .app-bar__headline {
   margin: 0;
   color: var(--semantic-color-text-primary);
-  /* Figma: Display/sm-semiemphasized (md/lg) · Headline/xs-semiemphasized (sm),
-     ambos weight 600. El pipeline no exporta `display-sm-semiemphasized`, así que
-     se usa el token de headline (mismo valor). */
+  /* Display/sm-se · Headline/sm-se · Headline/xs-se — todos weight 600. El
+     pipeline no exporta `display-sm-semiemphasized`, se usa el de headline. */
   font-weight: var(--typography-headline-xs-semiemphasized-weight); /* 600 */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.app-bar[data-size='sm'] .app-bar__headline {
+.app-bar[data-size='sm'][data-layout='inline'] .app-bar__headline {
   font-size: var(--typography-headline-xs-size); /* 22 */
   line-height: var(--typography-headline-xs-line-height); /* 30 */
+}
+.app-bar[data-size='sm'][data-layout='stacked'] .app-bar__headline {
+  font-size: var(--typography-headline-sm-size); /* 24 */
+  line-height: var(--typography-headline-sm-line-height); /* 32 */
 }
 .app-bar[data-size='md'] .app-bar__headline,
 .app-bar[data-size='lg'] .app-bar__headline {
@@ -122,13 +140,23 @@
   margin: 0;
   color: var(--semantic-color-text-secondary);
   font-weight: var(--typography-body-lg-weight); /* 500 */
+}
+/* inline → una línea con ellipsis · stacked → wrap */
+.app-bar[data-layout='inline'] .app-bar__supporting {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.app-bar[data-size='sm'] .app-bar__supporting {
+.app-bar[data-layout='stacked'] .app-bar__supporting {
+  white-space: normal;
+}
+.app-bar[data-size='sm'][data-layout='inline'] .app-bar__supporting {
   font-size: var(--typography-body-sm-size); /* 12 */
   line-height: var(--typography-body-sm-line-height); /* 17 */
+}
+.app-bar[data-size='sm'][data-layout='stacked'] .app-bar__supporting {
+  font-size: var(--typography-body-md-size); /* 14 */
+  line-height: var(--typography-body-md-line-height); /* 20 */
 }
 .app-bar[data-size='md'] .app-bar__supporting,
 .app-bar[data-size='lg'] .app-bar__supporting {
