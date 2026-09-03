@@ -45,6 +45,8 @@ const [expanded, setExpanded] = useState(true);
 | `mode` | `rail` (default) · `overlay` | `rail` = panel fijo con toggle · `overlay` = panel deslizante con backdrop y X |
 | `expanded` / `defaultExpanded` / `onExpandedChange` | `boolean` | 260px (con labels) ↔ 96px (solo iconos). `rail` mode |
 | `onClose` | `() => void` | `overlay` mode — X / backdrop / Escape |
+| `open` | `boolean` (default `true`) | `overlay` mode — al pasar a `false` reproduce la animación de salida y luego llama `onExited`. Si se omite, el consumidor desmonta sin animación |
+| `onExited` | `() => void` | `overlay` mode — se dispara al terminar la animación de salida; el consumidor desmonta ahí |
 | `size` | `lg` (default) · `md` | `lg` = items con supporting · `md` = sin supporting |
 | `compact` | `boolean` | items de menor alto (sin supporting) |
 
@@ -92,6 +94,17 @@ redondo y no como rectángulo alto.
 - `mode="overlay"`: `position: fixed` sobre el contenido, backdrop
   `rgba(28,27,32,.4)`, X en el header; cierra con X, click en el backdrop o
   `Escape` (`onClose`). Siempre expandido.
+- **Animación:**
+  - Colapsar ↔ expandir → `transition` de `inline-size` + `padding-inline` con
+    `linear-200` (mismo timing que el overlay). El contenido cambia de
+    orientación (horizontal ↔ vertical) al instante y `overflow: clip` recorta
+    mientras el ancho llega.
+  - `overlay` entrada/salida → `data-state` (`entering` / `open` / `exiting`)
+    en `.navigation-rail-overlay`. `entering` = slide-in `translateX(-100%)→0` +
+    backdrop fade-in. `exiting` = las mismas en reversa (`forwards`), y al
+    terminar (`onAnimationEnd`) llama `onExited` para que el consumidor
+    desmonte. Con `prefers-reduced-motion` se salta la animación y `onExited`
+    se llama de inmediato.
 - **Roving tabindex** sobre los navitems; `↑` / `↓` mueven el foco, `Home` /
   `End`; se navega con click / `Enter`.
 

@@ -29,6 +29,10 @@
   background-color: var(--semantic-color-bg-surface);
   border-inline-end: 1px solid var(--semantic-color-border-default);
   font-family: var(--typography-font-family);
+  /* colapsar ↔ expandir: anima el ancho con el mismo timing que el overlay */
+  transition:
+    inline-size var(--linear-200-duration-ms) var(--linear-200-easing),
+    padding-inline var(--linear-200-duration-ms) var(--linear-200-easing);
 }
 .navigation-rail[data-expanded] {
   inline-size: 260px;
@@ -152,14 +156,28 @@
   position: absolute;
   inset: 0;
   background-color: rgba(28, 27, 32, 0.4);
-  animation: navigation-rail-backdrop-in var(--linear-200-duration-ms) var(--linear-200-easing);
 }
 .navigation-rail-overlay .navigation-rail {
   position: relative;
   z-index: 1;
   block-size: 100%;
   box-shadow: var(--Elevation-elevation-3);
+}
+
+/* entrada */
+.navigation-rail-overlay[data-state='entering'] .navigation-rail-overlay__backdrop {
+  animation: navigation-rail-backdrop-in var(--linear-200-duration-ms) var(--linear-200-easing);
+}
+.navigation-rail-overlay[data-state='entering'] .navigation-rail {
   animation: navigation-rail-slide-in var(--linear-200-duration-ms) var(--linear-200-easing);
+}
+/* salida — misma animación en reversa; `forwards` mantiene el estado final
+   hasta que el consumidor desmonta (onExited). */
+.navigation-rail-overlay[data-state='exiting'] .navigation-rail-overlay__backdrop {
+  animation: navigation-rail-backdrop-out var(--linear-200-duration-ms) var(--linear-200-easing) forwards;
+}
+.navigation-rail-overlay[data-state='exiting'] .navigation-rail {
+  animation: navigation-rail-slide-out var(--linear-200-duration-ms) var(--linear-200-easing) forwards;
 }
 
 @keyframes navigation-rail-backdrop-in {
@@ -172,10 +190,22 @@
     transform: translateX(-100%);
   }
 }
+@keyframes navigation-rail-backdrop-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes navigation-rail-slide-out {
+  to {
+    transform: translateX(-100%);
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
+  .navigation-rail,
   .navigation-rail-overlay__backdrop,
   .navigation-rail-overlay .navigation-rail {
     animation: none;
+    transition: none;
   }
 }

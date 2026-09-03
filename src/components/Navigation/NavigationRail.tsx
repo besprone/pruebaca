@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Close, Logout, SidePanelClose, SidePanelOpen } from '@carbon/icons-react';
-import type { KeyboardEvent, ReactNode } from 'react';
+import type { AnimationEvent, KeyboardEvent, ReactNode } from 'react';
 import { Button } from '../Button/Button';
 import { IconButton } from '../IconButton/IconButton';
 import { RailNavItem } from './RailNavItem';
 import type { AvatarProps } from '../Avatar/Avatar';
+import { prefersReducedMotion } from '../../lib/spring';
 import './NavigationRail.css';
 
 export type NavigationRailMode = 'rail' | 'overlay';
@@ -53,6 +54,14 @@ export type NavigationRailProps = {
   onExpandedChange?: (expanded: boolean) => void;
   /** `overlay` mode — se llama al cerrar (X, backdrop, Escape). */
   onClose?: () => void;
+  /** `overlay` mode — controla la visibilidad para animar la salida. Al pasar a
+   *  `false` reproduce la animación de cierre y luego llama `onExited`. Si se
+   *  omite (`true`), el overlay se muestra y el consumidor lo desmonta sin
+   *  animación de salida. */
+  open?: boolean;
+  /** `overlay` mode — se dispara al terminar la animación de salida; el
+   *  consumidor lo usa para desmontar el overlay. */
+  onExited?: () => void;
   /** `lg` = items con supporting · `md` = sin supporting. Default `lg`. */
   size?: NavigationRailSize;
   /** Items de menor alto. Default `false`. */
@@ -84,6 +93,8 @@ export function NavigationRail({
   defaultExpanded = true,
   onExpandedChange,
   onClose,
+  open = true,
+  onExited,
   size = 'lg',
   compact = false,
   'aria-label': ariaLabel = 'Navegación',
@@ -101,6 +112,28 @@ export function NavigationRail({
 
   const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const rootRef = useRef<HTMLDivElement | null>(null);
+
+  // overlay: fase de entrada/salida para animar el cierre (no solo la apertura)
+  const [overlayPhase, setOverlayPhase] = useState<'entering' | 'open' | 'exiting'>(
+    mode === 'overlay' ? 'entering' : 'open',
+  );
+  const prevOpen = useRef(open);
+  useEffect(() => {
+    if (mode !== 'overlay' || prevOpen.current === open) return;
+    prevOpen.current = open;
+    if (prefersReducedMotion()) {
+      setOverlayPhase(open ? 'open' : 'exiting');
+      if (!open) onExited?.();
+    } else {
+      setOverlayPhase(open ? 'entering' : 'exiting');
+    }
+  }, [mode, open, onExited]);
+
+  const onRailAnimEnd = (e: AnimationEvent<HTMLDivElement>) => {
+    if (mode !== 'overlay' || e.target !== e.currentTarget) return;
+    if (overlayPhase === 'entering') setOverlayPhase('open');
+    else if (overlayPhase === 'exiting') onExited?.();
+  };
 
   const setExpanded = useCallback(
     (next: boolean) => {
@@ -184,6 +217,8 @@ export function NavigationRail({
       data-expanded={expanded ? '' : undefined}
       data-mode={mode}
       data-size={size}
+      data-state={mode === 'overlay' ? overlayPhase : undefined}
+      onAnimationEnd={onRailAnimEnd}
     >
       <div className="navigation-rail__header">
         {expanded && logo != null && <span className="navigation-rail__logo">{logo}</span>}
@@ -256,7 +291,7 @@ export function NavigationRail({
 
   if (mode === 'overlay') {
     return (
-      <div className="navigation-rail-overlay">
+      <div className="navigation-rail-overlay" data-state={overlayPhase}>
         <div
           className="navigation-rail-overlay__backdrop"
           onClick={() => onClose?.()}
