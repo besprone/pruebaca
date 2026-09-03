@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { Home, Analytics, Money, Portfolio, ScanAlt } from '@carbon/icons-react';
-import { NavigationBar } from '../../components/NavigationBar';
-import type { NavigationBarItemDef } from '../../components/NavigationBar';
-import { NavigationBarItem } from '../../components/NavigationBar/NavigationBarItem';
+import { NavigationBar } from '../../components/Navigation';
+import type { NavigationBarItemDef } from '../../components/Navigation';
+import { NavigationBarItem } from '../../components/Navigation/NavigationBarItem';
 
 const meta: Meta<typeof NavigationBar> = {
-  title: 'Components/NavigationBar',
+  title: 'Components/Navigation/Bar',
   component: NavigationBar,
   parameters: { layout: 'centered' },
   argTypes: {
