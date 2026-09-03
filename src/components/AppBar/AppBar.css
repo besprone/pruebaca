@@ -26,10 +26,17 @@
   align-items: center;
   inline-size: 100%;
   padding-block: var(--internalLayout-space-100); /* 8px */
-  padding-inline: var(--internalLayout-space-150); /* 12px */
+  /* padding-inline chico: la caja del IconButton (48) sobresale sobre su glifo
+     (12px interno), así el ícono queda a 16 (sm) / 24 (md·lg) del borde — como
+     en Figma. El texto sin ícono leading recupera esos 12px (ver __text). */
+  padding-inline: var(--internalLayout-space-50); /* 4px */
   background-color: var(--semantic-color-bg-surface);
   font-family: var(--typography-font-family);
   transition: box-shadow var(--linear-200-duration-ms) var(--linear-200-easing);
+}
+.app-bar[data-size='md'],
+.app-bar[data-size='lg'] {
+  padding-inline: var(--internalLayout-space-150); /* 12px */
 }
 
 .app-bar[data-elevation='raised'] {
@@ -82,14 +89,28 @@
   align-items: center;
   flex-shrink: 0;
 }
+/* Elementos sin "overhang" (no aportan padding interno como el IconButton):
+   los separo 12px del borde para que su arista quede en el mismo grid óptico
+   (16 sm / 24 md·lg) que el glifo de un IconButton leading. */
+.app-bar__leading > .brand {
+  margin-inline-start: var(--internalLayout-space-150); /* 12px */
+}
 
 .app-bar__trailing {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--internalLayout-space-50); /* 4px entre acciones */
+  /* Figma: gap 0 — las cajas de 48 de los IconButton se tocan y su padding
+     interno (12) da los 24px entre glifos. */
+  gap: 0;
   flex: 1 1 auto;
   min-inline-size: 0;
+}
+/* mismo criterio que el leading: un Avatar / AvatarAction al final no tiene
+   overhang → 12px del borde para alinear con el glifo del IconButton leading. */
+.app-bar__trailing > .avatar:last-child,
+.app-bar__trailing > .avatar-action:last-child {
+  margin-inline-end: var(--internalLayout-space-150); /* 12px */
 }
 
 /* ── texto ───────────────────────────────────────────────────────────────── */
@@ -100,6 +121,15 @@
 }
 .app-bar[data-layout='inline'] .app-bar__text {
   flex: 1 1 0;
+}
+/* Alinear el texto al mismo grid óptico que los glifos (16 sm / 24 md·lg):
+   el texto stacked va a lo ancho, y el inline sin ícono leading recupera los
+   12px que el ícono aporta con su padding interno. */
+.app-bar[data-layout='stacked'] .app-bar__text {
+  padding-inline: var(--internalLayout-space-150); /* 12px */
+}
+.app-bar[data-layout='inline'] .app-bar__row > .app-bar__text:first-child {
+  padding-inline-start: var(--internalLayout-space-150); /* 12px */
 }
 .app-bar[data-size='sm'][data-layout='inline'] .app-bar__text {
   gap: 0;
