@@ -27,6 +27,7 @@ on-scroll son responsabilidad del consumidor.
 | `size` | `sm` (def.) · `md` · `lg` | escala la ramp de tipografía (ver abajo) y la altura |
 | `layout` | `inline` (def.) · `stacked` | `inline` = leading · texto · trailing en una fila; headline **y** supporting a **1 línea con ellipsis** (estado **colapsado**) · `stacked` = fila de acciones + el texto a lo ancho debajo; headline **y** supporting hacen **wrap** (estado **expandido**) |
 | `elevation` | `flat` (def.) · `raised` | `flat` = **sin fondo** (transparente; la barra está en el top, nada se scrollea debajo) · `raised` (on-scroll) = fondo `bg/surface` opaco + sombra `elevation-2`. El consumidor lo alterna al hacer scroll |
+| `configuration` | `home` · `home-settings` · `navigation` · `dialog` · `search` · `section` · `resumen-de-saldos` · `dos-columnas` | **capa opcional** — preset de la variante de Figma. Ajusta `layout`/`elevation` por defecto y el padding/ancho del contenido (ver tabla abajo). Sin definir = el shell plano. Los slots siguen siendo la API de contenido |
 | `leading` | `ReactNode` | slot izquierdo: `IconButton` (back/menú) o `Brand` |
 | `headline` / `supporting` | `ReactNode` | título + texto secundario (ellipsis, una línea) |
 | `showHeadline` | `boolean` | fuerza mostrar/ocultar el bloque de texto. Default: `true` si hay `headline`/`supporting` |
@@ -38,7 +39,7 @@ on-scroll son responsabilidad del consumidor.
 ## Estructura
 
 ```
-<header.app-bar data-size data-layout data-elevation>
+<header.app-bar data-size data-layout data-elevation data-configuration?>
   <div.app-bar__row>              (display:contents en inline)
     .app-bar__leading  slot
     .app-bar__text     headline + supporting   (solo layout=inline)
@@ -52,20 +53,28 @@ on-scroll son responsabilidad del consumidor.
 `AvatarAction`, `Button` (via `patterns_buttons_actions`), `Brand` (logo). El
 `AppBar` solo aporta el layout, los tokens de texto y la elevación.
 
-## `configuration` de Figma → composición
+## `configuration` (capa opcional)
 
-Las 8 `configuration` del componente Figma son **presets de layout**, no
-composiciones distintas. Se reproducen con los slots:
+Las 8 `configuration` de Figma son **presets de layout/spacing**, no
+composiciones distintas — el contenido siempre lo pasan los slots. La prop
+`configuration` aplica el preset; sin ella, se compone a mano con
+`layout`/`size`/slots (todo lo que hace el preset se puede replicar).
 
-| configuration | cómo |
-|---|---|
-| `home settings` | `leading={<Brand secondary/>}` + `trailing` con iconos + `Avatar` |
-| `home` | `leading` menú + `headline`/`supporting` + `trailing` iconos |
-| `navigation` | `leading` back + `headline`/`supporting` + `trailing` |
-| `search` | `leading` back + `trailing={<><SearchField flex-1/><IconButton close/></>}` (sin `headline`) |
-| `section` | sin `leading`, `headline`/`supporting` + `trailing` con `Button` |
-| `dialog` | sin `leading`, `layout="stacked"`, `trailing` + `headline` debajo |
-| `resumen de saldos` / `dos columnas` | `headline` = monto, `trailing` con `SearchField` |
+| `configuration` | `layout` def. | `elevation` def. | efecto de spacing | slots típicos |
+|---|---|---|---|---|
+| `home` | `inline` | `flat` | — | `leading` menú + texto + `trailing` iconos |
+| `home-settings` | `inline` | `flat` | — | `leading` `<Brand>` + `trailing` iconos + `Avatar` |
+| `navigation` | `inline` | `flat` | en `stacked`: contenido centrado ~480px | `leading` back + texto + `trailing` |
+| `dialog` | **`stacked`** | `flat` | contenido centrado ~480px · `padding-block` **12 / 16** | sin `leading` · `trailing` (close) · texto debajo |
+| `search` | `inline` | `flat` | **sin bloque de texto** (aunque pases `headline`) | `leading` back + `trailing={<><SearchField flex-1/><IconButton close/></>}` |
+| `section` | `inline` | `flat` | `padding-inline` **40** | sin `leading` · texto + `trailing` con `Button` |
+| `resumen-de-saldos` | `inline` | `flat` | — | `leading` back + `headline` (monto) + `trailing` con `SearchField` |
+| `dos-columnas` | `inline` | **`raised`** | `padding-inline: max(12, (100% − 752) / 2)` (centrado ancho, degrada en móvil) | como `resumen-de-saldos` |
+
+`layout` / `elevation` explícitos siempre ganan sobre el default del preset.
+Los insets anchos de `section` (40) y `dos-columnas` (~130 en desktop) son
+márgenes de página — en un grid real el consumidor los ajusta con
+`className`/`style`.
 
 ## Ramp de tipografía y alturas (pixel-perfect vs Figma)
 
