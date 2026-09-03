@@ -26,7 +26,7 @@ on-scroll son responsabilidad del consumidor.
 |---|---|---|
 | `size` | `sm` (def.) · `md` · `lg` | escala la ramp de tipografía (ver abajo) y la altura |
 | `layout` | `inline` (def.) · `stacked` | `inline` = leading · texto · trailing en una fila; el texto se corta con ellipsis (estado **colapsado**) · `stacked` = fila de acciones + el texto a lo ancho debajo; el supporting hace **wrap** (estado **expandido**) |
-| `elevation` | `flat` (def.) · `raised` | `raised` = sombra `elevation-2` — el consumidor lo activa al hacer scroll |
+| `elevation` | `flat` (def.) · `raised` | `flat` = **sin fondo** (transparente; la barra está en el top, nada se scrollea debajo) · `raised` (on-scroll) = fondo `bg/surface` opaco + sombra `elevation-2`. El consumidor lo alterna al hacer scroll |
 | `leading` | `ReactNode` | slot izquierdo: `IconButton` (back/menú) o `Brand` |
 | `headline` / `supporting` | `ReactNode` | título + texto secundario (ellipsis, una línea) |
 | `showHeadline` | `boolean` | fuerza mostrar/ocultar el bloque de texto. Default: `true` si hay `headline`/`supporting` |
@@ -83,10 +83,10 @@ crece (estado expandido de onboarding).
 
 | Elemento | Token |
 |---|---|
-| Fondo | `semantic/color/bg/surface` |
+| Fondo | `flat` → transparente · `raised` → `semantic/color/bg/surface` |
 | Headline weight | 600 (`--typography-headline-xs-semiemphasized-weight` — el pipeline no exporta `display-sm-semiemphasized`) |
 | Headline / supporting color | `text/primary` · `text/secondary` |
-| Elevación `raised` | `Elevation/elevation-2` (`0 3 8 rgba(28,27,32,.12)`) |
+| `raised` (on-scroll) | `bg/surface` + `Elevation/elevation-2` (`0 3 8 rgba(28,27,32,.12)`) |
 | Padding-block | `internalLayout/space-100` (8; `stacked sm` pb 12) |
 | Padding-inline | `sm` `space-50` (4) · `md`/`lg` `space-150` (12) — la caja del IconButton (48) sobresale sobre su glifo (12 interno), así el **glifo** queda a **16** (sm) / **24** (md·lg) del borde, simétrico L/R. Elementos sin overhang (`Brand` leading, `Avatar`/`AvatarAction` trailing) llevan `margin` de 12 para alinear al mismo grid. `trailing` gap 0 (las cajas se tocan). |
 | Gap fila (inline) | `sm` `space-50` (4) · `md`/`lg` `componentSpacing/space-200` (16) |
