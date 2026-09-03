@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { Document, Time, CheckmarkOutline } from '@carbon/icons-react';
-import { PrimaryTabs } from '../../components/PrimaryTabs';
-import type { PrimaryTabDef, PrimaryTabsDistribution, PrimaryTabsSize } from '../../components/PrimaryTabs';
-import { PrimaryTab } from '../../components/PrimaryTabs/PrimaryTab';
+import { PrimaryTabs } from '../../components/Tabs';
+import type { PrimaryTabDef, PrimaryTabsDistribution, PrimaryTabsSize } from '../../components/Tabs';
+import { PrimaryTab } from '../../components/Tabs/PrimaryTab';
 
 const DISTRIBUTION: PrimaryTabsDistribution[] = ['equal', 'content'];
 const SIZE: PrimaryTabsSize[] = ['sm', 'md', 'lg'];
 
 const meta: Meta<typeof PrimaryTabs> = {
-  title: 'Components/PrimaryTabs',
+  title: 'Components/Tabs/Primary',
   component: PrimaryTabs,
   parameters: { layout: 'padded' },
   argTypes: {
