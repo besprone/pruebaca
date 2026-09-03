@@ -154,9 +154,17 @@
   /* Display/sm-se · Headline/sm-se · Headline/xs-se — todos weight 600. El
      pipeline no exporta `display-sm-semiemphasized`, se usa el de headline. */
   font-weight: var(--typography-headline-xs-semiemphasized-weight); /* 600 */
+}
+/* inline → una línea con ellipsis (colapsado, junto al back) ·
+   stacked → hace wrap, igual que el supporting (expandido). Figma: en `stacked`
+   el headline es `w-full` sin nowrap. */
+.app-bar[data-layout='inline'] .app-bar__headline {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.app-bar[data-layout='stacked'] .app-bar__headline {
+  white-space: normal;
 }
 .app-bar[data-size='sm'][data-layout='inline'] .app-bar__headline {
   font-size: var(--typography-headline-xs-size); /* 22 */
