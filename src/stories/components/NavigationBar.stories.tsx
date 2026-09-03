@@ -28,17 +28,14 @@ const meta: Meta<typeof NavigationBar> = {
 export default meta;
 type Story = StoryObj<typeof NavigationBar>;
 
-// ── Avatar de ejemplo (rellena el slot circular de 24px) ────────────────────
+// ── Avatar de ejemplo (foto data-uri para `avatarProps`) ────────────────────
 
-function DemoAvatar() {
-  return (
-    <svg viewBox="0 0 24 24" width={24} height={24} aria-hidden="true">
-      <rect width="24" height="24" fill="var(--semantic-color-bg-brand)" />
-      <circle cx="12" cy="9.5" r="4" fill="#fff" />
-      <path d="M4.5 21c0-4.1 3.4-7 7.5-7s7.5 2.9 7.5 7" fill="#fff" />
-    </svg>
-  );
-}
+const demoSvg =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">' +
+  '<rect width="24" height="24" fill="#1f6f21"/>' +
+  '<circle cx="12" cy="9.5" r="4" fill="#fff"/>' +
+  '<path d="M4.5 21c0-4.1 3.4-7 7.5-7s7.5 2.9 7.5 7" fill="#fff"/></svg>';
+const demoAvatar = { type: 'img' as const, src: `data:image/svg+xml;utf8,${encodeURIComponent(demoSvg)}`, alt: '' };
 
 // ── Sets de items ──────────────────────────────────────────────────────────
 
@@ -53,7 +50,7 @@ const five: NavigationBarItemDef[] = [
   { value: 'inversion', label: 'Inversión', icon: <Analytics /> },
   { value: 'credito', label: 'Crédito', icon: <Money /> },
   { value: 'portafolio', label: 'Portafolio', icon: <Portfolio /> },
-  { value: 'perfil', label: 'Perfil', type: 'avatar', avatar: <DemoAvatar />, 'aria-label': 'Tu perfil' },
+  { value: 'perfil', label: 'Perfil', type: 'avatar', avatarProps: demoAvatar, 'aria-label': 'Tu perfil' },
 ];
 
 // ── Playground ─────────────────────────────────────────────────────────────
@@ -113,7 +110,7 @@ export const ConEmphasis: Story = {
         onSelect: () => setScans((n) => n + 1),
       },
       { value: 'credito', label: 'Crédito', icon: <Money /> },
-      { value: 'perfil', label: 'Perfil', type: 'avatar', avatar: <DemoAvatar />, 'aria-label': 'Tu perfil' },
+      { value: 'perfil', label: 'Perfil', type: 'avatar', avatarProps: demoAvatar, 'aria-label': 'Tu perfil' },
     ];
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -204,8 +201,8 @@ export const BuildingBlocks: Story = {
     >
       <NavigationBarItem type="icon" icon={<Home />} label="Inicio" selected />
       <NavigationBarItem type="icon" icon={<Analytics />} label="Inversión" />
-      <NavigationBarItem type="avatar" avatar={<DemoAvatar />} label="Perfil" selected aria-label="Perfil seleccionado" />
-      <NavigationBarItem type="avatar" avatar={<DemoAvatar />} label="Perfil" aria-label="Perfil" />
+      <NavigationBarItem type="avatar" avatarProps={demoAvatar} label="Perfil" selected aria-label="Perfil seleccionado" />
+      <NavigationBarItem type="avatar" avatarProps={demoAvatar} label="Perfil" aria-label="Perfil" />
       <NavigationBarItem type="emphasis" icon={<ScanAlt />} label="Escanear" aria-label="Escanear" />
     </div>
   ),

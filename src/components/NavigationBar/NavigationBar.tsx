@@ -6,6 +6,7 @@ import {
   useState,
 } from 'react';
 import type { ReactNode } from 'react';
+import type { AvatarProps } from '../Avatar/Avatar';
 import { NavigationBarItem } from './NavigationBarItem';
 import type { NavigationBarItemType } from './NavigationBarItem';
 import './NavigationBar.css';
@@ -19,7 +20,9 @@ export type NavigationBarItemDef = {
   label?: string;
   /** Glifo del icono (24px). Para `icon` y `emphasis`. */
   icon?: ReactNode;
-  /** Elemento de imagen de perfil. Para `type="avatar"`. */
+  /** `type="avatar"` — props del `<Avatar>` (`size` fijo `xs`). */
+  avatarProps?: Omit<AvatarProps, 'size'>;
+  /** `type="avatar"` — escape hatch: un nodo propio en vez del `<Avatar>`. */
   avatar?: ReactNode;
   /** Tipo de navitem. Default `icon`. `emphasis` = acción destacada, no navegable. */
   type?: NavigationBarItemType;
@@ -207,6 +210,7 @@ export function NavigationBar({
           type={item.type}
           label={item.label}
           icon={item.icon}
+          avatarProps={item.avatarProps}
           avatar={item.avatar}
           selected={item.value === selectedValue}
           disabled={item.disabled}
