@@ -24,8 +24,8 @@ on-scroll son responsabilidad del consumidor.
 
 | Prop | Valores | |
 |---|---|---|
-| `size` | `sm` (def.) · `md` · `lg` | `sm` 64px / headline `Headline/xs` (22) · `md`/`lg` 84px / headline `Display/sm` (28). `lg` = más padding-inline |
-| `layout` | `inline` (def.) · `stacked` | `inline` = leading · texto · trailing en una fila · `stacked` = fila de acciones (leading + trailing) y el texto a lo ancho debajo |
+| `size` | `sm` (def.) · `md` · `lg` | escala la ramp de tipografía (ver abajo) y la altura |
+| `layout` | `inline` (def.) · `stacked` | `inline` = leading · texto · trailing en una fila; el texto se corta con ellipsis (estado **colapsado**) · `stacked` = fila de acciones + el texto a lo ancho debajo; el supporting hace **wrap** (estado **expandido**) |
 | `elevation` | `flat` (def.) · `raised` | `raised` = sombra `elevation-2` — el consumidor lo activa al hacer scroll |
 | `leading` | `ReactNode` | slot izquierdo: `IconButton` (back/menú) o `Brand` |
 | `headline` / `supporting` | `ReactNode` | título + texto secundario (ellipsis, una línea) |
@@ -67,28 +67,48 @@ composiciones distintas. Se reproducen con los slots:
 | `dialog` | sin `leading`, `layout="stacked"`, `trailing` + `headline` debajo |
 | `resumen de saldos` / `dos columnas` | `headline` = monto, `trailing` con `SearchField` |
 
+## Ramp de tipografía y alturas (pixel-perfect vs Figma)
+
+| layout × size | headline | supporting | gap texto | alto (frame Figma) |
+|---|---|---|---|---|
+| `inline` `sm` | Headline/xs-se (22/30) | Body/sm (12/17) | 0 | **64** |
+| `inline` `md`/`lg` | Display/sm-se (28/36) | Body/lg (16/24) | 8 | **84** |
+| `stacked` `sm` | Headline/sm-se (24/32) | Body/md (14/20) | 4 | **132** (fila 48 + texto 56) |
+| `stacked` `md`/`lg` | Display/sm-se (28/36) | Body/lg (16/24) | 8 | **144** (fila 48 + texto 68) |
+
+Las alturas de `stacked` son con supporting de **1 línea**; si hace wrap, la barra
+crece (estado expandido de onboarding).
+
 ## Tokens
 
 | Elemento | Token |
 |---|---|
 | Fondo | `semantic/color/bg/surface` |
-| Headline | `semantic/color/text/primary` · `sm` Headline/xs-se (22/30/**600**) · `md`/`lg` Display/sm-se (28/36/**600**) |
-| Supporting | `semantic/color/text/secondary` · `sm` Body/sm (12/17) · `md`/`lg` Body/lg (16/24) |
+| Headline weight | 600 (`--typography-headline-xs-semiemphasized-weight` — el pipeline no exporta `display-sm-semiemphasized`) |
+| Headline / supporting color | `text/primary` · `text/secondary` |
 | Elevación `raised` | `Elevation/elevation-2` (`0 3 8 rgba(28,27,32,.12)`) |
-| Padding | block `internalLayout/space-100` (8) · inline `space-150` (12) / `lg` `componentSpacing/space-300` (24) |
-| Gap | `sm` `space-50` (4) · `md`/`lg` `componentSpacing/space-200` (16) |
+| Padding | block `internalLayout/space-100` (8; `stacked sm` pb 12) · inline `space-150` (12) |
+| Gap fila (inline) | `sm` `space-50` (4) · `md`/`lg` `componentSpacing/space-200` (16) |
+| Gap fila↔texto (stacked) | `sm` `space-100` (8) · `md`/`lg` `space-150` (12) |
+| Fila de acciones | `min-block-size: 48px` (= IconButton `size="lg"`) |
 
-> El pipeline de tipografía no exporta `display-sm-semiemphasized` (weight 600);
-> se usa `--typography-headline-xs-semiemphasized-weight` (mismo valor).
-> Los `padding-inline` de Figma varían mucho por `configuration` (0/4/12/40/130):
-> son márgenes de página → el consumidor los ajusta con `className`/`style`.
+> Los `padding-inline` de Figma varían por `configuration` (0/4/12/40/130) — son
+> márgenes de página; el consumidor los ajusta con `className`/`style`.
 
-## Comportamiento dinámico (del PDF, no implementado aquí)
+## Comportamiento colapsada ↔ expandida (de los PDFs)
 
-El App bar colapsa al hacer scroll: headline grande → pequeño, supporting se
-oculta, aparece la elevación. Aquí solo se expone `elevation` (el consumidor lo
-alterna con el scroll — ver story `En contexto`); el colapso de tamaño
-headline/`size` se retoma cuando exista el diseño detallado.
+Del prototipo de scroll: la barra **colapsa** al bajar (pasa de `stacked` grande a
+`inline` `sm`, aparece `raised`) y **se expande** solo al volver al top. Si el
+usuario sube pero **no** llega al top, se mantiene colapsada + `raised`.
+
+Esa lógica vive en el **consumidor** (no en el componente — no puede conocer el
+contenedor de scroll): alterna `layout`/`size`/`elevation` según el scroll. Ver
+las stories `Colapsada ↔ expandida` (comparación estática) y `En contexto (scroll)`
+(la transición completa).
+
+Del PDF `flat → on-scroll`: mismo patrón para `elevation` solo — `flat` en el top,
+`raised` al bajar, vuelve a `flat` al llegar al top (si no está en el top y sube,
+se mantiene `raised`).
 
 ## Reglas de uso
 

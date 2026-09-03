@@ -138,31 +138,83 @@ export const Configuraciones: Story = {
   ),
 };
 
+export const Colapso: Story = {
+  name: 'Colapsada ↔ expandida',
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, background: 'var(--semantic-color-bg-canvas)', padding: 24 }}>
+      <div>
+        <p style={legend}>expandida — layout="stacked" size="lg" (el supporting hace wrap)</p>
+        <div style={{ maxWidth: 420, border: '1px solid var(--semantic-color-border-default)' }}>
+          <AppBar
+            size="lg"
+            layout="stacked"
+            leading={back}
+            headline="Confirma tu información"
+            supporting="Revisa que tus datos sean correctos antes de continuar. Estos datos se obtuvieron de tu identificación."
+            trailing={<IconButton emphasis="ghost" size="lg" aria-label="Información" icon={<Notification />} />}
+          />
+        </div>
+      </div>
+      <div>
+        <p style={legend}>colapsada — layout="inline" size="sm" (headline junto al back, supporting 1 línea)</p>
+        <div style={{ maxWidth: 420, border: '1px solid var(--semantic-color-border-default)' }}>
+          <AppBar
+            size="sm"
+            leading={back}
+            headline="Confirma tu información"
+            supporting="Revisa que tus datos sean correctos antes de continuar. Estos datos se obtuvieron de tu identificación."
+          />
+        </div>
+      </div>
+    </div>
+  ),
+};
+
 function ScrollDemo() {
-  const [raised, setRaised] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [atTop, setAtTop] = useState(true);
   const ref = useRef<HTMLDivElement>(null);
+  const lastY = useRef(0);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const onScroll = () => setRaised(el.scrollTop > 4);
+    const onScroll = () => {
+      const y = el.scrollTop;
+      setAtTop(y <= 0);
+      // colapsa al bajar; se expande solo al llegar al top
+      if (y > lastY.current && y > 24) setScrolled(true);
+      if (y <= 0) setScrolled(false);
+      lastY.current = y;
+    };
     el.addEventListener('scroll', onScroll);
     return () => el.removeEventListener('scroll', onScroll);
   }, []);
   return (
     <div ref={ref} style={{ height: '100vh', overflowY: 'auto', background: 'var(--semantic-color-bg-canvas)' }}>
       <div style={{ position: 'sticky', top: 0, zIndex: 1 }}>
-        <AppBar
-          size="md"
-          elevation={raised ? 'raised' : 'flat'}
-          leading={<IconButton emphasis="ghost" size="lg" aria-label="Volver" icon={<ArrowLeft />} />}
-          headline="Inversiones"
-          supporting="kubo.plazofijo"
-          trailing={<IconButton emphasis="ghost" size="lg" aria-label="Buscar" icon={<Search />} />}
-        />
+        {scrolled ? (
+          <AppBar
+            size="sm"
+            elevation="raised"
+            leading={<IconButton emphasis="ghost" size="lg" aria-label="Volver" icon={<ArrowLeft />} />}
+            headline="Confirma tu información"
+            supporting="Revisa que tus datos sean correctos antes de continuar."
+          />
+        ) : (
+          <AppBar
+            size="lg"
+            layout="stacked"
+            elevation={atTop ? 'flat' : 'raised'}
+            leading={<IconButton emphasis="ghost" size="lg" aria-label="Volver" icon={<ArrowLeft />} />}
+            headline="Confirma tu información"
+            supporting="Revisa que tus datos sean correctos antes de continuar. Estos datos se obtuvieron de tu identificación."
+          />
+        )}
       </div>
       <div style={{ padding: 24, fontFamily: 'var(--typography-font-family)', color: 'var(--semantic-color-text-secondary)' }}>
-        {Array.from({ length: 40 }, (_, i) => (
-          <p key={i}>Fila de contenido {i + 1} — haz scroll para ver la elevación de la barra.</p>
+        {Array.from({ length: 50 }, (_, i) => (
+          <p key={i}>Fila de contenido {i + 1} — baja para colapsar la barra, sube al top para expandirla.</p>
         ))}
       </div>
     </div>
@@ -170,7 +222,7 @@ function ScrollDemo() {
 }
 
 export const EnContexto: Story = {
-  name: 'En contexto (on-scroll)',
+  name: 'En contexto (scroll)',
   parameters: { controls: { disable: true } },
   render: () => <ScrollDemo />,
 };
