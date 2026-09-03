@@ -236,6 +236,12 @@
   align-items: center;
   flex-shrink: 0;
 }
+/* Wrapper flex — sin él, el <span> inline apoya el badge en la baseline de una
+   línea `line-height: normal` y queda ~2px por debajo del centro del item. */
+.rail-navitem__badge {
+  display: flex;
+  align-items: center;
+}
 /* El badge de notificación es un círculo: sin el borde de 1px del Badge `filled`
    las medidas caen a 19×19 (horizontal) / 16×16 (vertical), como en Figma. */
 .rail-navitem__badge .badge {
