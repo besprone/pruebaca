@@ -73,6 +73,17 @@
   padding-inline: var(--internalLayout-space-150); /* 12px */
 }
 
+/* Estructura interna en border-box: `.navigation-rail__avatar-section` lleva
+   `inline-size: 100%` + su propio `padding-inline`; sin border-box el padding se
+   suma al 100% y la sección desborda el rail (283 vs 260). */
+.navigation-rail__segments,
+.navigation-rail__section,
+.navigation-rail__section-label,
+.navigation-rail__items,
+.navigation-rail__footer {
+  box-sizing: border-box;
+}
+
 .navigation-rail__section {
   display: flex;
   flex-direction: column;
