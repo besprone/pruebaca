@@ -233,7 +233,7 @@ export function NavigationRail({
           {expanded ? (
             <Button
               emphasis="ghost"
-              size="md"
+              size="sm"
               icon={footer.icon ?? <Logout />}
               onClick={footer.onClick}
               className="navigation-rail__logout"
