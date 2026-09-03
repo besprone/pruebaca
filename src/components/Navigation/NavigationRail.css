@@ -139,7 +139,6 @@
 }
 .navigation-rail__logout {
   inline-size: 100%;
-  justify-content: flex-start;
 }
 
 /* ── overlay mode ────────────────────────────────────────────────────────── */
