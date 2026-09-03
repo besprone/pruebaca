@@ -87,7 +87,8 @@ crece (estado expandido de onboarding).
 | Headline weight | 600 (`--typography-headline-xs-semiemphasized-weight` — el pipeline no exporta `display-sm-semiemphasized`) |
 | Headline / supporting color | `text/primary` · `text/secondary` |
 | Elevación `raised` | `Elevation/elevation-2` (`0 3 8 rgba(28,27,32,.12)`) |
-| Padding | block `internalLayout/space-100` (8; `stacked sm` pb 12) · inline `space-150` (12) |
+| Padding-block | `internalLayout/space-100` (8; `stacked sm` pb 12) |
+| Padding-inline | `sm` `space-50` (4) · `md`/`lg` `space-150` (12) — la caja del IconButton (48) sobresale sobre su glifo (12 interno), así el **glifo** queda a **16** (sm) / **24** (md·lg) del borde, simétrico L/R. Elementos sin overhang (`Brand` leading, `Avatar`/`AvatarAction` trailing) llevan `margin` de 12 para alinear al mismo grid. `trailing` gap 0 (las cajas se tocan). |
 | Gap fila (inline) | `sm` `space-50` (4) · `md`/`lg` `componentSpacing/space-200` (16) |
 | Gap fila↔texto (stacked) | `sm` `space-100` (8) · `md`/`lg` `space-150` (12) |
 | Fila de acciones | `min-block-size: 48px` (= IconButton `size="lg"`) |
