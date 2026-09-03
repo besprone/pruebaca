@@ -23,7 +23,7 @@ const [tab, setTab] = useState('vigentes');
 ```
 
 `PrimaryTab` es un **building block interno** — se importa por ruta
-(`components/PrimaryTabs/PrimaryTab`) solo en stories. No se exporta del índice.
+(`components/Tabs/PrimaryTab`) solo en stories. No se exporta del índice.
 
 ## `PrimaryTabs`
 

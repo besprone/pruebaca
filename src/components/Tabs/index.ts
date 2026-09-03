@@ -5,3 +5,6 @@ export type {
   PrimaryTabsDistribution,
   PrimaryTabsSize,
 } from './PrimaryTabs';
+
+export { SecondaryTabs } from './SecondaryTabs';
+export type { SecondaryTabsProps, SecondaryTabDef } from './SecondaryTabs';
