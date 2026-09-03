@@ -1,4 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { Avatar } from '../Avatar/Avatar';
+import type { AvatarProps } from '../Avatar/Avatar';
 import './NavigationBarItem.css';
 
 export type NavigationBarItemType = 'icon' | 'avatar' | 'emphasis';
@@ -8,7 +10,9 @@ export type NavigationBarItemProps = {
   label?: string;
   /** Glifo del icono (24px). Para `icon` y `emphasis`. */
   icon?: ReactNode;
-  /** Elemento de imagen de perfil. Para `type="avatar"`. */
+  /** `type="avatar"` — props del `<Avatar>` (el `size` es fijo `xs`). */
+  avatarProps?: Omit<AvatarProps, 'size'>;
+  /** `type="avatar"` — escape hatch: un nodo propio en vez del `<Avatar>`. */
   avatar?: ReactNode;
   /** Tipo de navitem. Default `icon`. */
   type?: NavigationBarItemType;
@@ -23,12 +27,13 @@ export type NavigationBarItemProps = {
  * producto: siempre a través de `NavigationBar`.
  *
  *   type="icon"      icono 24px + label; recolorea a `brand` cuando `selected`
- *   type="avatar"    imagen de perfil circular + label
+ *   type="avatar"    `<Avatar>` (xs, 24px) + label
  *   type="emphasis"  círculo `bg/brand` con icono `onBrand` + label; sin estado activo
  */
 export function NavigationBarItem({
   label,
   icon,
+  avatarProps,
   avatar,
   type = 'icon',
   selected = false,
@@ -47,7 +52,7 @@ export function NavigationBarItem({
     >
       <span className="nav-bar-item__icon">
         {type === 'avatar' ? (
-          <span className="nav-bar-item__avatar">{avatar}</span>
+          <span className="nav-bar-item__avatar">{avatar ?? <Avatar size="xs" {...avatarProps} />}</span>
         ) : (
           <span className="nav-bar-item__glyph">{icon}</span>
         )}
