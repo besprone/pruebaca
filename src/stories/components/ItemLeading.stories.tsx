@@ -17,6 +17,7 @@ const meta: Meta<typeof ItemLeading> = {
     icon: { control: false },
     img: { control: false },
     avatar: { control: false },
+    avatarProps: { control: false },
     paymentStatus: { control: false },
     control: { control: false },
   },
@@ -25,14 +26,14 @@ const meta: Meta<typeof ItemLeading> = {
 export default meta;
 type Story = StoryObj<typeof ItemLeading>;
 
-// imagen de demo (data-uri, rellena el marco)
-const demoImg = (
-  <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <rect width="56" height="56" fill="#1f6f21" />
-    <circle cx="28" cy="22" r="9" fill="#fff" />
-    <path d="M10 50c0-9.4 8-16 18-16s18 6.6 18 16" fill="#fff" />
-  </svg>
-);
+// foto de demo (data-uri SVG) para `type="img"` y el <Avatar>
+const demoSvg =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56">' +
+  '<rect width="56" height="56" fill="#1f6f21"/>' +
+  '<circle cx="28" cy="22" r="9" fill="#fff"/>' +
+  '<path d="M10 50c0-9.4 8-16 18-16s18 6.6 18 16" fill="#fff"/></svg>';
+const demoSrc = `data:image/svg+xml;utf8,${encodeURIComponent(demoSvg)}`;
+const demoImg = <img src={demoSrc} alt="" />;
 
 // timeline de demo para paymentStatus
 const demoTimeline = (
@@ -61,7 +62,7 @@ export const Playground: Story = {
         {...args}
         icon={<Wallet />}
         img={demoImg}
-        avatar={demoImg}
+        avatarProps={{ type: 'img', src: demoSrc, alt: 'Foto de perfil' }}
         paymentStatus={demoTimeline}
         number={args.number ?? '3'}
       />
@@ -83,14 +84,16 @@ export const Tipos: Story = {
       ['icon md', <ItemLeading type="icon" size="md" icon={<Wallet />} />],
       ['img md', <ItemLeading type="img" size="md" img={demoImg} />],
       ['img md + badge', <ItemLeading type="img" size="md" img={demoImg} badge />],
-      ['avatar lg (slot)', <ItemLeading type="avatar" size="lg" avatar={demoImg} />],
+      ['avatar lg (img)', <ItemLeading type="avatar" size="lg" avatarProps={{ type: 'img', src: demoSrc, alt: 'Perfil' }} />],
+      ['avatar lg (initials)', <ItemLeading type="avatar" size="lg" avatarProps={{ type: 'initials', label: 'MA' }} />],
+      ['avatar lg (initials · secondary)', <ItemLeading type="avatar" size="lg" avatarProps={{ type: 'initials', label: 'JS', accent: 'secondary' }} />],
       ['number', <ItemLeading type="number" number="3" />],
       ['checkbox', <ItemLeading type="checkbox" control={{ checked: chk, onChange: (e) => setChk(e.target.checked), 'aria-label': 'Seleccionar' }} />],
       ['radiobutton', <ItemLeading type="radiobutton" control={{ checked: rad, onChange: () => setRad(true), name: 'l', 'aria-label': 'Elegir' }} />],
       ['paymentStatus (slot)', <ItemLeading type="paymentStatus" paymentStatus={demoTimeline} />],
     ];
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: 300 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: 340 }}>
         {items.map(([label, el]) => (
           <div key={label} style={frame}>
             {el}
@@ -107,14 +110,24 @@ export const Tamanos: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      {(['img', 'avatar'] as const).map((t) => (
-        <div key={t} style={{ ...frame, gap: 16 }}>
-          {SIZES.map((s) => (
-            <ItemLeading key={s} type={t} size={s} img={demoImg} avatar={demoImg} />
-          ))}
-          <span style={{ fontFamily: 'monospace', fontSize: 11, color: 'var(--semantic-color-text-secondary)' }}>{t} · xs→xl</span>
-        </div>
-      ))}
+      <div style={{ ...frame, gap: 16 }}>
+        {SIZES.map((s) => (
+          <ItemLeading key={s} type="img" size={s} img={demoImg} />
+        ))}
+        <span style={legend}>img · xs→xl</span>
+      </div>
+      <div style={{ ...frame, gap: 16 }}>
+        {SIZES.map((s) => (
+          <ItemLeading key={s} type="avatar" size={s} avatarProps={{ type: 'initials', label: 'MA' }} />
+        ))}
+        <span style={legend}>avatar · xs→xl</span>
+      </div>
     </div>
   ),
+};
+
+const legend: React.CSSProperties = {
+  fontFamily: 'monospace',
+  fontSize: 11,
+  color: 'var(--semantic-color-text-secondary)',
 };

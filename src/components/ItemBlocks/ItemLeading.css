@@ -3,7 +3,7 @@
 
      [data-type="icon"]          glifo — 20px (sm) · 24px (md) · icon/secondary
      [data-type="img"]           marco circular bg/canvas, overflow clip · xs–xl
-     [data-type="avatar"]        marco circular (slot) · xs–xl
+     [data-type="avatar"]        <Avatar> (o slot) · xs–xl
      [data-type="number"]        círculo bg/accentPrimaryMuted 32px + número
      [data-type="checkbox"]      <Checkbox> en columna de 24px, alto de fila
      [data-type="radiobutton"]   <Radio> idem
