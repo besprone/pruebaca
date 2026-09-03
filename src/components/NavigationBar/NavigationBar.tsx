@@ -6,6 +6,7 @@ import {
   useState,
 } from 'react';
 import type { ReactNode } from 'react';
+import { prefersReducedMotion, springTo } from '../../lib/spring';
 import type { AvatarProps } from '../Avatar/Avatar';
 import { NavigationBarItem } from './NavigationBarItem';
 import type { NavigationBarItemType } from './NavigationBarItem';
@@ -48,42 +49,6 @@ export type NavigationBarProps = {
   'aria-label'?: string;
   className?: string;
 };
-
-const SPRING = { stiffness: 100, damping: 15, mass: 1 };
-
-const prefersReducedMotion = () =>
-  typeof window !== 'undefined' &&
-  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-
-/**
- * Integrador de muelle (spring) — resuelve x'' = (-k·(x−to) − c·x') / m por
- * sub-pasos de Euler sobre rAF. `motion/spring` de Figma (stiffness 100,
- * damping 15, mass 1 → ζ≈0.75, ligero overshoot). Sin dependencias.
- */
-function springTo(from: number, to: number, onFrame: (x: number) => void): () => void {
-  const { stiffness: k, damping: c, mass: m } = SPRING;
-  let x = from;
-  let v = 0;
-  let last = performance.now();
-  let raf = requestAnimationFrame(function tick(now) {
-    const frame = Math.min((now - last) / 1000, 0.064);
-    last = now;
-    const sub = 8;
-    const h = frame / sub;
-    for (let i = 0; i < sub; i += 1) {
-      const a = (-k * (x - to) - c * v) / m;
-      v += a * h;
-      x += v * h;
-    }
-    if (Math.abs(to - x) < 0.15 && Math.abs(v) < 0.15) {
-      onFrame(to);
-      return;
-    }
-    onFrame(x);
-    raf = requestAnimationFrame(tick);
-  });
-  return () => cancelAnimationFrame(raf);
-}
 
 /**
  * NavigationBar — barra de navegación principal: organiza 3–5 `NavigationBarItem`

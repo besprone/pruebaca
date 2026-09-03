@@ -5,6 +5,7 @@
 import { figmaPathToCssVar } from "./figma-path-to-css";
 
 export const figmaIconSizeTokens: Record<string, number> = {
+  "size/4": 4,
   "size/6": 6,
   "size/12": 12,
   "size/16": 16,
