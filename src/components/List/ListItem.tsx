@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from 'react';
+import { ItemContent } from '../ItemBlocks/ItemContent';
 import { ListContext } from './listContext';
 import type { ListItemLayout } from './listContext';
 import './ListItem.css';
@@ -11,13 +12,16 @@ export type { ListItemLayout } from './listContext';
 export type ListItemState = 'hovered' | 'pressed';
 
 type BaseProps = {
-  /** Texto principal (Body/lg). */
-  label: ReactNode;
+  /** Texto principal (Body/lg). Requerido salvo que pases `content`. */
+  label?: ReactNode;
   /** Texto secundario opcional (Body/md en stacked, Body/lg en horizontal). */
   supporting?: ReactNode;
-  /** Slot izquierdo — icono ~20px. */
+  /** Reemplaza el bloque de contenido — un `<ItemContent>` propio con
+   *  `overline` / `supporting2` / `action`, etc. Ignora `label`/`supporting`. */
+  content?: ReactNode;
+  /** Slot izquierdo — icono ~20px, o un `<ItemLeading>`. */
   leading?: ReactNode;
-  /** Slot derecho — icono/acción ~24px (chevron, checkbox, checkmark…). */
+  /** Slot derecho — icono/acción ~24px (chevron, checkbox, checkmark…), o un `<ItemTrailing>`. */
   trailing?: ReactNode;
   /** Fila seleccionada — fondo `bg/brandSoft`. */
   selected?: boolean;
@@ -37,8 +41,8 @@ export type ListItemProps = BaseProps &
 /**
  * ListItem — fila base de `List`. Figma: `_building_blocks_list_item`.
  * **No lleva `border-radius`**: la esquina redondeada la aporta el `List` que
- * lo instancia (`overflow: clip` + radio). Compuesta por `leading` · contenido
- * (`label` + `supporting`) · `trailing`.
+ * lo instancia (`overflow: clip` + radio). Compone `leading` · `ItemContent`
+ * (`label` + `supporting`, o el slot `content`) · `trailing`.
  *
  * Building block interno: no se usa suelto en producto, se instancia dentro de
  * `List` (o de un componente que lo envuelva — Select, Dropdown…).
@@ -46,6 +50,7 @@ export type ListItemProps = BaseProps &
 export function ListItem({
   label,
   supporting,
+  content,
   leading,
   trailing,
   selected = false,
@@ -63,10 +68,15 @@ export function ListItem({
     <span className="list-item__state" data-state={state || undefined}>
       <span className="list-item__container">
         {leading != null && <span className="list-item__leading">{leading}</span>}
-        <span className="list-item__content">
-          <span className="list-item__label">{label}</span>
-          {supporting != null && <span className="list-item__supporting">{supporting}</span>}
-        </span>
+        {content ?? (
+          <ItemContent
+            className="list-item__content"
+            size="lg"
+            layout={layout}
+            label={label}
+            supporting={supporting}
+          />
+        )}
         {trailing != null && <span className="list-item__trailing">{trailing}</span>}
       </span>
     </span>
