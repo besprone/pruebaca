@@ -61,13 +61,17 @@
 }
 
 /* ── overlay de estado ───────────────────────────────────────────────────── */
+/* El overlay se dibuja distinto según orientación (Figma `_building_blocks_rail_navitem`):
+   · horizontal → cubre toda la fila (incluido disabled).
+   · vertical   → SOLO el pill del icono cambia de tono; disabled no lleva overlay,
+                  únicamente atenúa icono + texto. */
 .rail-navitem__state {
   position: relative;
   display: flex;
   flex: 1 1 auto;
   inline-size: 100%;
 }
-.rail-navitem__state::after {
+.rail-navitem[data-orientation='horizontal'] .rail-navitem__state::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -76,20 +80,44 @@
   transition: background-color var(--linear-200-duration-ms) var(--linear-200-easing);
 }
 @media (hover: hover) {
-  .rail-navitem:not(:disabled):hover .rail-navitem__state::after {
+  .rail-navitem[data-orientation='horizontal']:not(:disabled):hover .rail-navitem__state::after {
     background-color: var(--semantic-color-state-hover);
   }
 }
-.rail-navitem:not(:disabled):active .rail-navitem__state::after,
-.rail-navitem__state[data-state='pressed']::after {
+.rail-navitem[data-orientation='horizontal']:not(:disabled):active .rail-navitem__state::after,
+.rail-navitem[data-orientation='horizontal'] .rail-navitem__state[data-state='pressed']::after {
   background-color: var(--semantic-color-state-pressed);
 }
-.rail-navitem__state[data-state='hovered']::after {
+.rail-navitem[data-orientation='horizontal'] .rail-navitem__state[data-state='hovered']::after {
   background-color: var(--semantic-color-state-hover);
 }
-.rail-navitem[data-disabled] .rail-navitem__state::after {
+.rail-navitem[data-orientation='horizontal'][data-disabled] .rail-navitem__state::after {
   background-color: var(--semantic-color-state-disabled);
 }
+
+/* vertical → overlay sobre el pill del icono */
+.rail-navitem[data-orientation='vertical'] .rail-navitem__leading-box::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-color: transparent;
+  pointer-events: none;
+  transition: background-color var(--linear-200-duration-ms) var(--linear-200-easing);
+}
+@media (hover: hover) {
+  .rail-navitem[data-orientation='vertical']:not(:disabled):hover .rail-navitem__leading-box::after {
+    background-color: var(--semantic-color-state-hover);
+  }
+}
+.rail-navitem[data-orientation='vertical']:not(:disabled):active .rail-navitem__leading-box::after,
+.rail-navitem[data-orientation='vertical'] .rail-navitem__state[data-state='pressed'] .rail-navitem__leading-box::after {
+  background-color: var(--semantic-color-state-pressed);
+}
+.rail-navitem[data-orientation='vertical'] .rail-navitem__state[data-state='hovered'] .rail-navitem__leading-box::after {
+  background-color: var(--semantic-color-state-hover);
+}
+
 .rail-navitem:focus-visible {
   outline: 2px solid var(--semantic-color-border-focus);
   outline-offset: -2px;
@@ -208,12 +236,17 @@
   align-items: center;
   flex-shrink: 0;
 }
-/* badge overlay (vertical) — anclado a la esquina superior derecha del icono */
+/* El badge de notificación es un círculo: sin el borde de 1px del Badge `filled`
+   las medidas caen a 19×19 (horizontal) / 16×16 (vertical), como en Figma. */
+.rail-navitem__badge .badge {
+  border-width: 0;
+}
+/* badge overlay (vertical) — esquina superior derecha del pill (Figma: left 24 / top -4) */
 .rail-navitem__leading-box .rail-navitem__badge {
   position: absolute;
   top: -4px;
   inset-inline-start: 100%;
-  transform: translateX(-50%);
+  transform: translateX(-100%);
   z-index: 1;
 }
 
@@ -233,6 +266,7 @@
   .rail-navitem,
   .rail-navitem__state::after,
   .rail-navitem__leading-box,
+  .rail-navitem__leading-box::after,
   .rail-navitem__chevron {
     transition: none;
   }

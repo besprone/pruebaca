@@ -68,14 +68,20 @@ export const RailNavItem = forwardRef<HTMLButtonElement, RailNavItemProps>(funct
   ref,
 ) {
   const isAvatar = avatarProps != null;
+  const isVertical = orientation === 'vertical';
   const badgeEl = badge != null && (
     <span className="rail-navitem__badge">
-      <Badge semantic="error" variant="filled" size="xs" label={badge} />
+      <Badge
+        semantic="error"
+        variant="filled"
+        size={isVertical ? 'xxs' : 'xs'}
+        label={badge}
+      />
     </span>
   );
 
   const leading = isAvatar ? (
-    <Avatar size={orientation === 'vertical' ? 'sm' : 'sm'} {...avatarProps} />
+    <Avatar size="sm" {...avatarProps} />
   ) : (
     <span className="rail-navitem__icon">{icon}</span>
   );
