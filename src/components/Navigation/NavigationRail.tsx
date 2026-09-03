@@ -188,10 +188,17 @@ export function NavigationRail({
       <div className="navigation-rail__header">
         {expanded && logo != null && <span className="navigation-rail__logo">{logo}</span>}
         {mode === 'overlay' ? (
-          <IconButton emphasis="ghost" aria-label="Cerrar" icon={<Close />} onClick={() => onClose?.()} />
+          <IconButton
+            emphasis="ghost"
+            size="lg"
+            aria-label="Cerrar"
+            icon={<Close />}
+            onClick={() => onClose?.()}
+          />
         ) : (
           <IconButton
             emphasis="ghost"
+            size="lg"
             aria-label={expanded ? 'Colapsar navegación' : 'Expandir navegación'}
             icon={expanded ? <SidePanelClose /> : <SidePanelOpen />}
             onClick={() => setExpanded(!expanded)}
@@ -236,6 +243,7 @@ export function NavigationRail({
           ) : (
             <IconButton
               emphasis="ghost"
+              size="lg"
               aria-label={footer.label}
               icon={footer.icon ?? <Logout />}
               onClick={footer.onClick}

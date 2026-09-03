@@ -49,6 +49,7 @@
   --_font-size: var(--typography-body-xs-size); /* 10 */
   --_line-height: var(--typography-body-xs-line-height); /* 15 */
   min-width: 19px;
+  min-height: 19px; /* contenido de 1 carácter → círculo, no rectángulo alto */
 }
 .badge[data-size='md'] {
   --_pad-x: var(--internalLayout-space-75); /* 6 */

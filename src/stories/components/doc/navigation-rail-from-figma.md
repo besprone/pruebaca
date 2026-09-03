@@ -58,19 +58,37 @@ const [expanded, setExpanded] = useState(true);
   `<Avatar sm>`) + `<ItemContent size="md">` (label 14/20/**600** · supporting
   12/17) + `badge` a la derecha. 48px (32 en `compact`). `selected` → fondo
   `bg/brandSoft` + icono `icon/brand`.
-- **`orientation="vertical"`** (rail colapsado): icono 24px en un pill
+- **`orientation="vertical"`** (rail colapsado): icono 24px en un pill 40×32
   `controls/radius-100` (fondo `bg/brandSoft` si `selected`) + label opcional
   (`showContent`) apilado y centrado. El badge se ancla en la esquina superior
-  derecha del icono.
+  derecha del pill (`left 24 / top -4` en Figma).
 
-`state` (`hovered` | `pressed`) fuerza el overlay. `disabled` → `state/disabled`
-+ texto/iconos `disabled`. `expandable`/`expanded` → chevron que rota
-(provisional, pendiente del diseño de submenús).
+**Overlay de estado (`hovered` | `pressed` | `disabled`)** — según orientación:
+
+| | horizontal | vertical |
+|---|---|---|
+| hover / pressed / `state` | cubre toda la fila (radius 16) | **solo el pill del icono** (radius 8) |
+| disabled | overlay `state/disabled` en toda la fila | **sin overlay** — solo atenúa icono + texto a `disabled` |
+
+`expandable`/`expanded` → chevron que rota (provisional, pendiente del diseño de
+submenús).
+
+**Badge**: `<Badge semantic="error" variant="filled">` sin borde → círculo de
+**19×19** (horizontal, `size="xs"`) / **16×16** (vertical, `size="xxs"`). El
+`size="xs"` del `Badge` ganó un `min-height: 19px` para que un dígito quede
+redondo y no como rectángulo alto.
 
 ## Comportamiento
 
 - El toggle del header alterna `expanded` ↔ colapsado. En colapsado: 96px, solo
   iconos, section labels y footer label ocultos.
+- El `IconButton` del header (toggle / X) y el del footer colapsado son
+  `size="lg"` — caja 48×48, icono 24px, radius 12 (Figma
+  `components_buttons_iconbutton` del rail).
+- `logo` es un slot (`ReactNode`). En las stories se usa el lockup real
+  `kubo.financiero` (Figma `brand_assets_kugo_logo` · type=primary /
+  variant=original / size=sm · 131×16) con el wordmark en `currentColor`; en
+  producción vendría del componente de marca del DS.
 - `mode="overlay"`: `position: fixed` sobre el contenido, backdrop
   `rgba(28,27,32,.4)`, X en el header; cierra con X, click en el backdrop o
   `Escape` (`onClose`). Siempre expandido.
@@ -86,8 +104,8 @@ const [expanded, setExpanded] = useState(true);
 | Navitem seleccionado | `semantic/color/bg/brandSoft` |
 | Icono / label seleccionado | `semantic/color/icon/brand` · (label queda `text/primary`, según Figma) |
 | Icono / label reposo | `semantic/color/icon/secondary` · `semantic/color/text/primary` + `semantic/color/text/secondary` |
-| Overlays | `semantic/color/state/{hover,pressed,disabled}` · foco `border/focus` |
-| Badge | `semantic/color/bg/danger` · `semantic/color/text/onDanger` (Body/xs) |
+| Overlays | `semantic/color/state/{hover,pressed,disabled}` · foco `border/focus` (vertical: overlay solo en el pill; disabled sin overlay) |
+| Badge | `semantic/color/bg/danger` · `semantic/color/text/onDanger` (Body/xs) · círculo 19/16 sin borde |
 | Footer / logout | `<Button emphasis="ghost">` · `text/brand` |
 | Ancho | 260px (expanded) · 96px (colapsado) |
 
