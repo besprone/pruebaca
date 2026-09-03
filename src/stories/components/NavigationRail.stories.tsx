@@ -13,6 +13,7 @@ import {
 import { NavigationRail } from '../../components/Navigation';
 import type { RailSection } from '../../components/Navigation';
 import { RailNavItem } from '../../components/Navigation/RailNavItem';
+import { Button } from '../../components/Button/Button';
 
 const meta: Meta<typeof NavigationRail> = {
   title: 'Components/Navigation/Rail',
@@ -86,6 +87,7 @@ function RailDemo({ mode = 'rail' as const, size, compact }: { mode?: 'rail' | '
   const [value, setValue] = useState('inversiones');
   const [expanded, setExpanded] = useState(true);
   const [open, setOpen] = useState(true);
+  const [mounted, setMounted] = useState(true);
 
   const rail = (
     <NavigationRail
@@ -96,7 +98,9 @@ function RailDemo({ mode = 'rail' as const, size, compact }: { mode?: 'rail' | '
       mode={mode}
       expanded={expanded}
       onExpandedChange={setExpanded}
+      open={open}
       onClose={() => setOpen(false)}
+      onExited={() => setMounted(false)}
       size={size}
       compact={compact}
       avatar={{ value: 'perfil', label: 'Marco Antonio', supporting: 'marco@kubo.mx', avatarProps: { type: 'img', src: demoAvatarSrc, alt: '' } }}
@@ -110,14 +114,18 @@ function RailDemo({ mode = 'rail' as const, size, compact }: { mode?: 'rail' | '
     <div style={{ display: 'flex', height: '100vh', background: 'var(--semantic-color-bg-canvas)' }}>
       {mode === 'overlay' ? (
         <>
-          {open && rail}
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            style={{ margin: 24, height: 40, padding: '0 16px', alignSelf: 'flex-start' }}
+          {mounted && rail}
+          <Button
+            emphasis="secondary"
+            size="sm"
+            onClick={() => {
+              setMounted(true);
+              setOpen(true);
+            }}
+            style={{ margin: 24, alignSelf: 'flex-start' }}
           >
             Abrir navegación
-          </button>
+          </Button>
         </>
       ) : (
         rail
