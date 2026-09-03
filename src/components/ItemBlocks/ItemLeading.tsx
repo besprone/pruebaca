@@ -1,5 +1,7 @@
 import type { ChangeEvent, HTMLAttributes, InputHTMLAttributes, ReactNode } from 'react';
 import { Add } from '@carbon/icons-react';
+import { Avatar } from '../Avatar/Avatar';
+import type { AvatarProps } from '../Avatar/Avatar';
 import { Checkbox } from '../Checkbox/Checkbox';
 import { Radio } from '../Radio/Radio';
 import './ItemLeading.css';
@@ -30,7 +32,9 @@ type BaseProps = {
   icon?: ReactNode;
   /** `type="img"` — un `<img>` que llena el marco. */
   img?: ReactNode;
-  /** `type="avatar"` — slot (hasta que exista `Avatar`). */
+  /** `type="avatar"` — props del `<Avatar>` (el `size` lo aporta `ItemLeading`). */
+  avatarProps?: Omit<AvatarProps, 'size'>;
+  /** `type="avatar"` — escape hatch: un nodo propio en vez del `<Avatar>`. */
   avatar?: ReactNode;
   /** `type="paymentStatus"` — slot (hasta que exista `PaymentStatus`). */
   paymentStatus?: ReactNode;
@@ -48,14 +52,16 @@ export type ItemLeadingProps = BaseProps & Omit<HTMLAttributes<HTMLSpanElement>,
  * ItemLeading — bloque del borde izquierdo de un row (list item, menu item,
  * cell…). Figma: `_building_blocks_leading`. Despacha por `type`.
  *
- * `avatar` y `paymentStatus` renderizan un slot hasta que existan sus
- * componentes (`components_avatar`, `_building_block_paymentstatus`).
+ * `type="avatar"` instancia `<Avatar>` (con el `size` de `ItemLeading`) desde
+ * `avatarProps`; `avatar` es un escape hatch. `paymentStatus` sigue siendo un
+ * slot hasta que exista su componente (`_building_block_paymentstatus`).
  */
 export function ItemLeading({
   type,
   size = 'sm',
   icon,
   img,
+  avatarProps,
   avatar,
   paymentStatus,
   number,
@@ -88,7 +94,7 @@ export function ItemLeading({
 
       {type === 'avatar' && (
         <span className="item-leading__frame item-leading__frame--avatar">
-          {avatar}
+          {avatar ?? <Avatar size={size} {...avatarProps} />}
           {showBadge && (
             <span className="item-leading__badge" aria-hidden="true">
               <Add />
