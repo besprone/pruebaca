@@ -40,7 +40,7 @@ const [mounted, setMounted] = useState(true);
 | `showClose` | `boolean` (def. `true`) | botón de cerrar (`IconButton` ghost `lg`) |
 | `headerAction` | `ReactNode` | acción extra en el header, junto al cerrar |
 | `label` / `supporting` | `ReactNode` | título + descripción breve |
-| `footer` | `ReactNode` | 1–2 `Button`, alineados a la derecha (sin stretch) |
+| `footer` | `ReactNode` | 1–2 `Button`, reparten el ancho completo (`flex: 1` cada uno) |
 | `microcopy` | `ReactNode` | texto legal / aclaratorio sobre los botones (`text/tertiary`, centrado) |
 | `aria-label` | `string` | nombre del drawer si no hay `label` visible |
 
@@ -56,7 +56,7 @@ completo del viewport — no hay variante de altura adaptativa).
   .side-drawer [role=dialog aria-modal]  360×100dvh · SIN radio · translateX según anchor
     .side-drawer__header             cerrar (+ headerAction) · label/supporting
     .side-drawer__content            children · flex:1 · overflow-y auto
-    .side-drawer__footer             microcopy + .side-drawer__actions (Button ·N, justify-end)
+    .side-drawer__footer             microcopy + .side-drawer__actions (Button ·N, flex:1 c/u)
 ```
 
 ## Componentes que instancia
@@ -102,7 +102,7 @@ inmediato).
 | Microcopy | `text/tertiary` · Body/md (14/20), centrado |
 | `padding` header | `pt` `internalLayout/space-150` (12) · `pb` `componentSpacing/space-200` (16) · `px` `internalLayout/space-150` (12) — idéntico al header de `Dialog` |
 | content slot | `padding-inline` `componentSpacing/space-300` (24) · siempre `flex:1` |
-| footer | `padding-block` `componentSpacing/space-300` (24) · `padding-inline` 24 · `gap` 16 · acciones `gap` 8, `justify-end` |
+| footer | `padding-block` `componentSpacing/space-300` (24) · `padding-inline` 24 · `gap` 16 · acciones `gap` 8, `flex: 1` cada botón — desviación deliberada de Figma (que muestra ancho natural también acá), por el mismo motivo que la centrada de `Dialog`: en un panel angosto (360px) un ancho natural deja demasiado espacio muerto |
 
 > **Nota de tokens:** el PDF documenta el overlay como
 > `semantic/color/bg/overlay`, y el token existe en el pipeline
