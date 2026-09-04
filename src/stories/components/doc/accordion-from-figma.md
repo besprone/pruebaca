@@ -149,10 +149,18 @@ dentro de `children`:
 
 El ejemplo real de Figma para `Accordion type="paymentStatus"` compone:
 header con fecha (`label`) + monto (`supporting`) + `PaymentStatusIndicator`
-en `leading`; contenido expandido = un `KeyValue` (`divider={false}`, filas
-`background="canvas"`) con el detalle del pago, más `PaymentStatusIndicator
-showIcon={false}` en `contentLeading` para continuar la línea. Ver la
-story "Timeline de pagos" y `payment-status-from-figma.md`.
+en `leading`; contenido expandido = un `KeyValue` (**`divider` default,
+`true`** — filas `background="canvas"` separadas por el gap de 2px,
+tarjeta redondeada 16px/clip — así se ve en el `components_key_value_group`
+real dentro de `slot-detalle-pago`, confirmado vía `get_design_context`)
+con el detalle del pago, más `PaymentStatusIndicator showIcon={false}` en
+`contentLeading` para continuar la línea. Ver la story "Timeline de pagos"
+y `payment-status-from-figma.md`.
+
+> **Corrección:** la primera versión de esta story usaba `divider={false}`
+> — colapsaba las filas en un bloque plano sin separación, sin corresponder
+> a la referencia real de Figma. `divider` es `true` por default en
+> `KeyValue`; bastaba con no pasarlo.
 
 ```tsx
 <Accordion type="paymentStatus">
@@ -162,7 +170,7 @@ story "Timeline de pagos" y `payment-status-from-figma.md`.
     leading={<PaymentStatusIndicator status="next" position="middle" />}
     contentLeading={<PaymentStatusIndicator status="next" position="middle" showIcon={false} />}
   >
-    <KeyValue divider={false}>
+    <KeyValue>
       <KeyValueRow background="canvas">
         <KeyValueKey>Tasa anual</KeyValueKey>
         <KeyValueValue>10.50%</KeyValueValue>
