@@ -80,8 +80,8 @@ ajustarlo.
 ```
 .accordion                          radio 16 · overflow hidden · bg/canvas (asoma en el gap)
   .accordion-item ·N                  bg/surface
-    .accordion-item__row                leading? + header
-      .accordion-item__leading            self-stretch
+    .accordion-item__row                leading? + header (16px inset + 12px gap si hay leading)
+      .accordion-item__leading            self-stretch, margin-inline-start 16px
       .accordion-item__header             <button> — ItemContent (label+supporting) + chevron (rota 180° al expandir)
     .accordion-item__content            alto animado (spring) — overflow hidden mientras anima
       .accordion-item__content-row        contentLeading? + content-block
@@ -129,7 +129,7 @@ dentro de `children`:
 | Radio del contenedor | `containers/radius-200` (16) |
 | Gap `segmented` | `internalLayout/space-25` (2) |
 | Gap `paymentStatus` | 0 |
-| Header — padding inline | `layout/stack/block` (16) |
+| Header — padding inline | `layout/stack/block` (16) — si hay `leading`, este ya carga el inset de 16px (`margin-inline-start`) y el header solo aporta el gap de 12px (`internalLayout/space-150`) hasta el label |
 | Header — alto mínimo | 56px |
 | Label | `text/primary` · `Body/lg` (16/24/500) |
 | Chevron | `icon/brand` (verde — hereda de `components_buttons_iconbutton`, no `icon/primary`), 24px reservados (sin caja de 48px extra: el hit-target es todo el header), rota 180° al expandir |

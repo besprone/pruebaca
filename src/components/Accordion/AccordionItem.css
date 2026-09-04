@@ -29,6 +29,7 @@
   align-items: center;
   flex-shrink: 0;
   overflow: hidden;
+  margin-inline-start: var(--layout-stack-block); /* 16px — inset del leading respecto al borde del item */
 }
 
 .accordion-item__header {
@@ -43,6 +44,11 @@
   min-block-size: 56px;
   padding-inline: var(--layout-stack-block); /* 16px */
   cursor: pointer;
+}
+/* si hay leading, este ya carga su propio inset de 16px — el header solo
+   necesita el gap de 12px hasta el label, no un segundo inset de 16px */
+.accordion-item__row:has(.accordion-item__leading) .accordion-item__header {
+  padding-inline-start: var(--internalLayout-space-150); /* 12px */
 }
 .accordion-item__header::after {
   content: '';
