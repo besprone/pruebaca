@@ -18,8 +18,8 @@ export type QuickActionGroupProps = {
  * Figma: `patterns_quick_actions_group`.
  *
  * Solo organiza layout y jerarquía — no redefine el diseño individual de
- * cada `QuickAction` (ese vive en el `IconButton` base). Cada hijo ocupa el
- * mismo ancho disponible; el grupo se adapta al ancho del contenedor.
+ * cada `QuickAction`. Cada hijo ocupa el mismo ancho disponible; el grupo
+ * se adapta al ancho del contenedor.
  */
 export function QuickActionGroup({ children, size, scheme, className, ...props }: QuickActionGroupProps) {
   return (
