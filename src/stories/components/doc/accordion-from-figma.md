@@ -47,6 +47,20 @@ múltiples items pueden estar expandidos simultáneamente").
 | `actions` | `ReactNode` | fila inferior de acciones — normalmente 1–2 `Button` a lo ancho completo |
 | `aria-label` | `string` | nombre accesible del header si `label` no basta |
 
+El `label` se renderiza con `ItemContent` (`_building_blocks_content`,
+`src/components/ItemBlocks/`) — el mismo building block que ya usan
+`ListItem`, `MenuItem` y `RailNavItem` — en vez de un `<span>` propio, para
+heredar exactamente su tipografía/comportamiento (esto se corrigió tras el
+build inicial, que sí tenía la tipografía correcta a mano pero no
+reutilizaba el componente compartido).
+
+**Ancho:** `Accordion`/`AccordionItem` son fluidos (`inline-size: 100%`),
+sin min/max-width propio — no se encontró una restricción de tamaño en
+Figma (el frame de 328px de los ejemplos es solo el ancho de demo, igual
+que en el resto de componentes de este sistema). Si Figma sí define un
+min/max explícito que no se pudo verificar por esta vía, avisar para
+ajustarlo.
+
 ## Estructura
 
 ```
@@ -54,7 +68,7 @@ múltiples items pueden estar expandidos simultáneamente").
   .accordion-item ·N                  bg/surface
     .accordion-item__row                leading? + header
       .accordion-item__leading            self-stretch
-      .accordion-item__header             <button> — label + chevron (rota 180° al expandir)
+      .accordion-item__header             <button> — ItemContent (label) + chevron (rota 180° al expandir)
     .accordion-item__content            alto animado (spring) — overflow hidden mientras anima
       .accordion-item__content-row        contentLeading? + content-block
         .accordion-item__content-block      supporting? + slot + actions?
@@ -104,7 +118,7 @@ dentro de `children`:
 | Header — padding inline | `layout/stack/block` (16) |
 | Header — alto mínimo | 56px |
 | Label | `text/primary` · `Body/lg` (16/24/500) |
-| Chevron | `icon/primary`, 24px, rota 180° al expandir |
+| Chevron | `icon/brand` (verde — hereda de `components_buttons_iconbutton`, no `icon/primary`), 24px reservados (sin caja de 48px extra: el hit-target es todo el header), rota 180° al expandir |
 | Hover / pressed del header | `semantic/color/state/hover` · `state/pressed` (mismo patrón que `ListItem`) |
 | Content — padding inline | `layout/container/inline` (16, inicio) / `layout/stack/block` (16, fin) |
 | Supporting | `text/secondary` · `Body/md` (14/20/500) |
