@@ -2,9 +2,11 @@
    Unidad expandible. Figma: `_building_blocks_accordion_item`.
 
    .accordion-item                       bg/surface
-     .accordion-item__row                  leading? + header (fila, self-stretch)
+     .accordion-item__header               <button> — leading? + ItemContent (label+supporting) + chevron
+                                            (leading vive DENTRO del botón para que el overlay de
+                                            hover/pressed — ::after, inset:0 — cubra toda la fila,
+                                            igual que `ListItem`)
        .accordion-item__leading              (opcional) self-stretch
-       .accordion-item__header               <button> — ItemContent (label+supporting) + chevron
      .accordion-item__content              alto animado (spring) — description + slot + actions
        .accordion-item__content-row          contentLeading? + content-block
 ──────────────────────────────────────────────────────────────────────────── */
@@ -17,11 +19,6 @@
   inline-size: 100%;
   background-color: var(--semantic-color-bg-surface);
   font-family: var(--typography-font-family);
-}
-
-.accordion-item__row {
-  display: flex;
-  align-items: stretch;
 }
 
 .accordion-item__leading {
@@ -37,7 +34,6 @@
   box-sizing: border-box;
   position: relative;
   display: flex;
-  flex: 1 1 auto;
   align-items: center;
   gap: var(--internalLayout-space-150); /* 12px */
   min-inline-size: 0;
@@ -45,10 +41,11 @@
   padding-inline: var(--layout-stack-block); /* 16px */
   cursor: pointer;
 }
-/* si hay leading, este ya carga su propio inset de 16px — el header solo
-   necesita el gap de 12px hasta el label, no un segundo inset de 16px */
-.accordion-item__row:has(.accordion-item__leading) .accordion-item__header {
-  padding-inline-start: var(--internalLayout-space-150); /* 12px */
+/* si hay leading, este ya carga su propio inset de 16px (margin-inline-start)
+   y el `gap` del header ya aporta el espacio de 12px hasta el label — el
+   header no necesita su propio padding-inline-start en ese caso */
+.accordion-item__header:has(> .accordion-item__leading) {
+  padding-inline-start: 0;
 }
 .accordion-item__header::after {
   content: '';
