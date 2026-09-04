@@ -21,6 +21,10 @@
   flex: 1 1 auto;
   min-block-size: 0;
   inline-size: 24px;
+  /* el contenedor `leading` centra íconos sueltos por default (align-items:
+     center) — este override individual lo hace ocupar el alto completo
+     igual, sin depender de que el padre use `stretch` */
+  align-self: stretch;
 }
 
 .payment-status-indicator__line {

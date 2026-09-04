@@ -64,28 +64,27 @@
   outline-offset: -2px;
 }
 
-.accordion-item__label {
+/* reutiliza ItemContent (`_building_blocks_content`) — solo necesita crecer
+   para empujar el chevron al final del header */
+.accordion-item__content-text {
   flex: 1 1 auto;
   min-inline-size: 0;
-  text-align: left;
-  color: var(--semantic-color-text-primary);
-  font-size: var(--typography-body-lg-size); /* 16 */
-  line-height: var(--typography-body-lg-line-height); /* 24 */
-  font-weight: var(--typography-body-lg-weight); /* 500 */
 }
 
+/* reservado 24×24 (mismo tamaño que el glifo) — el hit-target del header ya
+   es toda la fila, así que no necesita su propia caja de 48px */
 .accordion-item__chevron {
   display: flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  padding: var(--internalLayout-space-150); /* 12px, calca el hit-box de un IconButton lg */
-  border-radius: var(--controls-radius-150); /* 12px */
+  inline-size: 24px;
+  block-size: 24px;
 }
 .accordion-item__chevron-icon {
   inline-size: 24px;
   block-size: 24px;
-  color: var(--semantic-color-icon-primary);
+  color: var(--semantic-color-icon-brand);
   transition: transform var(--linear-200-duration-ms) var(--linear-200-easing);
 }
 .accordion-item[data-expanded] .accordion-item__chevron-icon {

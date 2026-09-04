@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useId, useRef, useState } from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { ChevronDown } from '@carbon/icons-react';
+import { ItemContent } from '../ItemBlocks/ItemContent';
 import { prefersReducedMotion, springTo } from '../../lib/spring';
 import './AccordionItem.css';
 
@@ -133,7 +134,7 @@ export const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(func
           aria-label={ariaLabel}
           onClick={toggle}
         >
-          <span className="accordion-item__label">{label}</span>
+          <ItemContent className="accordion-item__content-text" size="lg" label={label} />
           <span className="accordion-item__chevron" aria-hidden="true">
             <ChevronDown className="accordion-item__chevron-icon" />
           </span>

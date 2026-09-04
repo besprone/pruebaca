@@ -87,6 +87,16 @@ p. ej. el `label`/`supporting` del `AccordionItem` que lo usa).
 ))}
 ```
 
+**Por qué se ve completo aunque el contenedor `leading` centre por default:**
+`PaymentStatusIndicator` trae `align-self: stretch` en su propia raíz — así
+ocupa el alto completo (56px del header, o el alto del área expandida en
+`contentLeading`) sin importar que `.accordion-item__leading` use
+`align-items: center` (el default correcto para un ícono suelto). Sin este
+`align-self`, el indicador colapsa a su alto de contenido (24px, el
+círculo) y las líneas quedan con 0px de alto — invisibles. Si se nota el
+timeline "cortado" (círculos flotando sin línea entre ellos), esto es lo
+primero a revisar.
+
 `leading` (header, ícono) + `contentLeading` (área expandida, solo línea) son
 DOS instancias separadas — así lo hace Figma: el header de cada
 `AccordionItem` tiene su propio `PaymentStatusIndicator` con ícono, y su
