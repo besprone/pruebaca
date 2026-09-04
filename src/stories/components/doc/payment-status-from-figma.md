@@ -34,6 +34,10 @@ p. ej. el `label`/`supporting` del `AccordionItem` que lo usa).
 <PaymentStatusIndicator status="future" position="middle" number="4" />
 <PaymentStatusIndicator status="offer" position="middle" number="003" />
 
+{/* el item anterior ya se pagó/es el próximo — la línea de "antes" se
+    pinta verde aunque este item siga siendo `future` (ver nota abajo) */}
+<PaymentStatusIndicator status="future" position="middle" previousStatus="paid" />
+
 {/* modo "puente" — solo la línea, sin ícono, para continuar el timeline
     a través del área expandida de un AccordionItem */}
 <PaymentStatusIndicator status="next" position="middle" showIcon={false} />
@@ -45,6 +49,7 @@ p. ej. el `label`/`supporting` del `AccordionItem` que lo usa).
 | `position` | `first` · `middle` (def.) · `last` | con `showIcon` (header): `first` → sin línea antes · `last` → sin línea después. Con `showIcon={false}` (puente): el tramo es uno solo (sin split antes/después) — invisible completo solo en `last`, visible completo en `first`/`middle` (ver nota abajo) |
 | `showIcon` | `boolean` (def. `true`) | `false` → solo la línea (modo puente, ver `Accordion`) |
 | `number` | `ReactNode` | número de pago dentro del círculo — reemplaza el ícono en `future`/`offer` (mismo círculo gris, con el número en vez de vacío). Sin efecto en `next`/`paid` |
+| `previousStatus` | `PaymentStatusValue` | status del item **anterior** en la secuencia. Si es `paid`/`next`, la línea de "antes" de este item se pinta verde en vez de con el status propio. Solo aplica con `showIcon=true` (el header) — ver nota abajo |
 
 ## Estados
 
@@ -65,13 +70,25 @@ p. ej. el `label`/`supporting` del `AccordionItem` que lo usa).
 > visualmente no se distingue de un `future` numerado.
 
 > El PDF describe la línea de `next` como asimétrica (antes verde / después
-> gris). El código de Figma no lo hace así: cada unidad pinta **ambos**
-> lados de su línea con el color de su propio `status`. El efecto de
-> "transición" que describe el PDF ocurre igual, pero emerge de apilar
-> unidades con distinto `status` una tras otra — el "después" verde de una
-> unidad `next` y el "antes" gris de la siguiente unidad `future` ocupan la
-> misma franja visual, así que el corte de color aparece justo en el límite
-> entre ambas. Se siguió el código.
+> gris). El código **base** de Figma no lo hace así: confirmado 4 veces
+> contra instancias reales distintas (2 composiciones diferentes +
+> componente aislado, incluyendo el caso exacto de un item `future` pegado
+> a uno `paid`) que cada unidad pinta ambos lados de su línea con el color
+> de su propio `status`, sin mirar al vecino — el corte de color en Figma
+> ocurre limpio justo en el límite entre dos círculos.
+>
+> **Deviación deliberada de producto (`previousStatus`):** a pesar de lo
+> anterior, el sistema decidió agregar la validación que el PDF sugería —
+> si el item anterior ya está `paid`/`next`, la línea de "antes" de este
+> item se pinta verde aunque el item en sí siga `future`. Es un cambio
+> consciente respecto al código base de Figma (no un hallazgo de que Figma
+> ya lo hacía así), agregado vía la prop `previousStatus` en
+> `PaymentStatusIndicator` — el componente no puede inferir el status del
+> vecino por sí solo, así que el consumidor (la story, o cualquier
+> composición real) se lo pasa explícitamente. Sin este prop (u omitiéndolo),
+> el comportamiento es el de Figma sin modificar. Afecta solo el lado
+> "antes" del **header** (`showIcon=true`) — `contentLeading` sigue
+> reflejando únicamente el status propio del item, sin cambios.
 
 > `offer` tampoco es un color especial — es el mismo círculo/línea gris de
 > `future`, pero mostrando un número dentro del círculo en vez de vacío.
