@@ -126,6 +126,13 @@ dentro de `children`:
 </AccordionItem>
 ```
 
+`.accordion-item__content-row` tiene `padding-block-start: internalLayout/space-100`
+(8px) — Figma no define aire ahí (el contenido arranca pegado al borde
+inferior del header), pero se sentía muy apretado. Se agregó a pedido del
+usuario tras revisar la story en vivo; no afecta el alto del `content-leading`
+(sigue cubriendo exactamente el alto del `content-block`, solo desplazado
+8px junto con él) ni las medidas ya verificadas del resto del componente.
+
 ## Tokens
 
 | Elemento | Token |
@@ -142,6 +149,7 @@ dentro de `children`:
 | Hover / pressed del header | `semantic/color/state/hover` · `state/pressed` (mismo patrón que `ListItem`) |
 | `supporting` (header) | `text/secondary` · `Body/lg` (16/24/500 — mismo tamaño que `label`, vía `ItemContent`) |
 | Content — padding inline | `layout/container/inline` (16, inicio) / `layout/stack/block` (16, fin) |
+| Content — padding block-start | `internalLayout/space-100` (8) — deviación deliberada, ver sección de arriba |
 | `description` (content slot) | `text/secondary` · `Body/md` (14/20/500) |
 | Actions — gap | `componentSpacing/space-200` (16) |
 
