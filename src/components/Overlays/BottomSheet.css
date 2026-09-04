@@ -160,7 +160,11 @@
   align-items: center;
   gap: var(--internalLayout-space-100); /* 8px */
 }
-.bottom-sheet__actions > * {
+/* especificidad extra (dos clases) a propósito: `.button` trae `all: unset`,
+   que resetea `flex` a su valor inicial — con la misma especificidad que
+   `.bottom-sheet__actions > *` gana por orden de aparición en el bundle, y
+   los botones quedaban a ancho natural en vez de repartirse el espacio */
+.bottom-sheet__footer .bottom-sheet__actions > * {
   flex: 1 1 0;
   min-inline-size: 0;
 }
