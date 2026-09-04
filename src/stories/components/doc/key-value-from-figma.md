@@ -56,7 +56,7 @@ props redundantes.
 | `emphasis` | `boolean` (def. `false`) | `Body/md` (14/20) → `Headline/xs` (22/30) negrita. El color **no** cambia con emphasis (verificado contra Figma — el PDF sugiere que sí, se siguió el código) |
 | `multiline` | `boolean` (def. `false`) | `false` → una línea con ellipsis · `true` → wrap |
 | `color` | `default` (def.) · `accent` | |
-| `icon` | `ReactNode` | icono contextual al inicio (20px) |
+| `icon` | `ReactNode` | icono contextual al inicio (20px) — usar para explicar el **término** (ej. un ícono de info junto a "GAT Nominal") |
 
 `children` = texto de la key.
 
@@ -67,7 +67,7 @@ props redundantes.
 | `emphasis` | `boolean` (def. `false`) | igual que en `KeyValueKey` |
 | `color` | `default` (def.) · `accent` | |
 | `promo` | `ReactNode` | texto breve junto al value (`Body/md` negrita, `text/accent`) |
-| `trailing` | `ReactNode` | icono al final del value (20px) |
+| `trailing` | `ReactNode` | icono al final del value (20px) — usar para una **acción sobre el dato** (ej. copiar un folio), no para explicar la key |
 | `expandable` | `boolean` (def. `false`) | agrega el toggle "Ver completo / Ver menos" para revelar contenido largo que por default se trunca |
 | `expanded` / `defaultExpanded` / `onExpandedChange` | | controlado / no controlado, como el resto de la librería |
 | `expandLabel` / `collapseLabel` | `ReactNode` | def. `"Ver completo"` / `"Ver menos"` |
