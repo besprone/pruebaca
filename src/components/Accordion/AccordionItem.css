@@ -27,6 +27,11 @@
   flex-shrink: 0;
   overflow: hidden;
   margin-inline-start: var(--layout-stack-block); /* 16px — inset del leading respecto al borde del item */
+  /* el header usa align-items:center (para centrar label+chevron) — sin
+     este align-self propio, `leading` se encoge a su contenido (24px, el
+     ícono) y el `PaymentStatusIndicator` de adentro no tiene alto real para
+     estirarse, aunque él mismo ya declare su propio align-self:stretch */
+  align-self: stretch;
 }
 
 .accordion-item__header {
