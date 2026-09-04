@@ -16,12 +16,22 @@ p. ej. el `label`/`supporting` del `AccordionItem` que lo usa).
 > exactamente cómo se usa en todos los ejemplos compuestos del archivo. Se
 > construyó siguiendo el código de Figma, no la prosa del PDF.
 
+> **`_building_blocks_leading`:** en Figma, `PaymentStatusIndicator` se
+> instancia siempre dentro de este wrapper genérico compartido (el mismo
+> que envuelve íconos/avatares/checkboxes/etc. como `leading` de una fila —
+> `type="paymentStatus", size="sm"`). El wrapper en sí es solo
+> `display:flex; align-items:center; overflow:clip` sin tamaño propio — no
+> aporta estructura extra, así que no se replicó como componente aparte;
+> `AccordionItem`'s `.accordion-item__leading` cumple el mismo rol
+> (contenedor + `overflow:hidden`).
+
 ## API
 
 ```tsx
 <PaymentStatusIndicator status="paid" position="first" />
 <PaymentStatusIndicator status="next" position="middle" />
 <PaymentStatusIndicator status="future" position="last" />
+<PaymentStatusIndicator status="future" position="middle" number="4" />
 <PaymentStatusIndicator status="offer" position="middle" number="003" />
 
 {/* modo "puente" — solo la línea, sin ícono, para continuar el timeline
@@ -34,16 +44,25 @@ p. ej. el `label`/`supporting` del `AccordionItem` que lo usa).
 | `status` | `future` · `next` · `paid` · `offer` | ver tabla de estados abajo |
 | `position` | `first` · `middle` (def.) · `last` | `first` → sin línea antes · `last` → sin línea después |
 | `showIcon` | `boolean` (def. `true`) | `false` → solo la línea (modo puente, ver `Accordion`) |
-| `number` | `ReactNode` | número mostrado dentro del círculo cuando `status="offer"` |
+| `number` | `ReactNode` | número de pago dentro del círculo — reemplaza el ícono en `future`/`offer` (mismo círculo gris, con el número en vez de vacío). Sin efecto en `next`/`paid` |
 
 ## Estados
 
 | `status` | Ícono | Línea (antes y después — **mismo color a ambos lados**, no asimétrico) |
 |---|---|---|
-| `future` | círculo blanco, borde 1.2px `bg/disabled` | `bg/disabled` (gris) |
+| `future` | círculo blanco, borde 1.2px `bg/disabled` — o con `number` dentro (`Body/sm-se`, `text/secondary`) si se pasa | `bg/disabled` (gris) |
 | `next` | círculo blanco, borde 1.2px `icon/success` (anillo verde) | `icon/success` (verde) |
 | `paid` | círculo lleno `icon/success`, check blanco | `icon/success` (verde) |
-| `offer` | círculo blanco, borde `bg/disabled`, número dentro (`Body/sm-se`, `text/secondary`) | `bg/disabled` (gris) |
+| `offer` | igual que `future` (círculo blanco, borde `bg/disabled`) — normalmente con `number` | `bg/disabled` (gris) |
+
+> **`number` no es exclusivo de `offer`.** Se confirmó contra un ejemplo real
+> compuesto de Figma: una fila con `status="future"` (no `offer`) mostraba un
+> número de pago ("8") dentro del mismo círculo gris — el build inicial
+> ataba `number` solo a `offer`, lo cual era incorrecto. `offer` y
+> `future`+`number` comparten exactamente el mismo tratamiento visual;
+> `offer` se mantiene como valor de `status` aparte porque es un nombre de
+> variante real en Figma (uso: pagos especiales/promocionales), pero
+> visualmente no se distingue de un `future` numerado.
 
 > El PDF describe la línea de `next` como asimétrica (antes verde / después
 > gris). El código de Figma no lo hace así: cada unidad pinta **ambos**
@@ -67,22 +86,24 @@ p. ej. el `label`/`supporting` del `AccordionItem` que lo usa).
 | Círculo `next` | fondo `bg/surface`, borde 1.2px `icon/success` |
 | Círculo `paid` | fondo `icon/success` |
 | Check (`paid`) | `semantic/color/icon/onSuccess` (blanco) |
-| Número (`offer`) | `text/secondary` · `Body/sm-semiemphasized` (12/17/600) |
+| Número (`future`/`offer` + `number`) | `text/secondary` · `Body/sm-semiemphasized` (12/17/600) |
 
 ## Uso típico — timeline de pagos en un Accordion
 
 ```tsx
 {plan.map((pago, i) => (
   <AccordionItem
-    key={pago.label}
-    label={pago.label}
-    leading={<PaymentStatusIndicator status={pago.status} position={posicionDe(i, plan)} />}
+    key={pago.fecha}
+    label={pago.fecha}
+    supporting={pago.monto}
+    leading={
+      <PaymentStatusIndicator status={pago.status} position={posicionDe(i, plan)} number={pago.numero} />
+    }
     contentLeading={
       <PaymentStatusIndicator status={pago.status} position={posicionDe(i, plan)} showIcon={false} />
     }
-    supporting={pago.supporting}
   >
-    {/* contenido del pago */}
+    {/* detalle del pago — típicamente un KeyValue, ver accordion-from-figma.md */}
   </AccordionItem>
 ))}
 ```

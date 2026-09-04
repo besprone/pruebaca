@@ -39,20 +39,34 @@ múltiples items pueden estar expandidos simultáneamente").
 | Prop | Valores | |
 |---|---|---|
 | `label` | `ReactNode` | título — siempre visible |
+| `supporting` | `ReactNode` | texto secundario del **header**, bajo `label` — siempre visible (ej. un monto bajo una fecha, como en el patrón `paymentStatus`). Distinto de `description` |
 | `expanded` / `defaultExpanded` / `onExpandedChange` | | controlado / no controlado |
 | `leading` | `ReactNode` | slot al inicio del header, self-stretch (icono, o un `PaymentStatusIndicator`) |
 | `contentLeading` | `ReactNode` | continúa `leading` a través del área expandida — ver `PaymentStatusIndicator` |
-| `supporting` | `ReactNode` | texto secundario, arriba del content slot (`Body/md`, `text/secondary`) |
+| `description` | `ReactNode` | texto secundario del **content slot**, arriba de `children` — solo visible expandido (`Body/md`, `text/secondary`) |
 | `children` | `ReactNode` | content slot flexible: texto, listas, `KeyValue`, componentes, layouts complejos |
 | `actions` | `ReactNode` | fila inferior de acciones — normalmente 1–2 `Button` a lo ancho completo |
 | `aria-label` | `string` | nombre accesible del header si `label` no basta |
 
-El `label` se renderiza con `ItemContent` (`_building_blocks_content`,
+`label` + `supporting` se renderizan con `ItemContent` (`_building_blocks_content`,
 `src/components/ItemBlocks/`) — el mismo building block que ya usan
 `ListItem`, `MenuItem` y `RailNavItem` — en vez de un `<span>` propio, para
-heredar exactamente su tipografía/comportamiento (esto se corrigió tras el
-build inicial, que sí tenía la tipografía correcta a mano pero no
-reutilizaba el componente compartido).
+heredar exactamente su tipografía/comportamiento. `supporting` en el header
+es real: confirmado contra un ejemplo compuesto de Figma
+(`components_key_value_group` dentro de un accordion de `payment_status`)
+donde cada fila muestra fecha (`label`) + monto (`supporting`) — sin
+`supporting`, la fila usa el alto mínimo de 56px; con él, crece de forma
+natural (measured: 68px con `label`+`supporting`, `min-block-size` es solo
+un piso, no una altura fija).
+
+**`supporting` (header) vs. `description` (content slot):** dos props
+distintas a propósito — `supporting` siempre está visible (parte del
+`ItemContent` del header, como "$4,890.00" bajo "15 sep 2026"),
+`description` solo aparece cuando el item está expandido (texto libre
+antes de `children`). Nombres elegidos para no chocar entre sí ni con el
+significado ya establecido de "supporting" en el resto del sistema
+(`ListItem`, `KeyValueKey`, etc. — siempre "texto bajo el label,
+visible").
 
 **Ancho:** `Accordion`/`AccordionItem` son fluidos (`inline-size: 100%`),
 sin min/max-width propio — no se encontró una restricción de tamaño en
@@ -68,10 +82,10 @@ ajustarlo.
   .accordion-item ·N                  bg/surface
     .accordion-item__row                leading? + header
       .accordion-item__leading            self-stretch
-      .accordion-item__header             <button> — ItemContent (label) + chevron (rota 180° al expandir)
+      .accordion-item__header             <button> — ItemContent (label+supporting) + chevron (rota 180° al expandir)
     .accordion-item__content            alto animado (spring) — overflow hidden mientras anima
       .accordion-item__content-row        contentLeading? + content-block
-        .accordion-item__content-block      supporting? + slot + actions?
+        .accordion-item__content-block      description? + slot + actions?
 ```
 
 ## Comportamiento
@@ -92,7 +106,7 @@ ajustarlo.
 `_building_blocks_content_accordion` (el building block que en Figma
 compone hasta 2 secciones de texto+botón con un separador entre ellas) **no
 se construyó como componente aparte** — se decidió junto con el usuario
-antes de empezar. `AccordionItem` expone en su lugar `supporting` +
+antes de empezar. `AccordionItem` expone en su lugar `description` +
 `children` (slot libre) + `actions`, que cubren el caso de una sección. El
 patrón de 2 secciones (poco común — el PDF lo limita a máx. 2, con reglas
 específicas de separador y tipo de botón) se logra componiendo a mano
@@ -120,9 +134,38 @@ dentro de `children`:
 | Label | `text/primary` · `Body/lg` (16/24/500) |
 | Chevron | `icon/brand` (verde — hereda de `components_buttons_iconbutton`, no `icon/primary`), 24px reservados (sin caja de 48px extra: el hit-target es todo el header), rota 180° al expandir |
 | Hover / pressed del header | `semantic/color/state/hover` · `state/pressed` (mismo patrón que `ListItem`) |
+| `supporting` (header) | `text/secondary` · `Body/lg` (16/24/500 — mismo tamaño que `label`, vía `ItemContent`) |
 | Content — padding inline | `layout/container/inline` (16, inicio) / `layout/stack/block` (16, fin) |
-| Supporting | `text/secondary` · `Body/md` (14/20/500) |
+| `description` (content slot) | `text/secondary` · `Body/md` (14/20/500) |
 | Actions — gap | `componentSpacing/space-200` (16) |
+
+## Composición típica — timeline de pagos
+
+El ejemplo real de Figma para `Accordion type="paymentStatus"` compone:
+header con fecha (`label`) + monto (`supporting`) + `PaymentStatusIndicator`
+en `leading`; contenido expandido = un `KeyValue` (`divider={false}`, filas
+`background="canvas"`) con el detalle del pago, más `PaymentStatusIndicator
+showIcon={false}` en `contentLeading` para continuar la línea. Ver la
+story "Timeline de pagos" y `payment-status-from-figma.md`.
+
+```tsx
+<Accordion type="paymentStatus">
+  <AccordionItem
+    label="15 sep 2026"
+    supporting="$4,890.00"
+    leading={<PaymentStatusIndicator status="next" position="middle" />}
+    contentLeading={<PaymentStatusIndicator status="next" position="middle" showIcon={false} />}
+  >
+    <KeyValue divider={false}>
+      <KeyValueRow background="canvas">
+        <KeyValueKey>Tasa anual</KeyValueKey>
+        <KeyValueValue>10.50%</KeyValueValue>
+      </KeyValueRow>
+      {/* … */}
+    </KeyValue>
+  </AccordionItem>
+</Accordion>
+```
 
 ## Relación con otros patrones
 

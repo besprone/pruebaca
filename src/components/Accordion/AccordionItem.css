@@ -4,8 +4,8 @@
    .accordion-item                       bg/surface
      .accordion-item__row                  leading? + header (fila, self-stretch)
        .accordion-item__leading              (opcional) self-stretch
-       .accordion-item__header               <button> — label + chevron
-     .accordion-item__content              alto animado (spring) — supporting + slot + actions
+       .accordion-item__header               <button> — ItemContent (label+supporting) + chevron
+     .accordion-item__content              alto animado (spring) — description + slot + actions
        .accordion-item__content-row          contentLeading? + content-block
 ──────────────────────────────────────────────────────────────────────────── */
 
@@ -28,6 +28,7 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .accordion-item__header {
@@ -122,7 +123,7 @@
   padding-block-end: var(--componentSpacing-space-200); /* 16px */
 }
 
-.accordion-item__supporting {
+.accordion-item__description {
   margin: 0;
   color: var(--semantic-color-text-secondary);
   font-size: var(--typography-body-md-size); /* 14 */
