@@ -5,6 +5,7 @@ import './IconButton.css';
 
 export type IconButtonEmphasis = 'primary' | 'secondary' | 'ghost';
 export type IconButtonSize = 'sm' | 'md' | 'lg';
+export type IconButtonScheme = 'brand' | 'neutral';
 
 // Mapeo de tamaño del botón al tamaño del spinner (según Figma)
 const spinnerSize: Record<IconButtonSize, CircularProgressSize> = {
@@ -17,6 +18,8 @@ export type IconButtonProps = {
   icon: ReactNode;
   emphasis?: IconButtonEmphasis;
   size?: IconButtonSize;
+  /** Paleta de color: `brand` (def., verde) · `neutral` (escala de grises). */
+  scheme?: IconButtonScheme;
   isLoading?: boolean;
   'aria-label': string;
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'>;
@@ -25,6 +28,7 @@ export function IconButton({
   icon,
   emphasis = 'primary',
   size = 'sm',
+  scheme = 'brand',
   isLoading = false,
   disabled,
   className,
@@ -37,6 +41,7 @@ export function IconButton({
       aria-busy={isLoading || undefined}
       data-emphasis={emphasis}
       data-size={size}
+      data-scheme={scheme}
       data-loading={isLoading || undefined}
       className={['icon-button', className].filter(Boolean).join(' ')}
     >
