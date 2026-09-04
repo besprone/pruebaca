@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { CheckmarkOutline, Money, Wallet, Document, Purchase, ChevronRight } from '@carbon/icons-react';
-import { BottomSheet } from '../../components/BottomSheet/BottomSheet';
-import type { BottomSheetProps, BottomSheetType } from '../../components/BottomSheet/BottomSheet';
+import { BottomSheet } from '../../components/Overlays';
+import type { BottomSheetProps, BottomSheetType } from '../../components/Overlays';
 import { Button } from '../../components/Button/Button';
 import { List } from '../../components/List';
 import { ListItem } from '../../components/List/ListItem';
