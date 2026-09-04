@@ -42,7 +42,7 @@ p. ej. el `label`/`supporting` del `AccordionItem` que lo usa).
 | Prop | Valores | |
 |---|---|---|
 | `status` | `future` · `next` · `paid` · `offer` | ver tabla de estados abajo |
-| `position` | `first` · `middle` (def.) · `last` | `first` → sin línea antes · `last` → sin línea después |
+| `position` | `first` · `middle` (def.) · `last` | con `showIcon` (header): `first` → sin línea antes · `last` → sin línea después. Con `showIcon={false}` (puente): el tramo es uno solo (sin split antes/después) — invisible completo solo en `last`, visible completo en `first`/`middle` (ver nota abajo) |
 | `showIcon` | `boolean` (def. `true`) | `false` → solo la línea (modo puente, ver `Accordion`) |
 | `number` | `ReactNode` | número de pago dentro del círculo — reemplaza el ícono en `future`/`offer` (mismo círculo gris, con el número en vez de vacío). Sin efecto en `next`/`paid` |
 
@@ -93,12 +93,6 @@ p. ej. el `label`/`supporting` del `AccordionItem` que lo usa).
 ```tsx
 {plan.map((pago, i) => {
   const position = posicionDe(i, plan);
-  // `contentLeading` siempre continúa desde el propio header de este mismo
-  // item (su círculo + línea-después ya están visibles) — nunca es el
-  // inicio absoluto del timeline, aunque el item sí lo sea. Por eso su lado
-  // "antes" no debe cortarse en `first` (a diferencia del header, donde
-  // `first` sí significa "nada arriba de todo"). Ver nota más abajo.
-  const contentPosition = position === 'first' ? 'middle' : position;
   return (
     <AccordionItem
       key={pago.fecha}
@@ -108,7 +102,7 @@ p. ej. el `label`/`supporting` del `AccordionItem` que lo usa).
         <PaymentStatusIndicator status={pago.status} position={position} number={pago.numero} />
       }
       contentLeading={
-        <PaymentStatusIndicator status={pago.status} position={contentPosition} showIcon={false} />
+        <PaymentStatusIndicator status={pago.status} position={position} showIcon={false} />
       }
     >
       {/* detalle del pago — típicamente un KeyValue, ver accordion-from-figma.md */}
@@ -117,19 +111,37 @@ p. ej. el `label`/`supporting` del `AccordionItem` que lo usa).
 })}
 ```
 
-> **`contentLeading` no debe recibir el mismo `position` que `leading` sin
-> ajustar.** Bug real encontrado y corregido: al pasarle `position="first"`
-> tal cual, su propio lado "antes" se volvía transparente (la regla
-> correcta para el header, donde `first` = nada arriba de todo el
-> timeline) — pero el `contentLeading` de un item SIEMPRE tiene algo arriba
-> (el header de ese mismo item, ya visible con su color), nunca es el
-> inicio absoluto. Esto dejaba un hueco visible entre el círculo del header
-> y la línea que continúa junto a la primera fila del contenido expandido
-> (confirmado con `getBoundingClientRect`: el segmento medía
-> `data-status="transparent"` en vez de heredar el status real). Fix:
-> mapear `position==='first' → 'middle'` solo para la instancia de
-> `contentLeading` — `'last'` se deja igual, porque ahí el lado "después"
-> sí debe cortarse (es el final real del timeline).
+> **`leading` y `contentLeading` usan el mismo `position` sin ajustar — el
+> componente resuelve la diferencia internamente vía `showIcon`.** Historia
+> real de cómo se llegó a esto (dos bugs encontrados y corregidos en rondas
+> distintas):
+>
+> 1. Un primer intento le pasó el mismo `position` a ambas instancias sin
+>    más — con `position="first"`, el propio lado "antes" de
+>    `contentLeading` se volvía transparente (la regla correcta para el
+>    header, donde `first` = nada arriba de todo el timeline). Pero
+>    `contentLeading` **siempre** tiene algo arriba (el header de ese mismo
+>    item, ya visible), nunca es el inicio absoluto — eso dejaba un hueco
+>    visible entre el círculo del header y la línea reapareciendo junto a
+>    la primera fila del contenido expandido.
+> 2. Un segundo intento "arregló" esto remapeando `position` en la propia
+>    story (`first → middle` solo para `contentLeading`) — funcionaba, pero
+>    escondía el problema real: **`contentLeading` no tiene la estructura
+>    antes/después del header** (no hay círculo en medio). En Figma es **un
+>    solo tramo continuo** por item — confirmado con `get_design_context`
+>    sobre 3 instancias reales distintas (`first`, `middle`, y el
+>    verdadero `last` de la lista): `first`/`middle` renderizan un único
+>    `_building_block_paymentstatus_line` con opacidad normal (visible de
+>    punta a punta); el `last` real renderiza ese mismo único tramo con
+>    `opacity-0` — **completamente invisible, no solo "después" cortado**.
+>
+> Fix definitivo, en `PaymentStatusIndicator` mismo: cuando `showIcon` es
+> `false`, el lado "antes" usa la regla de `last` (no la de `first`) — así
+> ambos lados (antes/después, que en la práctica son el mismo tramo visual
+> ya que no hay círculo separándolos) solo se apagan juntos en `last`,
+> nunca en `first`. La story ya no necesita ningún remapeo — pasa el mismo
+> `position` a `leading` y `contentLeading` tal cual, y cada uno interpreta
+> `first`/`last` correctamente según su propio `showIcon`.
 
 **Por qué se ve completo aunque el contenedor `leading` centre por default:**
 `PaymentStatusIndicator` trae `align-self: stretch` en su propia raíz — así
