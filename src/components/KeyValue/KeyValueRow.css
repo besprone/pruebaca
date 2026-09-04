@@ -47,6 +47,9 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  /* solo afecta íconos bare (fill=currentColor); un Badge define sus propios
+     colores por token y no lo hereda */
+  color: var(--semantic-color-icon-secondary);
 }
 .key-value-row__trailing svg {
   inline-size: 20px;
