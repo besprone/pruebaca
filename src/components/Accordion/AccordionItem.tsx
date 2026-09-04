@@ -136,27 +136,25 @@ export const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(func
       className={['accordion-item', className].filter(Boolean).join(' ')}
       data-expanded={expanded || undefined}
     >
-      <div className="accordion-item__row">
-        {leading != null && <div className="accordion-item__leading">{leading}</div>}
-        <button
-          type="button"
-          className="accordion-item__header"
-          aria-expanded={expanded}
-          aria-controls={labelId}
-          aria-label={ariaLabel}
-          onClick={toggle}
-        >
-          <ItemContent
-            className="accordion-item__content-text"
-            size="lg"
-            label={label}
-            supporting={supporting}
-          />
-          <span className="accordion-item__chevron" aria-hidden="true">
-            <ChevronDown className="accordion-item__chevron-icon" />
-          </span>
-        </button>
-      </div>
+      <button
+        type="button"
+        className="accordion-item__header"
+        aria-expanded={expanded}
+        aria-controls={labelId}
+        aria-label={ariaLabel}
+        onClick={toggle}
+      >
+        {leading != null && <span className="accordion-item__leading">{leading}</span>}
+        <ItemContent
+          className="accordion-item__content-text"
+          size="lg"
+          label={label}
+          supporting={supporting}
+        />
+        <span className="accordion-item__chevron" aria-hidden="true">
+          <ChevronDown className="accordion-item__chevron-icon" />
+        </span>
+      </button>
       <div className="accordion-item__content" id={labelId} ref={contentRef}>
         <div className="accordion-item__content-row">
           {contentLeading != null && (

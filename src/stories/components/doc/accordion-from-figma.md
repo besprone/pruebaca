@@ -80,9 +80,10 @@ ajustarlo.
 ```
 .accordion                          radio 16 · overflow hidden · bg/canvas (asoma en el gap)
   .accordion-item ·N                  bg/surface
-    .accordion-item__row                leading? + header (16px inset + 12px gap si hay leading)
-      .accordion-item__leading            self-stretch, margin-inline-start 16px
-      .accordion-item__header             <button> — ItemContent (label+supporting) + chevron (rota 180° al expandir)
+    .accordion-item__header             <button> — TODA la fila es el área clicable/hoverable
+      .accordion-item__leading            (opcional) self-stretch, margin-inline-start 16px
+      ItemContent (label+supporting)
+      chevron (rota 180° al expandir)
     .accordion-item__content            alto animado (spring) — overflow hidden mientras anima
       .accordion-item__content-row        contentLeading? + content-block
         .accordion-item__content-block      description? + slot + actions?
@@ -92,7 +93,12 @@ ajustarlo.
 
 - El header **completo** es el área interactiva (un solo `<button>`, no un
   ícono aparte) — `aria-expanded` + `aria-controls` apuntando al `id` del
-  contenido.
+  contenido. `leading` vive **dentro** de ese `<button>` (no al lado, como
+  un sibling) precisamente para esto: el overlay de hover/pressed (`::after`,
+  `inset:0`) cubre toda la fila incluyendo `leading`, y clickear encima de
+  `leading` (p. ej. el círculo de un `PaymentStatusIndicator`) también
+  expande/colapsa el item — igual que `ListItem`, cuyo `leading` también
+  vive dentro de su elemento clicable.
 - Expandir/colapsar anima **alto + opacidad** con el mismo integrador de
   muelle del resto de la librería (`src/lib/spring` — mide `scrollHeight`,
   anima con `springTo`, fija `height:auto` al terminar de expandir para que
@@ -129,7 +135,7 @@ dentro de `children`:
 | Radio del contenedor | `containers/radius-200` (16) |
 | Gap `segmented` | `internalLayout/space-25` (2) |
 | Gap `paymentStatus` | 0 |
-| Header — padding inline | `layout/stack/block` (16) — si hay `leading`, este ya carga el inset de 16px (`margin-inline-start`) y el header solo aporta el gap de 12px (`internalLayout/space-150`) hasta el label |
+| Header — padding inline | `layout/stack/block` (16) — si hay `leading`, este ya carga el inset de 16px (`margin-inline-start`) y el header pone `padding-inline-start:0` (el `gap` del propio header, `internalLayout/space-150` = 12px, ya separa `leading` del label) |
 | Header — alto mínimo | 56px |
 | Label | `text/primary` · `Body/lg` (16/24/500) |
 | Chevron | `icon/brand` (verde — hereda de `components_buttons_iconbutton`, no `icon/primary`), 24px reservados (sin caja de 48px extra: el hit-target es todo el header), rota 180° al expandir |
