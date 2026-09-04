@@ -206,6 +206,12 @@
   justify-content: flex-end;
   gap: var(--internalLayout-space-100); /* 8px */
 }
+/* `centered` — el contenido ya está centrado; unos botones a la derecha
+   rompen la simetría. Desviación deliberada de Figma (que mantiene
+   justify-end en todos los tipos) por balance visual. */
+.dialog[data-type='centered'] .dialog__actions {
+  justify-content: center;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .dialog {
