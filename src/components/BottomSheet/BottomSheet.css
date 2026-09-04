@@ -27,12 +27,9 @@
   position: absolute;
   inset: 0;
   background-color: rgba(28, 27, 32, 0.4);
-}
-.bottom-sheet-overlay[data-state='entering'] .bottom-sheet-overlay__backdrop {
-  animation: bottom-sheet-backdrop-in var(--linear-200-duration-ms) var(--linear-200-easing);
-}
-.bottom-sheet-overlay[data-state='exiting'] .bottom-sheet-overlay__backdrop {
-  animation: bottom-sheet-backdrop-out var(--linear-200-duration-ms) var(--linear-200-easing) forwards;
+  /* `--bs-drag` (0 abierto → 1 fuera) lo actualiza el JS en cada frame del
+     muelle y durante el arrastre — el backdrop sigue al sheet en todos los casos */
+  opacity: calc(1 - var(--bs-drag, 1));
 }
 
 .bottom-sheet {
@@ -54,6 +51,18 @@
 }
 .bottom-sheet[data-full-height] {
   block-size: 92dvh;
+}
+
+/* ── zona de arrastre (handle + header) ──────────────────────────────────── */
+.bottom-sheet__drag-zone {
+  flex-shrink: 0;
+}
+.bottom-sheet__drag-zone[data-swipe] {
+  touch-action: none;
+  cursor: grab;
+}
+.bottom-sheet__drag-zone[data-swipe]:active {
+  cursor: grabbing;
 }
 
 /* ── handle ──────────────────────────────────────────────────────────────── */
@@ -156,20 +165,3 @@
   min-inline-size: 0;
 }
 
-/* ── keyframes ───────────────────────────────────────────────────────────── */
-@keyframes bottom-sheet-backdrop-in {
-  from {
-    opacity: 0;
-  }
-}
-@keyframes bottom-sheet-backdrop-out {
-  to {
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bottom-sheet-overlay__backdrop {
-    animation: none;
-  }
-}

@@ -36,6 +36,7 @@ const [mounted, setMounted] = useState(true);
 | `fullHeight` | `boolean` (def. `false`) | `true` → altura máx. (**92dvh**) y el content hace scroll · `false` → altura según contenido |
 | `showHandle` | `boolean` (def. `true`) | barra de arrastre. `true` comunica swipe · `false` = diálogo |
 | `showClose` | `boolean` (def. `true`) | botón de cerrar (`IconButton` ghost `lg`, esquina superior **izquierda**) |
+| `swipeToClose` | `boolean` (def. `true`) | cerrar arrastrando hacia abajo desde el handle / header. Solo si hay `showHandle` + `onClose` |
 | `label` / `supporting` | `ReactNode` | título + descripción breve |
 | `slotHeading` | `ReactNode` | `centered` — icono / ilustración sobre el label |
 | `headerAction` | `ReactNode` | acción extra en el header, a la derecha (rara) |
@@ -67,7 +68,13 @@ consumidor). El `slotHeading` y el `content` son slots.
 ## Comportamiento
 
 - Aparece desde abajo; el backdrop bloquea la interacción de fondo.
-- Cierra con: botón de cerrar, click en el backdrop, `Escape`.
+- Cierra con: botón de cerrar, click en el backdrop, `Escape`, o **swipe hacia
+  abajo** desde el handle / header (`swipeToClose`, si hay `showHandle`).
+- **Swipe**: `touch-action: none` solo en la zona handle + header (el content
+  sigue scrolleando). El sheet sigue el dedo (`translateY`), el backdrop se
+  atenúa a la par (`--bs-drag`). Al soltar: si el recorrido supera el 35 % del
+  alto **o** hay flick hacia abajo → cierra; si no, vuelve a su sitio con el
+  muelle. `PointerEvent` + `setPointerCapture` (mouse + touch).
 - **Foco**: al abrir se mueve al primer interactivo (o al sheet); trap de `Tab`
   dentro; se restaura al cerrar. `role="dialog"` + `aria-modal` +
   `aria-labelledby` (el `label`). Backdrop `aria-hidden`.
