@@ -3,8 +3,22 @@
 Acceso rápido a una acción clave (Home, Dashboard). Figma:
 `patterns_quick_actions_single` + `patterns_quick_actions_group`.
 
-Patrón de solo presentación — organiza `IconButton` (componente base) + un
-label, sin definir lógica propia ni nuevos tokens/estilos.
+Patrón de solo presentación — combina la estructura visual de `IconButton`
+(componente base) + un label, sin definir lógica propia ni nuevos
+tokens/estilos.
+
+> **Es UN SOLO `<button>`, no anida un `IconButton`.** Primer intento sí
+> instanciaba `<IconButton>` dentro de `QuickAction`, con el label como
+> hermano fuera del botón (`aria-hidden`, decorativo) — el usuario notó que
+> eso dejaba "clics muertos": hover/focus/clic sobre el label no hacían
+> nada, aunque visualmente pareciera parte del mismo control. Fix: `QuickAction`
+> reproduce la estructura visual de `IconButton size="lg"` (fondo, radio,
+> ícono, hover/pressed) directamente sobre su propio `<button>` — mismo
+> patrón que el chevron de `AccordionItem` (nunca anidar un componente que
+> renderiza su propio `<button>`/`<a>` dentro de otro elemento
+> interactivo). Con esto: un solo tab-stop, un solo `aria-label`, y
+> hover/pressed/clic cubren TODO el bloque (ícono + label) sin zonas
+> muertas.
 
 ## API
 
@@ -19,9 +33,9 @@ label, sin definir lógica propia ni nuevos tokens/estilos.
 | `label` | `string` | texto corto y accionable (máx. 2 líneas, luego trunca) — también es el `aria-label` del botón, no hace falta pasarlo aparte |
 | `icon` | `ReactNode` | debe ser entendible sin depender solo del texto |
 | `emphasis` | `primary` (def.) · `secondary` · `ghost` | **no cambia el tamaño** — solo comunica prioridad. Recomendado: un solo `primary` por grupo, el resto `secondary`/`ghost` |
-| `size` | `sm` (def.) · `lg` | afecta el gap icono↔label y la tipografía del label — **no** el tamaño del `IconButton` (siempre `size="lg"`, ver nota abajo) |
-| `scheme` | `brand` (def., verde) · `neutral` (escala de grises) | se aplica transversalmente a `IconButton` + label |
-| `disabled` | `boolean` | el label seguido automáticamente al estado disabled del `IconButton` (`:has()`) |
+| `size` | `sm` (def.) · `lg` | afecta el gap icono↔label y la tipografía del label — **no** el tamaño de la caja del ícono (siempre equivalente a `IconButton size="lg"`, ver nota abajo) |
+| `scheme` | `brand` (def., verde) · `neutral` (escala de grises) | se aplica al ícono + label por igual |
+| `disabled` | `boolean` | atributo `disabled` nativo del `<button>` — bloquea clic/foco/hover y desatura ícono + label automáticamente |
 
 `QuickActionGroup` agrupa varias `QuickAction` en una fila balanceada:
 
@@ -50,17 +64,21 @@ el tamaño `lg` de nuestro `IconButton`). La única diferencia entre
   `internalLayout/space-100`=8px)
 - la tipografía del label (`Body/sm` 12/17/500 vs `Body/md` 14/20/500)
 
-El área táctil del patrón es siempre la misma (`IconButton size="lg"`),
-independientemente de la densidad visual — coincide con la doc de Figma:
-"Área táctil garantizada por el Icon button".
+El área táctil del patrón es siempre la misma (equivalente a
+`IconButton size="lg"`), independientemente de la densidad visual —
+coincide con la doc de Figma: "Área táctil garantizada por el Icon
+button".
 
-## `IconButton`: nuevo prop `scheme`
+## `IconButton` también ganó un prop `scheme` (adición independiente)
 
-Este patrón requería que `IconButton` (ya usado en 13+ lugares del sistema)
-soportara una paleta neutra además de la verde (`brand`) que ya tenía
-hardcodeada. Se agregó `scheme?: 'brand' | 'neutral'` (def. `'brand'` —
-100% retrocompatible, ningún consumidor existente pasa `scheme`, así que
-su comportamiento no cambia).
+Este patrón necesitaba una paleta neutra además de la verde (`brand`) —
+se agregó `scheme?: 'brand' | 'neutral'` (def. `'brand'`, 100%
+retrocompatible) directamente a `IconButton` (ya usado en 13+ lugares del
+sistema), ya que es el componente base de referencia para estos colores.
+`QuickAction` **no instancia `IconButton`** (ver nota de arriba sobre por
+qué es un solo `<button>`) — reproduce el mismo mapeo de tokens
+directamente en su propio CSS, pero la tabla de abajo describe el mapeo
+compartido por ambos.
 
 | `emphasis` × `scheme` | Fondo | Ícono |
 |---|---|---|
@@ -90,17 +108,20 @@ Reglas de Figma seguidas al pie de la letra:
 
 ## Accesibilidad
 
-- El `<button>` real es el `IconButton` — el label visible es
-  `aria-hidden` y a la vez la fuente de su `aria-label` (`QuickAction`
-  pasa `label` como `aria-label` del `IconButton` automáticamente, sin
-  prop aparte).
-- Área táctil garantizada por el `IconButton` (ver nota de `size` arriba).
+- `QuickAction` es un solo `<button>` real (ver nota de arriba) — el label
+  visible es `aria-hidden` y a la vez la fuente de su `aria-label`, sin
+  prop aparte. Un solo tab-stop, hover/pressed/clic cubren ícono + label
+  por igual (sin clics muertos sobre el texto).
+- Área táctil garantizada (equivalente a `IconButton size="lg"`, ver nota
+  de `size` arriba).
 - El ícono debe comunicar la acción sin depender solo del texto — decisión
   de contenido del consumidor, el patrón no la valida.
 
 ## Relación con otros componentes
 
-- `IconButton`: componente base (ver nuevo prop `scheme` arriba).
+- `IconButton`: componente base — `QuickAction` reproduce su estructura
+  visual (no lo instancia, ver nota de arriba) y comparte su mapeo de
+  tokens por `emphasis`/`scheme`.
 - `QuickAction`: patrón de uso — icono + label, sin lógica propia.
 - `QuickActionGroup`: agrupación de layout — no rediseña las `QuickAction`
   hijas, solo el espaciado/alineación entre ellas (tokens globales de
