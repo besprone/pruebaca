@@ -175,6 +175,12 @@
 .dialog[data-type='iframe']:not([data-full-height]) .dialog__content {
   block-size: 160px;
 }
+/* sin footer, el content queda pegado al borde inferior — se le da el mismo
+   aire que el `padding-block-start` del footer (24px) para que no se vea cortado */
+.dialog[data-type='default'] .dialog__content:last-child,
+.dialog__container:last-child {
+  padding-block-end: var(--componentSpacing-space-300); /* 24px */
+}
 
 /* ── footer ──────────────────────────────────────────────────────────────── */
 .dialog__footer {
