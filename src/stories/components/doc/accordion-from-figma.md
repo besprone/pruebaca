@@ -126,12 +126,23 @@ dentro de `children`:
 </AccordionItem>
 ```
 
-`.accordion-item__content-row` tiene `padding-block-start: internalLayout/space-100`
-(8px) — Figma no define aire ahí (el contenido arranca pegado al borde
-inferior del header), pero se sentía muy apretado. Se agregó a pedido del
-usuario tras revisar la story en vivo; no afecta el alto del `content-leading`
-(sigue cubriendo exactamente el alto del `content-block`, solo desplazado
-8px junto con él) ni las medidas ya verificadas del resto del componente.
+`.accordion-item__content-block` tiene `padding-block-start:
+internalLayout/space-100` (8px) — Figma no define aire ahí (el contenido
+arranca pegado al borde inferior del header), pero se sentía muy apretado.
+Se agregó a pedido del usuario tras revisar la story en vivo.
+
+**Importante: va en `content-block`, no en `content-row`.** Un primer
+intento lo puso en `content-row` — funcionaba visualmente pero rompía la
+línea del timeline: `content-row` es el padre de AMBOS `content-leading`
+(la línea puente) y `content-block` (el texto), así que un padding ahí
+empuja a los dos por igual, dejando un hueco real de 8px entre la línea
+del header y la del `content-leading` (confirmado con
+`getBoundingClientRect`: `header line bottom=528` vs `content-leading
+line top=536`). Puesto en `content-block` en cambio, `content-leading`
+queda flush con el header (0px de hueco) y solo el texto/KeyValue recibe
+el respiro — el `content-leading` sigue teniendo `align-items:stretch`
+en el `content-row`, así que su alto crece igual para matchear el nuevo
+alto de `content-block` (152→160px), sin desalinear nada.
 
 ## Tokens
 
@@ -149,7 +160,7 @@ usuario tras revisar la story en vivo; no afecta el alto del `content-leading`
 | Hover / pressed del header | `semantic/color/state/hover` · `state/pressed` (mismo patrón que `ListItem`) |
 | `supporting` (header) | `text/secondary` · `Body/lg` (16/24/500 — mismo tamaño que `label`, vía `ItemContent`) |
 | Content — padding inline | `layout/container/inline` (16, inicio) / `layout/stack/block` (16, fin) |
-| Content — padding block-start | `internalLayout/space-100` (8) — deviación deliberada, ver sección de arriba |
+| Content-block — padding block-start | `internalLayout/space-100` (8) — deviación deliberada, en `content-block` NO en `content-row` (ver sección de arriba) |
 | `description` (content slot) | `text/secondary` · `Body/md` (14/20/500) |
 | Actions — gap | `componentSpacing/space-200` (16) |
 
