@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Information, ChevronRight, CheckmarkFilled } from '@carbon/icons-react';
+import { Information, ChevronRight, CheckmarkFilled, Copy } from '@carbon/icons-react';
 import { KeyValue, KeyValueRow, KeyValueKey, KeyValueValue } from '../../components/KeyValue';
 import { Badge } from '../../components/Badge/Badge';
 import { IconButton } from '../../components/IconButton/IconButton';
@@ -144,10 +144,16 @@ export const BadgeYTrailing: Story = {
           <KeyValueKey>Cuenta destino</KeyValueKey>
           <KeyValueValue>•••• 4821</KeyValueValue>
         </KeyValueRow>
+        {/* icon en la key: explica el término ("GAT Nominal") — mismo patrón que "Confirma tu inversión" */}
         <KeyValueRow>
-          <KeyValueKey>Rendimiento</KeyValueKey>
-          <KeyValueValue trailing={<IconButton emphasis="ghost" size="sm" aria-label="Más información" icon={<Information />} />}>
-            $53.23
+          <KeyValueKey icon={<Information />}>GAT Nominal</KeyValueKey>
+          <KeyValueValue>10.49%</KeyValueValue>
+        </KeyValueRow>
+        {/* trailing en el value: una acción sobre el dato mismo, no sobre la key */}
+        <KeyValueRow>
+          <KeyValueKey>Folio de referencia</KeyValueKey>
+          <KeyValueValue trailing={<IconButton emphasis="ghost" size="sm" aria-label="Copiar folio" icon={<Copy />} />}>
+            88291734
           </KeyValueValue>
         </KeyValueRow>
       </KeyValue>
