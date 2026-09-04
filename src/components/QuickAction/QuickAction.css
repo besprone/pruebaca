@@ -1,0 +1,49 @@
+/* ── QuickAction ──────────────────────────────────────────────────────────
+   Icono + label debajo. Figma: `patterns_quick_actions_single`.
+
+   .quick-action                 flex-col · items-center · gap 6 (sm) / 8 (lg)
+     IconButton                    siempre size="lg" — no cambia con `size`
+     .quick-action__label          Body/sm (sm) / Body/md (lg) · máx 2 líneas
+──────────────────────────────────────────────────────────────────────────── */
+
+.quick-action {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--internalLayout-space-75); /* 6px */
+}
+.quick-action[data-size='lg'] {
+  gap: var(--internalLayout-space-100); /* 8px */
+}
+
+.quick-action__label {
+  margin: 0;
+  max-inline-size: 100%;
+  text-align: center;
+  color: var(--semantic-color-text-brand);
+  font-family: var(--typography-font-family);
+  font-size: var(--typography-body-sm-size); /* 12 */
+  line-height: var(--typography-body-sm-line-height); /* 17 */
+  font-weight: var(--typography-body-sm-weight); /* 500 */
+  overflow-wrap: break-word;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.quick-action[data-size='lg'] .quick-action__label {
+  font-size: var(--typography-body-md-size); /* 14 */
+  line-height: var(--typography-body-md-line-height); /* 20 */
+  font-weight: var(--typography-body-md-weight); /* 500 */
+}
+.quick-action__label[data-scheme='neutral'] {
+  color: var(--semantic-color-text-neutral);
+}
+
+/* el label sigue al icon button a disabled — el patrón no gestiona su
+   propio estado, lo hereda del IconButton (ver doc) */
+.quick-action:has(.icon-button:disabled) .quick-action__label {
+  color: var(--semantic-color-text-disabled);
+}

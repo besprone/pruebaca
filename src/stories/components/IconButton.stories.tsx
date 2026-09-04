@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Add, Close, Edit, Search, Settings, Star } from '@carbon/icons-react';
 import { IconButton } from '../../components/IconButton/IconButton';
-import type { IconButtonEmphasis, IconButtonSize } from '../../components/IconButton/IconButton';
+import type { IconButtonEmphasis, IconButtonScheme, IconButtonSize } from '../../components/IconButton/IconButton';
 
 const meta: Meta<typeof IconButton> = {
   title: 'Components/IconButton',
@@ -16,6 +16,10 @@ const meta: Meta<typeof IconButton> = {
       control: 'radio',
       options: ['sm', 'md', 'lg'] satisfies IconButtonSize[],
     },
+    scheme: {
+      control: 'radio',
+      options: ['brand', 'neutral'] satisfies IconButtonScheme[],
+    },
     isLoading: { control: 'boolean' },
     disabled:  { control: 'boolean' },
   },
@@ -23,6 +27,7 @@ const meta: Meta<typeof IconButton> = {
     'aria-label': 'Acción',
     emphasis: 'primary',
     size: 'sm',
+    scheme: 'brand',
     isLoading: false,
     disabled: false,
     icon: <Add />,
@@ -60,6 +65,24 @@ export const PorTamaño: Story = {
       <IconButton aria-label="sm" size="sm" icon={<Add />} />
       <IconButton aria-label="md" size="md" icon={<Add />} />
       <IconButton aria-label="lg" size="lg" icon={<Add />} />
+    </div>
+  ),
+};
+
+// ── Por scheme ──────────────────────────────────────────────────────────────
+
+export const PorScheme: Story = {
+  name: 'Por scheme',
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div style={{ display: 'flex', gap: 32 }}>
+      {(['brand', 'neutral'] as IconButtonScheme[]).map((scheme) => (
+        <div key={scheme} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <IconButton aria-label="Primary"   scheme={scheme} emphasis="primary"   size="md" icon={<Add />} />
+          <IconButton aria-label="Secondary" scheme={scheme} emphasis="secondary" size="md" icon={<Add />} />
+          <IconButton aria-label="Ghost"     scheme={scheme} emphasis="ghost"     size="md" icon={<Add />} />
+        </div>
+      ))}
     </div>
   ),
 };

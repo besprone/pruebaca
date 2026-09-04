@@ -31,7 +31,7 @@
   --_icon-size:     24px;
 }
 
-/* ── emphasis ──────────────────────────────────────────────────────── */
+/* ── emphasis × scheme (brand def.) ──────────────────────────────────── */
 .icon-button[data-emphasis="primary"] {
   --_btn-bg:     var(--semantic-color-bg-brand);
   --_icon-color: var(--semantic-color-icon-onBrand);
@@ -43,6 +43,20 @@
 .icon-button[data-emphasis="ghost"] {
   --_btn-bg:     transparent;
   --_icon-color: var(--semantic-color-icon-brand);
+}
+
+/* ── scheme="neutral" (mismo emphasis, tokens de gris en vez de verde) ─── */
+.icon-button[data-scheme="neutral"][data-emphasis="primary"] {
+  --_btn-bg:     var(--semantic-color-bg-neutral);
+  --_icon-color: var(--semantic-color-icon-onNeutral);
+}
+.icon-button[data-scheme="neutral"][data-emphasis="secondary"] {
+  --_btn-bg:     var(--semantic-color-bg-neutralSoft);
+  --_icon-color: var(--semantic-color-icon-neutral);
+}
+.icon-button[data-scheme="neutral"][data-emphasis="ghost"] {
+  --_btn-bg:     transparent;
+  --_icon-color: var(--semantic-color-icon-neutral);
 }
 
 /* ── btn (capa visual: bg + border-radius + clip) ──────────────────── */
