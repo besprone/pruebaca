@@ -6,15 +6,17 @@
   display: flex;
   align-items: center;
   gap: var(--internalLayout-space-50); /* 4px */
-  /* absorbe todo el espacio que el value no necesita — así una key larga
-     envuelve (o trunca) en vez de robarle ancho a un value que sí cabe entero */
-  flex: 1 1 auto;
+  /* shrink-only (sin grow): así una key larga envuelve/trunca cuando hace
+     falta, en vez de robarle ancho a un value que sí cabe entero — pero sin
+     inflar la caja cuando la key es corta (`flex-grow` dejaba un hueco
+     invisible entre el texto y el `icon`, ver commit) */
+  flex: 0 1 auto;
   min-inline-size: 0;
 }
 
 .key-value-key__text {
   margin: 0;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-inline-size: 0;
   overflow: hidden;
   text-overflow: ellipsis;
