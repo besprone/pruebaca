@@ -91,22 +91,45 @@ p. ej. el `label`/`supporting` del `AccordionItem` que lo usa).
 ## Uso típico — timeline de pagos en un Accordion
 
 ```tsx
-{plan.map((pago, i) => (
-  <AccordionItem
-    key={pago.fecha}
-    label={pago.fecha}
-    supporting={pago.monto}
-    leading={
-      <PaymentStatusIndicator status={pago.status} position={posicionDe(i, plan)} number={pago.numero} />
-    }
-    contentLeading={
-      <PaymentStatusIndicator status={pago.status} position={posicionDe(i, plan)} showIcon={false} />
-    }
-  >
-    {/* detalle del pago — típicamente un KeyValue, ver accordion-from-figma.md */}
-  </AccordionItem>
-))}
+{plan.map((pago, i) => {
+  const position = posicionDe(i, plan);
+  // `contentLeading` siempre continúa desde el propio header de este mismo
+  // item (su círculo + línea-después ya están visibles) — nunca es el
+  // inicio absoluto del timeline, aunque el item sí lo sea. Por eso su lado
+  // "antes" no debe cortarse en `first` (a diferencia del header, donde
+  // `first` sí significa "nada arriba de todo"). Ver nota más abajo.
+  const contentPosition = position === 'first' ? 'middle' : position;
+  return (
+    <AccordionItem
+      key={pago.fecha}
+      label={pago.fecha}
+      supporting={pago.monto}
+      leading={
+        <PaymentStatusIndicator status={pago.status} position={position} number={pago.numero} />
+      }
+      contentLeading={
+        <PaymentStatusIndicator status={pago.status} position={contentPosition} showIcon={false} />
+      }
+    >
+      {/* detalle del pago — típicamente un KeyValue, ver accordion-from-figma.md */}
+    </AccordionItem>
+  );
+})}
 ```
+
+> **`contentLeading` no debe recibir el mismo `position` que `leading` sin
+> ajustar.** Bug real encontrado y corregido: al pasarle `position="first"`
+> tal cual, su propio lado "antes" se volvía transparente (la regla
+> correcta para el header, donde `first` = nada arriba de todo el
+> timeline) — pero el `contentLeading` de un item SIEMPRE tiene algo arriba
+> (el header de ese mismo item, ya visible con su color), nunca es el
+> inicio absoluto. Esto dejaba un hueco visible entre el círculo del header
+> y la línea que continúa junto a la primera fila del contenido expandido
+> (confirmado con `getBoundingClientRect`: el segmento medía
+> `data-status="transparent"` en vez de heredar el status real). Fix:
+> mapear `position==='first' → 'middle'` solo para la instancia de
+> `contentLeading` — `'last'` se deja igual, porque ahí el lado "después"
+> sí debe cortarse (es el final real del timeline).
 
 **Por qué se ve completo aunque el contenedor `leading` centre por default:**
 `PaymentStatusIndicator` trae `align-self: stretch` en su propia raíz — así
