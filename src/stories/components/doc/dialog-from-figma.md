@@ -40,7 +40,7 @@ const [mounted, setMounted] = useState(true);
 | `headerAction` | `ReactNode` | acción extra en el header — junto al cerrar (`default`/`centered`) o a la derecha (`iframe`: compartir / buscar) |
 | `slotHeading` | `ReactNode` | `centered` — icono / ilustración sobre el label |
 | `label` / `supporting` | `ReactNode` | título + descripción breve |
-| `footer` | `ReactNode` | 1–2 `Button`, alineados a la derecha (sin stretch) |
+| `footer` | `ReactNode` | 1–2 `Button`, alineados a la derecha (sin stretch) · centrados en `type="centered"` |
 | `microcopy` | `ReactNode` | texto legal / aclaratorio sobre los botones (`text/tertiary`, centrado) |
 | `aria-label` | `string` | nombre del diálogo si no hay `label` visible |
 
@@ -104,7 +104,7 @@ inmediato).
 | content slot (`default`) | `padding-inline` `componentSpacing/space-300` (24) |
 | content slot (`centered`) | hereda el `padding-inline` 24 del `.dialog__container` |
 | content slot (`iframe`/`slotOnly`) | edge-to-edge (0) · `iframe` sin `fullHeight` → alto fijo 160 |
-| footer | `padding-block` `componentSpacing/space-300` (24) · `padding-inline` 24 · `gap` 16 · acciones `gap` 8, `justify-end` (sin stretch — a diferencia de `BottomSheet`) |
+| footer | `padding-block` `componentSpacing/space-300` (24) · `padding-inline` 24 · `gap` 16 · acciones `gap` 8, `justify-end` (sin stretch — a diferencia de `BottomSheet`); `center` en `type="centered"` — desviación deliberada de Figma (que mantiene `justify-end` en todos los tipos) por balance visual con el contenido centrado |
 
 ## Diferencias con `BottomSheet`
 
