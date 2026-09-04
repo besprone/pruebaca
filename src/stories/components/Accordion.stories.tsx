@@ -159,6 +159,7 @@ export const PlanDePagos: Story = {
         {plan.map((pago, i) => {
           const position: PaymentStatusPosition =
             i === 0 ? 'first' : i === plan.length - 1 ? 'last' : 'middle';
+          const previousStatus = i > 0 ? plan[i - 1].status : undefined;
           return (
             <AccordionItem
               key={pago.fecha}
@@ -166,7 +167,12 @@ export const PlanDePagos: Story = {
               supporting={pago.monto}
               defaultExpanded={pago.status === 'next'}
               leading={
-                <PaymentStatusIndicator status={pago.status} position={position} number={pago.numero} />
+                <PaymentStatusIndicator
+                  status={pago.status}
+                  position={position}
+                  number={pago.numero}
+                  previousStatus={previousStatus}
+                />
               }
               contentLeading={
                 <PaymentStatusIndicator status={pago.status} position={position} showIcon={false} />

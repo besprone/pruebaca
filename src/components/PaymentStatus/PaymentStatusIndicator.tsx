@@ -31,6 +31,18 @@ export type PaymentStatusIndicatorProps = {
    * Sin efecto en `next`/`paid`, que siempre muestran su propio ícono.
    */
   number?: ReactNode;
+  /**
+   * Status del item ANTERIOR en la secuencia (solo relevante con
+   * `showIcon=true`). Si es `paid`/`next`, la línea de "antes" de ESTE item
+   * se pinta verde (como `next`) en vez de con el status propio — refleja
+   * que el recorrido hasta aquí ya se completó, aunque este item en
+   * concreto todavía esté `future`. Deliberadamente NO es el
+   * comportamiento del componente base en Figma (que pinta cada tramo solo
+   * con su propio status, sin mirar al vecino) — decisión explícita de
+   * producto. Sin efecto en `contentLeading` (`showIcon=false`), que sigue
+   * reflejando únicamente el status propio del item.
+   */
+  previousStatus?: PaymentStatusValue;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'children'>;
 
 /**
@@ -46,7 +58,7 @@ export type PaymentStatusIndicatorProps = {
  */
 export const PaymentStatusIndicator = forwardRef<HTMLDivElement, PaymentStatusIndicatorProps>(
   function PaymentStatusIndicator(
-    { status, position = 'middle', showIcon = true, number, className, ...props },
+    { status, position = 'middle', showIcon = true, number, previousStatus, className, ...props },
     ref,
   ) {
     // El header (showIcon=true) tiene un círculo entre dos tramos
@@ -57,13 +69,18 @@ export const PaymentStatusIndicator = forwardRef<HTMLDivElement, PaymentStatusIn
     // en `last` (el final real del timeline); en `first`/`middle` va visible
     // de punta a punta, porque siempre continúa desde el propio header de
     // ese mismo item.
+    //
+    // El tramo "antes" del header, además, refleja el status del item
+    // ANTERIOR cuando ya se resolvió (paid/next) — ver `previousStatus`.
+    const beforeStatus =
+      showIcon && (previousStatus === 'paid' || previousStatus === 'next') ? previousStatus : status;
     const lineBeforeStatus = !showIcon
       ? position === 'last'
         ? 'transparent'
         : status
       : position === 'first'
         ? 'transparent'
-        : status;
+        : beforeStatus;
     const lineAfterStatus = position === 'last' ? 'transparent' : status;
 
     return (
