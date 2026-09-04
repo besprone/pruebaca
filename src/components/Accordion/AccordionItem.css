@@ -113,10 +113,6 @@
   gap: var(--internalLayout-space-150); /* 12px */
   padding-inline-start: var(--layout-container-inline); /* 16px */
   padding-inline-end: var(--layout-stack-block); /* 16px */
-  /* deviación deliberada: Figma no define aire aquí (el contenido arranca
-     pegado al header), pero se ve muy apretado — un respiro chico mejora
-     la lectura sin alterar ninguna medida ya verificada */
-  padding-block-start: var(--internalLayout-space-100); /* 8px */
 }
 
 .accordion-item__content-leading {
@@ -132,6 +128,13 @@
   align-items: stretch;
   min-inline-size: 0;
   gap: var(--componentSpacing-space-200); /* 16px */
+  /* deviación deliberada: Figma no define aire arriba (el contenido arranca
+     pegado al header), pero se ve muy apretado — un respiro chico mejora
+     la lectura. Va en `content-block`, NO en `content-row`: si estuviera en
+     el row empujaría también a `content-leading` (la línea puente), dejando
+     un hueco visible respecto a la línea del header — el respiro es del
+     texto/KeyValue, la línea debe seguir pegada al header. */
+  padding-block-start: var(--internalLayout-space-100); /* 8px */
   padding-block-end: var(--componentSpacing-space-200); /* 16px */
 }
 
