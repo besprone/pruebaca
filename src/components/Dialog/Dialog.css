@@ -95,6 +95,7 @@
 
 /* ── centered (type=centered) ────────────────────────────────────────────── */
 .dialog__container {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -108,6 +109,7 @@
   flex: 1 1 auto;
 }
 .dialog__centered {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -123,6 +125,7 @@
   flex-shrink: 0;
 }
 .dialog__centered-text {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -156,6 +159,7 @@
 
 /* ── content slot ────────────────────────────────────────────────────────── */
 .dialog__content {
+  box-sizing: border-box;
   flex: 0 1 auto;
   min-block-size: 0;
   overflow-y: auto;
