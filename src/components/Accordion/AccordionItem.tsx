@@ -8,6 +8,12 @@ import './AccordionItem.css';
 export type AccordionItemProps = {
   /** Título de la fila — siempre visible. */
   label: ReactNode;
+  /**
+   * Texto secundario del header, bajo `label` — siempre visible (ej. un
+   * monto bajo una fecha). Renderizado por `ItemContent`, igual que
+   * `label`. Distinto de `description` (que solo se ve expandido).
+   */
+  supporting?: ReactNode;
   /** Controlado. Si se omite, el estado es interno (ver `defaultExpanded`). */
   expanded?: boolean;
   /** Estado inicial sin controlar. Default `false`. */
@@ -21,8 +27,12 @@ export type AccordionItemProps = {
    * timeline visualmente continuo mientras el item está abierto.
    */
   contentLeading?: ReactNode;
-  /** Texto secundario, arriba del content slot (`Body/md`, `text/secondary`). */
-  supporting?: ReactNode;
+  /**
+   * Texto secundario del content slot, arriba de `children` — solo visible
+   * expandido (`Body/md`, `text/secondary`). Distinto del `supporting` del
+   * header, que siempre está visible.
+   */
+  description?: ReactNode;
   /** Sección inferior de acciones — normalmente 1–2 `Button` a lo ancho. */
   actions?: ReactNode;
   /** Content slot flexible: texto, listas, key-value, componentes, layouts complejos. */
@@ -35,20 +45,22 @@ export type AccordionItemProps = {
  * AccordionItem — unidad expandible de un `Accordion`. Figma:
  * `_building_blocks_accordion_item`.
  *
- * El header (label + `leading`/`trailing` opcionales) es el área
- * interactiva; el contenido (supporting + content slot + actions) se
- * expande/colapsa con `motion/spring` (alto + opacidad). Cada item controla
- * su propio estado — pueden estar varios expandidos a la vez.
+ * El header (label + `supporting`/`leading`/`trailing` opcionales, siempre
+ * visible) es el área interactiva; el contenido (`description` + content
+ * slot + actions) se expande/colapsa con `motion/spring` (alto + opacidad).
+ * Cada item controla su propio estado — pueden estar varios expandidos a
+ * la vez.
  */
 export const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(function AccordionItem(
   {
     label,
+    supporting,
     expanded: expandedProp,
     defaultExpanded = false,
     onExpandedChange,
     leading,
     contentLeading,
-    supporting,
+    description,
     actions,
     children,
     className,
@@ -134,7 +146,12 @@ export const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(func
           aria-label={ariaLabel}
           onClick={toggle}
         >
-          <ItemContent className="accordion-item__content-text" size="lg" label={label} />
+          <ItemContent
+            className="accordion-item__content-text"
+            size="lg"
+            label={label}
+            supporting={supporting}
+          />
           <span className="accordion-item__chevron" aria-hidden="true">
             <ChevronDown className="accordion-item__chevron-icon" />
           </span>
@@ -146,7 +163,7 @@ export const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(func
             <div className="accordion-item__content-leading">{contentLeading}</div>
           )}
           <div className="accordion-item__content-block">
-            {supporting != null && <p className="accordion-item__supporting">{supporting}</p>}
+            {description != null && <p className="accordion-item__description">{description}</p>}
             {children != null && <div className="accordion-item__slot">{children}</div>}
             {actions != null && <div className="accordion-item__actions">{actions}</div>}
           </div>

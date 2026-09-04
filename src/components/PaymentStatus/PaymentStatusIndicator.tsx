@@ -7,7 +7,7 @@ export type PaymentStatusValue = 'future' | 'next' | 'paid' | 'offer';
 export type PaymentStatusPosition = 'first' | 'middle' | 'last';
 
 export type PaymentStatusIndicatorProps = {
-  /** Estado del pago. `future` = pendiente (gris) · `next` = próximo (anillo verde) · `paid` = completado (check verde) · `offer` = pago numerado sin confirmar (gris, número dentro del círculo). */
+  /** Estado del pago. `future` = pendiente (gris) · `next` = próximo (anillo verde) · `paid` = completado (check verde) · `offer` = pago especial/promocional (gris, mismo trato visual que `future`). */
   status: PaymentStatusValue;
   /** `first` → sin línea antes · `last` → sin línea después · `middle` (def.) → línea a ambos lados. */
   position?: PaymentStatusPosition;
@@ -17,7 +17,11 @@ export type PaymentStatusIndicatorProps = {
    * área de contenido expandida de un `AccordionItem`.
    */
   showIcon?: boolean;
-  /** Número mostrado dentro del círculo cuando `status="offer"`. */
+  /**
+   * Número de pago mostrado dentro del círculo — reemplaza el ícono en
+   * `future`/`offer` (mismo círculo gris, con el número en vez de vacío).
+   * Sin efecto en `next`/`paid`, que siempre muestran su propio ícono.
+   */
   number?: ReactNode;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'children'>;
 
@@ -53,7 +57,7 @@ export const PaymentStatusIndicator = forwardRef<HTMLDivElement, PaymentStatusIn
             {status === 'paid' && (
               <Checkmark className="payment-status-indicator__check" />
             )}
-            {status === 'offer' && number != null && (
+            {(status === 'future' || status === 'offer') && number != null && (
               <span className="payment-status-indicator__number">{number}</span>
             )}
           </span>

@@ -3,6 +3,7 @@ import { Accordion, AccordionItem } from '../../components/Accordion';
 import { PaymentStatusIndicator } from '../../components/PaymentStatus';
 import type { PaymentStatusPosition, PaymentStatusValue } from '../../components/PaymentStatus';
 import { Button } from '../../components/Button/Button';
+import { KeyValue, KeyValueRow, KeyValueKey, KeyValueValue } from '../../components/KeyValue';
 
 const meta: Meta<typeof Accordion> = {
   title: 'Components/Accordion',
@@ -46,14 +47,14 @@ export const Playground: Story = {
 };
 
 export const ConAcciones: Story = {
-  name: 'Con supporting + actions',
+  name: 'Con description + actions',
   parameters: { controls: { disable: true } },
   render: () => (
     <Frame>
       <Accordion type="segmented">
         <AccordionItem
           label="Términos y condiciones"
-          supporting="Aplican para todos los productos de inversión kubo.plazofijo."
+          description="Aplican para todos los productos de inversión kubo.plazofijo."
           defaultExpanded
           actions={
             <>
@@ -71,7 +72,7 @@ export const ConAcciones: Story = {
         </AccordionItem>
         <AccordionItem
           label="Información de producto"
-          supporting="Detalles sobre tasas y comisiones aplicables."
+          description="Detalles sobre tasas y comisiones aplicables."
           actions={
             <Button emphasis="primary" size="xs">
               Ver ficha técnica
@@ -85,18 +86,69 @@ export const ConAcciones: Story = {
   ),
 };
 
+export const ConSupportingEnHeader: Story = {
+  name: 'Con supporting en el header',
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <Frame>
+      <Accordion type="segmented">
+        <AccordionItem label="15 sep 2026" supporting="$4,890.00" defaultExpanded>
+          <KeyValue divider={false}>
+            <KeyValueRow background="canvas">
+              <KeyValueKey>Tasa anual</KeyValueKey>
+              <KeyValueValue>10.50%</KeyValueValue>
+            </KeyValueRow>
+            <KeyValueRow background="canvas">
+              <KeyValueKey>Capital</KeyValueKey>
+              <KeyValueValue>$4,500.00</KeyValueValue>
+            </KeyValueRow>
+            <KeyValueRow background="canvas">
+              <KeyValueKey>Interés</KeyValueKey>
+              <KeyValueValue>$390.00</KeyValueValue>
+            </KeyValueRow>
+          </KeyValue>
+        </AccordionItem>
+        <AccordionItem label="15 oct 2026" supporting="$4,890.00" />
+      </Accordion>
+    </Frame>
+  ),
+};
+
 type Pago = {
-  label: string;
+  fecha: string;
+  monto: string;
   status: PaymentStatusValue;
-  supporting?: string;
+  numero?: string;
 };
 
 const plan: Pago[] = [
-  { label: 'Pago 1', status: 'paid', supporting: 'Completado — 15 feb 2026' },
-  { label: 'Pago 2', status: 'paid', supporting: 'Completado — 15 mar 2026' },
-  { label: 'Pago 3', status: 'next', supporting: 'Próximo pago' },
-  { label: 'Pago 4', status: 'future', supporting: 'Pendiente' },
+  { fecha: '15 feb 2026', monto: '$500.00', status: 'paid' },
+  { fecha: '15 mar 2026', monto: '$500.00', status: 'paid' },
+  { fecha: '15 abr 2026', monto: '$500.00', status: 'next' },
+  { fecha: '15 may 2026', monto: '$500.00', status: 'future', numero: '4' },
 ];
+
+/** Detalle de un pago — mismo patrón que `slot-detalle-pago` en Figma: un `KeyValue` con filas `background="canvas"`. */
+function DetallePago({ pago }: { pago: Pago }) {
+  return (
+    <KeyValue divider={false}>
+      <KeyValueRow background="canvas">
+        <KeyValueKey>Fecha de pago</KeyValueKey>
+        <KeyValueValue>{pago.fecha}</KeyValueValue>
+      </KeyValueRow>
+      <KeyValueRow background="canvas">
+        <KeyValueKey>Monto</KeyValueKey>
+        <KeyValueValue>{pago.monto}</KeyValueValue>
+      </KeyValueRow>
+      <KeyValueRow background="canvas">
+        <KeyValueKey>Estado</KeyValueKey>
+        <KeyValueValue color="accent">
+          {pago.status === 'paid' ? 'Pagado' : pago.status === 'next' ? 'Próximo' : 'Pendiente'}
+        </KeyValueValue>
+      </KeyValueRow>
+    </KeyValue>
+  );
+}
 
 export const PlanDePagos: Story = {
   name: 'Timeline de pagos (type="paymentStatus")',
@@ -109,21 +161,18 @@ export const PlanDePagos: Story = {
             i === 0 ? 'first' : i === plan.length - 1 ? 'last' : 'middle';
           return (
             <AccordionItem
-              key={pago.label}
-              label={pago.label}
+              key={pago.fecha}
+              label={pago.fecha}
+              supporting={pago.monto}
               defaultExpanded={pago.status === 'next'}
-              leading={<PaymentStatusIndicator status={pago.status} position={position} />}
+              leading={
+                <PaymentStatusIndicator status={pago.status} position={position} number={pago.numero} />
+              }
               contentLeading={
                 <PaymentStatusIndicator status={pago.status} position={position} showIcon={false} />
               }
-              supporting={pago.supporting}
             >
-              {pago.status === 'next' && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                  <span>Monto</span>
-                  <strong>$1,250.00</strong>
-                </div>
-              )}
+              <DetallePago pago={pago} />
             </AccordionItem>
           );
         })}
