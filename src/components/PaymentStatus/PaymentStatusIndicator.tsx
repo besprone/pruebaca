@@ -9,7 +9,15 @@ export type PaymentStatusPosition = 'first' | 'middle' | 'last';
 export type PaymentStatusIndicatorProps = {
   /** Estado del pago. `future` = pendiente (gris) · `next` = próximo (anillo verde) · `paid` = completado (check verde) · `offer` = pago especial/promocional (gris, mismo trato visual que `future`). */
   status: PaymentStatusValue;
-  /** `first` → sin línea antes · `last` → sin línea después · `middle` (def.) → línea a ambos lados. */
+  /**
+   * Con `showIcon=true` (header): `first` → sin línea antes · `last` → sin
+   * línea después · `middle` (def.) → línea a ambos lados.
+   * Con `showIcon=false` (puente, ver `contentLeading` de `AccordionItem`):
+   * el tramo es uno solo, sin split antes/después (no hay círculo en
+   * medio) — invisible completo solo en `last` (el final real del
+   * timeline); visible completo en `first`/`middle`, porque siempre
+   * continúa desde el propio header de ese mismo item.
+   */
   position?: PaymentStatusPosition;
   /**
    * `true` (def.) → círculo + líneas (uso en el header del item). `false` →
@@ -41,7 +49,21 @@ export const PaymentStatusIndicator = forwardRef<HTMLDivElement, PaymentStatusIn
     { status, position = 'middle', showIcon = true, number, className, ...props },
     ref,
   ) {
-    const lineBeforeStatus = position === 'first' ? 'transparent' : status;
+    // El header (showIcon=true) tiene un círculo entre dos tramos
+    // independientes: el de antes se corta en `first` (nada arriba de todo
+    // el timeline), el de después en `last` (nada abajo). El puente del área
+    // expandida (showIcon=false) no tiene círculo — es un solo tramo
+    // continuo por item, y Figma lo hace transparente completo únicamente
+    // en `last` (el final real del timeline); en `first`/`middle` va visible
+    // de punta a punta, porque siempre continúa desde el propio header de
+    // ese mismo item.
+    const lineBeforeStatus = !showIcon
+      ? position === 'last'
+        ? 'transparent'
+        : status
+      : position === 'first'
+        ? 'transparent'
+        : status;
     const lineAfterStatus = position === 'last' ? 'transparent' : status;
 
     return (
