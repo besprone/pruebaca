@@ -93,7 +93,7 @@ export const ConSupportingEnHeader: Story = {
     <Frame>
       <Accordion type="segmented">
         <AccordionItem label="15 sep 2026" supporting="$4,890.00" defaultExpanded>
-          <KeyValue divider={false}>
+          <KeyValue>
             <KeyValueRow background="canvas">
               <KeyValueKey>Tasa anual</KeyValueKey>
               <KeyValueValue>10.50%</KeyValueValue>
@@ -131,7 +131,7 @@ const plan: Pago[] = [
 /** Detalle de un pago — mismo patrón que `slot-detalle-pago` en Figma: un `KeyValue` con filas `background="canvas"`. */
 function DetallePago({ pago }: { pago: Pago }) {
   return (
-    <KeyValue divider={false}>
+    <KeyValue>
       <KeyValueRow background="canvas">
         <KeyValueKey>Fecha de pago</KeyValueKey>
         <KeyValueValue>{pago.fecha}</KeyValueValue>
