@@ -32,6 +32,11 @@ export type BottomSheetProps = {
   showHandle?: boolean;
   /** Botón de cerrar en el header (esquina superior izquierda). Default `true`. */
   showClose?: boolean;
+  /**
+   * Cerrar arrastrando el sheet hacia abajo desde el handle / header. Solo
+   * aplica si hay `showHandle` y `onClose`. Default `true`.
+   */
+  swipeToClose?: boolean;
   /** Título del sheet. */
   label?: ReactNode;
   /** Texto descriptivo breve bajo el label. */
@@ -66,6 +71,7 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(function
     fullHeight = false,
     showHandle = true,
     showClose = true,
+    swipeToClose = true,
     label,
     supporting,
     slotHeading,
@@ -81,14 +87,27 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(function
 ) {
   const [phase, setPhase] = useState<Phase>('entering');
   const sheetRef = useRef<HTMLDivElement | null>(null);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
   const prevFocus = useRef<HTMLElement | null>(null);
   const cancelSpring = useRef<(() => void) | null>(null);
+  // callbacks en refs — así el efecto de transición solo depende de `open` y no
+  // se re-dispara (ni su cleanup cancela el muelle) en cada render
+  const onCloseRef = useRef(onClose);
+  const onExitedRef = useRef(onExited);
+  onCloseRef.current = onClose;
+  onExitedRef.current = onExited;
+  /** Posición actual del sheet en % (0 = abierto, 100 = fuera). La mantienen el
+   *  muelle y el drag, y la usa el muelle de salida como punto de partida. */
+  const currentPct = useRef(100);
   // `!open` → el efecto de transición también corre en el montaje inicial
   const prevOpen = useRef(!open);
   const labelId = useId();
 
   const setTransform = (pct: number) => {
+    currentPct.current = pct;
     if (sheetRef.current) sheetRef.current.style.transform = `translateY(${pct}%)`;
+    // el backdrop se atenúa a la par del arrastre
+    overlayRef.current?.style.setProperty('--bs-drag', String(pct / 100));
   };
 
   // enter / exit con muelle sobre translateY (%). También corre en el montaje.
@@ -112,16 +131,19 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(function
     } else {
       setPhase('exiting');
       if (prefersReducedMotion()) {
-        onExited?.();
+        onExitedRef.current?.();
       } else {
-        cancelSpring.current = springTo(0, 100, (y) => {
+        cancelSpring.current = springTo(currentPct.current, 100, (y) => {
           setTransform(y);
-          if (y === 100) onExited?.();
+          if (y === 100) onExitedRef.current?.();
         });
       }
     }
-    return () => cancelSpring.current?.();
-  }, [open, onExited]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  // cancela el muelle al desmontar
+  useEffect(() => () => cancelSpring.current?.(), []);
 
   // foco: mover al primer interactivo al abrir, restaurar al cerrar
   useEffect(() => {
@@ -143,7 +165,70 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(function
     };
   }, [open]);
 
-  const close = useCallback(() => onClose?.(), [onClose]);
+  const close = useCallback(() => onCloseRef.current?.(), []);
+
+  // ── swipe-to-dismiss (desde el handle / header) ──────────────────────────
+  const swipeEnabled = swipeToClose && showHandle && onClose != null;
+  const drag = useRef<{ startY: number; sheetH: number; lastY: number; lastT: number; v: number } | null>(null);
+
+  const onDragMove = useCallback((e: PointerEvent) => {
+    const d = drag.current;
+    if (!d) return;
+    const now = performance.now();
+    d.v = (e.clientY - d.lastY) / Math.max(now - d.lastT, 1);
+    d.lastY = e.clientY;
+    d.lastT = now;
+    const dy = e.clientY - d.startY;
+    // solo hacia abajo; un poco de resistencia hacia arriba
+    const pct = dy >= 0 ? (dy / d.sheetH) * 100 : (dy / d.sheetH) * 100 * 0.15;
+    setTransform(Math.max(-4, pct));
+  }, []);
+
+  const onDragEnd = useCallback(
+    (e: PointerEvent) => {
+      const d = drag.current;
+      drag.current = null;
+      window.removeEventListener('pointermove', onDragMove);
+      window.removeEventListener('pointerup', onDragEnd);
+      window.removeEventListener('pointercancel', onDragEnd);
+      if (!d) return;
+      (e.target as Element)?.releasePointerCapture?.(e.pointerId);
+      const dy = e.clientY - d.startY;
+      const dismiss = dy > d.sheetH * 0.35 || d.v > 0.55; // umbral o flick hacia abajo
+      if (dismiss) {
+        close();
+      } else if (prefersReducedMotion()) {
+        setTransform(0);
+      } else {
+        cancelSpring.current?.();
+        cancelSpring.current = springTo(currentPct.current, 0, setTransform);
+      }
+    },
+    [close, onDragMove],
+  );
+
+  const onDragStart = (e: React.PointerEvent) => {
+    if (!swipeEnabled || e.button !== 0) return;
+    // no arrancar el drag si el gesto empezó dentro de un control interactivo
+    if ((e.target as Element).closest('button,a,input,select,textarea')) return;
+    cancelSpring.current?.();
+    const h = sheetRef.current?.getBoundingClientRect().height ?? window.innerHeight;
+    drag.current = { startY: e.clientY, sheetH: h, lastY: e.clientY, lastT: performance.now(), v: 0 };
+    (e.target as Element).setPointerCapture?.(e.pointerId);
+    window.addEventListener('pointermove', onDragMove);
+    window.addEventListener('pointerup', onDragEnd);
+    window.addEventListener('pointercancel', onDragEnd);
+  };
+
+  // limpia listeners de drag si el sheet se desmonta a mitad del gesto
+  useEffect(
+    () => () => {
+      window.removeEventListener('pointermove', onDragMove);
+      window.removeEventListener('pointerup', onDragEnd);
+      window.removeEventListener('pointercancel', onDragEnd);
+    },
+    [onDragMove, onDragEnd],
+  );
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Escape') {
@@ -190,7 +275,7 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(function
     type === 'centered' && (slotHeading != null || label != null || supporting != null);
 
   return (
-    <div className="bottom-sheet-overlay" data-state={phase}>
+    <div className="bottom-sheet-overlay" data-state={phase} ref={overlayRef}>
       <div
         className="bottom-sheet-overlay__backdrop"
         aria-hidden="true"
@@ -213,24 +298,30 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(function
         tabIndex={-1}
         onKeyDown={onKeyDown}
       >
-        {showHandle && (
-          <div className="bottom-sheet__handle" aria-hidden="true">
-            <span className="bottom-sheet__handle-bar" />
-          </div>
-        )}
+        <div
+          className="bottom-sheet__drag-zone"
+          data-swipe={swipeEnabled ? '' : undefined}
+          onPointerDown={onDragStart}
+        >
+          {showHandle && (
+            <div className="bottom-sheet__handle" aria-hidden="true">
+              <span className="bottom-sheet__handle-bar" />
+            </div>
+          )}
 
-        {showAppBar && (
-          <AppBar
-            className="bottom-sheet__appbar"
-            size="sm"
-            layout={hasHeaderText ? 'stacked' : 'inline'}
-            leading={closeBtn}
-            trailing={headerAction}
-            headline={hasHeaderText ? <span id={labelId}>{label}</span> : undefined}
-            supporting={hasHeaderText ? supporting : undefined}
-            aria-label="Encabezado"
-          />
-        )}
+          {showAppBar && (
+            <AppBar
+              className="bottom-sheet__appbar"
+              size="sm"
+              layout={hasHeaderText ? 'stacked' : 'inline'}
+              leading={closeBtn}
+              trailing={headerAction}
+              headline={hasHeaderText ? <span id={labelId}>{label}</span> : undefined}
+              supporting={hasHeaderText ? supporting : undefined}
+              aria-label="Encabezado"
+            />
+          )}
+        </div>
 
         {hasCentered && (
           <div className="bottom-sheet__centered">
