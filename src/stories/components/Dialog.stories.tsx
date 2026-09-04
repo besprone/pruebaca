@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { CheckmarkOutline, Money, Wallet, Document, ChevronRight, Share, Search } from '@carbon/icons-react';
-import { Dialog } from '../../components/Dialog/Dialog';
-import type { DialogProps, DialogType } from '../../components/Dialog/Dialog';
+import { Dialog } from '../../components/Overlays';
+import type { DialogProps, DialogType } from '../../components/Overlays';
 import { Button } from '../../components/Button/Button';
 import { IconButton } from '../../components/IconButton/IconButton';
 import { List } from '../../components/List';
