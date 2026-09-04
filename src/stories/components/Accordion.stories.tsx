@@ -159,6 +159,12 @@ export const PlanDePagos: Story = {
         {plan.map((pago, i) => {
           const position: PaymentStatusPosition =
             i === 0 ? 'first' : i === plan.length - 1 ? 'last' : 'middle';
+          // `contentLeading` siempre continúa desde el propio header de este
+          // mismo item (su círculo + línea-después ya están visibles) — nunca
+          // es el inicio absoluto del timeline, aunque el item sí lo sea. Por
+          // eso su lado "antes" no debe cortarse en `first` (a diferencia del
+          // header, donde `first` sí significa "nada arriba de todo").
+          const contentPosition: PaymentStatusPosition = position === 'first' ? 'middle' : position;
           return (
             <AccordionItem
               key={pago.fecha}
@@ -169,7 +175,7 @@ export const PlanDePagos: Story = {
                 <PaymentStatusIndicator status={pago.status} position={position} number={pago.numero} />
               }
               contentLeading={
-                <PaymentStatusIndicator status={pago.status} position={position} showIcon={false} />
+                <PaymentStatusIndicator status={pago.status} position={contentPosition} showIcon={false} />
               }
             >
               <DetallePago pago={pago} />
