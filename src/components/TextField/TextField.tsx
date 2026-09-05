@@ -1,5 +1,5 @@
 import { useId, useRef } from 'react';
-import type { InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes, ReactNode } from 'react';
 import { Close, WarningFilled } from '@carbon/icons-react';
 import { IconButton } from '../IconButton/IconButton';
 import './TextField.css';
@@ -10,7 +10,13 @@ export type TextFieldProps = {
   error?: boolean;
   showTrailing?: boolean;
   onClear?: () => void;
-} & Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'placeholder'>;
+  /**
+   * Reemplaza el trailing por defecto (limpiar / warning) con un ícono
+   * estático propio — p. ej. el chevron de un `Select`. Tiene prioridad
+   * sobre `error`/`onClear` cuando se pasa.
+   */
+  trailingIcon?: ReactNode;
+} & Omit<InputHTMLAttributes<HTMLInputElement>, 'size'>;
 
 export function TextField({
   label,
@@ -18,9 +24,11 @@ export function TextField({
   error = false,
   showTrailing = false,
   onClear,
+  trailingIcon,
   id: idProp,
   className,
   disabled,
+  placeholder = ' ',
   ...props
 }: TextFieldProps) {
   const autoId = useId();
@@ -49,15 +57,19 @@ export function TextField({
               ref={inputRef}
               id={inputId}
               disabled={disabled}
-              placeholder=" "
+              placeholder={placeholder}
               className="text-field__input"
             />
           </div>
 
           {showTrailing && (
             <span className="text-field__trailing">
-              {error ? (
+              {trailingIcon ? (
                 <span className="text-field__trailing-icon" aria-hidden="true">
+                  {trailingIcon}
+                </span>
+              ) : error ? (
+                <span className="text-field__trailing-icon text-field__trailing-icon--danger" aria-hidden="true">
                   <WarningFilled />
                 </span>
               ) : (
