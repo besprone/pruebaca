@@ -82,7 +82,7 @@ export function SelectBottomSheet({
           error={error}
           disabled={disabled}
           showTrailing
-          trailingIcon={<ChevronDown />}
+          trailingIcon={<ChevronDown className="select-bottom-sheet__chevron" />}
           readOnly
           value={selected?.label ?? ''}
           placeholder={placeholder}

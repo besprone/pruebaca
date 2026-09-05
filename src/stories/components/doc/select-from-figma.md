@@ -116,7 +116,9 @@ consumidores existentes, ambas 100% retrocompatibles):
   warning. Al reusar la misma clase para el chevron, salía rojo también.
   Fix: el color rojo se movió a `.text-field__trailing-icon--danger`
   (aplicado solo en el caso de warning), la clase base quedó neutral
-  (`icon/secondary`).
+  (`icon/secondary` — genérico, para cualquier futuro `trailingIcon` que no
+  sea el chevron de `Select`; el chevron mismo pinta su propio color, ver
+  abajo).
 - `placeholder` ya no está en el `Omit` de `TextFieldProps` — antes
   `TextField` lo hardcodeaba a `" "` (un espacio, truco para que
   `:placeholder-shown` detecte "vacío" sin mostrar texto visible). Ahora
@@ -124,6 +126,30 @@ consumidores existentes, ambas 100% retrocompatibles):
   mecanismo de floating-label solo depende de si el valor está vacío, no del
   contenido del placeholder, así que esto no cambia nada para los
   consumidores existentes.
+
+## Color del chevron y cursor del trigger (ronda de fixes post-merge)
+
+Dos detalles reportados tras el merge inicial, ambos en `Select.css`:
+
+- **Color del chevron:** el default de `trailingIcon` (`icon/secondary`,
+  gris genérico) no es el token correcto para ESTE chevron específico — el
+  resto del sistema (`Accordion`, `List`, `Menu`) usa `icon/brand` (verde)
+  para sus chevrons. Fix: `.select-bottom-sheet__chevron`/`.select-web__chevron`
+  pintan `icon/brand` directamente sobre el propio ícono (una declaración
+  directa sobre el elemento, no heredada — gana sobre el color del
+  contenedor sin importar especificidad). **Efecto secundario que hubo que
+  corregir aparte:** como esa declaración es directa sobre el ícono, ignora
+  por completo cualquier cambio de color en el contenedor — incluido
+  `disabled`, que normalmente atenúa todo (input, label, helper) vía
+  `.text-field[data-disabled] ...`. Sin una regla explícita, el chevron se
+  quedaba verde incluso deshabilitado. Fix:
+  `.text-field[data-disabled] .select-web__chevron` (e ídem
+  `select-bottom-sheet__chevron`) → `icon/disabled`.
+- **Cursor del trigger:** `.text-field__container` trae `cursor: text`
+  (correcto para un input real editable) — pero el trigger de `Select`
+  nunca es editable (`readOnly` + clic para abrir). Fix:
+  `.select-bottom-sheet__trigger .text-field__container` /
+  `.select-web__trigger .text-field__container` → `cursor: pointer`.
 
 ## Relación con otros componentes
 
