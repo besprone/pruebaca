@@ -142,13 +142,18 @@
   flex-shrink: 0;
 }
 
-/* static warning icon (error state, non-interactive)                        */
+/* static trailing icon (warning en error, o un ícono propio vía `trailingIcon`) */
 /* dimensiones = IconButton ghost lg: padding 12px, icono 24px, outer 0px   */
 .text-field__trailing-icon {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--internalLayout-space-150); /* 12px, igual que lg state padding */
+  color: var(--semantic-color-icon-secondary);
+}
+
+/* el warning (error, sin `trailingIcon` propio) sí es siempre rojo */
+.text-field__trailing-icon--danger {
   color: var(--semantic-color-icon-dangerStrong);
 }
 

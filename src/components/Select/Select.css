@@ -1,0 +1,41 @@
+/* ── Select ───────────────────────────────────────────────────────────────
+   Patrón de selección: `TextField` (trigger, no editable) + panel de
+   opciones. Figma: `pattern_select_bottom_sheet` + `pattern_select_web`.
+   No introduce tokens propios — hereda de `TextField`/`BottomSheet`/
+   `List`/`Dropdown`.
+──────────────────────────────────────────────────────────────────────────── */
+
+.select-bottom-sheet__check {
+  width: 20px;
+  height: 20px;
+  color: var(--semantic-color-icon-brand);
+}
+
+/* ── SelectWeb — chevron rota al abrir, panel flotante ──────────────────── */
+.select-web__chevron {
+  transition: transform var(--linear-200-duration-ms) var(--linear-200-easing);
+}
+.select-web[data-open] .select-web__chevron {
+  transform: rotate(180deg);
+}
+
+.select-web__panel {
+  box-sizing: border-box;
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity var(--linear-200-duration-ms) var(--linear-200-easing),
+    transform var(--linear-200-duration-ms) var(--linear-200-easing);
+  transform-origin: top center;
+}
+.select-web__panel[data-state='open'] {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .select-web__chevron,
+  .select-web__panel {
+    transition: none;
+  }
+}
