@@ -88,6 +88,13 @@ export function SelectWeb({
     exitTimer.current = setTimeout(() => setMounted(false), prefersReducedMotion() ? 0 : EXIT_MS);
   }, [mounted]);
 
+  // el click del trigger alterna: si ya está abierto, lo cierra en vez de
+  // no hacer nada (clickear el select de nuevo debe ocultar el dropdown)
+  const toggle = useCallback(() => {
+    if (mounted) close();
+    else open();
+  }, [mounted, open, close]);
+
   useEffect(() => () => clearTimeout(exitTimer.current), []);
 
   // Escape + click-fuera cierran
@@ -141,7 +148,7 @@ export function SelectWeb({
       className={['select-web', className].filter(Boolean).join(' ')}
       data-open={mounted || undefined}
     >
-      <div className="select-web__trigger" onClick={open}>
+      <div className="select-web__trigger" onClick={toggle}>
         <TextField
           label={label}
           helperText={helperText}
