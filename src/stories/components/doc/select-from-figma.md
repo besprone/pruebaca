@@ -151,6 +151,33 @@ Dos detalles reportados tras el merge inicial, ambos en `Select.css`:
   `.select-bottom-sheet__trigger .text-field__container` /
   `.select-web__trigger .text-field__container` → `cursor: pointer`.
 
+## Segunda ronda: token de error del chevron, toggle en `SelectWeb`
+
+- **Token de error incorrecto:** el chevron en `error` seguía pintando
+  `icon/brand` (verde) — se corrigió a `icon/danger` (`#b83a3a`), el MISMO
+  tono que ya usan `text/danger`/`border/danger` para el label y el borde
+  del campo (confirmado comparando los valores hex en
+  `colors-from-figma.css` — no `icon/dangerStrong`, que es un tono más
+  oscuro reservado para el ícono de warning sólido, no para este chevron).
+- **`SelectWeb` no alternaba (toggle) al re-clickear el trigger:** clickear
+  el select mientras el panel ya estaba abierto no lo cerraba (solo
+  cerraba con Escape, click-fuera, o al elegir una opción). Se agregó
+  `toggle()` — si ya está montado, cierra; si no, abre — y el `onClick`
+  del `.select-web__trigger` pasó de `open` a `toggle`. Verificado que no
+  reintroduce el bug de reapertura por burbujeo de portal (PR #90): el
+  toggle vive en el mismo `<div>` acotado solo al `TextField`, nunca en un
+  ancestro compartido con el panel. `SelectBottomSheet` no se tocó — un
+  bottom sheet modal no tiene el mismo patrón de "clic de nuevo para
+  cerrar" (se cierra con el botón X, backdrop, o al elegir).
+- **Posicionamiento sin `helperText`, verificado (no era un bug):** el
+  panel de `SelectWeb` ya se posiciona correctamente pegado al trigger con
+  o sin `helperText` — `anchorRef` mide `.select-web` completo, cuyo único
+  hijo visible es el trigger (el panel vive en un portal, no cuenta para
+  su propio alto), así que el punto de anclaje siempre refleja lo que
+  realmente se renderiza. Medido con `getBoundingClientRect`: gap de 4px
+  (`OFFSET`) tanto con helper (pegado debajo del helper) como sin él
+  (pegado debajo del `.text-field__container`).
+
 ## Relación con otros componentes
 
 - `TextField`: trigger visual en ambas superficies (no editable).

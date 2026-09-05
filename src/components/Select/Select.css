@@ -25,12 +25,19 @@
 .select-web__chevron {
   color: var(--semantic-color-icon-brand);
 }
-/* disabled: el color propio del chevron (arriba) es una declaración
+/* disabled/error: el color propio del chevron (arriba) es una declaración
    directa sobre el svg, así que ignora el color heredado del contenedor
-   — hace falta esta regla explícita para que sí se atenúe */
+   — hacen falta estas reglas explícitas para que sí reaccionen.
+   `icon/danger` (no `icon/dangerStrong`, que es el tono más oscuro del
+   ícono de warning) — mismo tono que usan `text/danger`/`border/danger`
+   para el label y el borde del campo. */
 .text-field[data-disabled] .select-bottom-sheet__chevron,
 .text-field[data-disabled] .select-web__chevron {
   color: var(--semantic-color-icon-disabled);
+}
+.text-field[data-error] .select-bottom-sheet__chevron,
+.text-field[data-error] .select-web__chevron {
+  color: var(--semantic-color-icon-danger);
 }
 
 /* ── SelectWeb — chevron rota al abrir, panel flotante ──────────────────── */
