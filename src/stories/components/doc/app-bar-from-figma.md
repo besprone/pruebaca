@@ -113,7 +113,8 @@ hacen wrap y la barra crece (estado expandido de onboarding).
 | Headline / supporting color | `text/primary` · `text/secondary` |
 | `raised` (on-scroll) | `bg/surface` + `Elevation/elevation-2` (`0 3 8 rgba(28,27,32,.12)`) |
 | Padding-block | `internalLayout/space-100` (8; `stacked sm` pb 12) |
-| Padding-inline | `sm` `space-50` (4) · `md`/`lg` `space-150` (12) — la caja del IconButton (48) sobresale sobre su glifo (12 interno), así el **glifo** queda a **16** (sm) / **24** (md·lg) del borde, simétrico L/R. Elementos sin overhang (`Brand` leading, `Avatar`/`AvatarAction` trailing) llevan `margin` de 12 para alinear al mismo grid. `trailing` gap 0 (las cajas se tocan). |
+| Padding-inline | `sm` `space-50` (4) · `md`/`lg` `space-150` (12). La retícula óptica (canto visible del 1er/último componente del slot) queda a **16** (sm) / **24** (md·lg) del borde, simétrico L/R. `trailing` gap 0 (las cajas se tocan). |
+| Alineación óptica del slot | La distancia borde→retícula es fija (12px en las 3 tallas). El AppBar resta a esos 12 el `--optical-inset` que **cada componente declara** (distancia de su caja al canto visible): `IconButton`/`Button` ghost = padding al glifo/label (12 / 16-24), filled = 0 (la píldora ya está al borde), `Avatar`/`Brand`/`SearchField`/`Badge` = 0 (pintan fondo). Regla única `margin-inline: calc(12px - var(--optical-inset))` en `> *:first-child` / `> *:last-child` — sin lista blanca por clase; un componente nuevo en un slot cae en retícula solo. |
 | Gap fila (inline) | `sm` `space-50` (4) · `md`/`lg` `componentSpacing/space-200` (16) |
 | Gap fila↔texto (stacked) | `sm` `space-100` (8) · `md`/`lg` `space-150` (12) |
 | Fila de acciones | `min-block-size: 48px` (= IconButton `size="lg"`) |
