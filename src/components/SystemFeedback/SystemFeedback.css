@@ -49,10 +49,13 @@
   max-inline-size: 480px; /* layout/web/screen/webonboarding — el pipeline no trae token */
   margin-inline: auto;
 }
-/* sticky (sólo high + sm): el cuerpo crece y centra, las acciones al pie.
-   El contenedor padre debe tener alto. */
+/* sticky (sólo high + sm): la botonera queda SIEMPRE al pie. Si el contenido
+   cabe, el cuerpo lo centra; si no, el cuerpo scrollea internamente y la
+   botonera no se mueve. El contenedor padre debe tener alto (100dvh, un
+   frame de pantalla, o un flex parent que estire este nodo). */
 .system-feedback[data-sticky] {
-  min-block-size: 100%;
+  block-size: 100%;
+  min-block-size: 0;
 }
 
 .system-feedback__body {
@@ -72,7 +75,11 @@
 }
 .system-feedback[data-sticky] .system-feedback__body {
   flex: 1 1 auto;
-  justify-content: center;
+  min-block-size: 0; /* deja que el flex-item encoja y el overflow funcione */
+  overflow-y: auto;
+  /* `safe`: centra cuando sobra espacio, alinea al inicio (sin recortar) y
+     scrollea cuando el contenido excede el alto disponible. */
+  justify-content: safe center;
 }
 
 /* ── slot visual ────────────────────────────────────────────────────────── */
@@ -170,6 +177,11 @@
 .system-feedback__actions {
   display: flex;
   inline-size: 100%;
+}
+/* sticky: la botonera nunca se comprime ni scrollea — queda fija al pie
+   mientras el cuerpo scrollea por dentro. */
+.system-feedback[data-sticky] .system-feedback__actions {
+  flex-shrink: 0;
 }
 /* high: apiladas a lo ancho, contenedor con su padding (Figma "stickyCTAContainer") */
 .system-feedback[data-emphasis='high'] .system-feedback__actions {
