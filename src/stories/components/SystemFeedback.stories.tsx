@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Search, CheckmarkFilled, Renew } from '@carbon/icons-react';
 import { SystemFeedback } from '../../components/SystemFeedback';
@@ -97,7 +98,7 @@ const TxnDetail = () => (
 );
 
 /** Marco que simula el viewport de una pantalla para las variantes `sticky`. */
-const Screen = ({ children }: { children: React.ReactNode }) => (
+const Screen = ({ children }: { children: ReactNode }) => (
   <div
     style={{
       blockSize: 680,
@@ -125,7 +126,11 @@ export const Playground: Story = {
     label: 'No encontramos resultados',
     supporting: 'Prueba con otro término o ajusta los filtros.',
     media: <MediaBand />,
-    actions: <Button emphasis="primary">Ajustar filtros</Button>,
+    actions: (
+      <Button emphasis="primary" size="sm">
+        Ajustar filtros
+      </Button>
+    ),
   },
 };
 
@@ -144,10 +149,10 @@ export const EmptyBusqueda: Story = {
         supporting="Prueba con otro término o ajusta los filtros."
         actions={
           <>
-            <Button emphasis="ghost" size="sm">
+            <Button emphasis="ghost" size="xs">
               Restablecer búsqueda
             </Button>
-            <Button emphasis="ghost" size="sm">
+            <Button emphasis="ghost" size="xs">
               Ajustar filtros
             </Button>
           </>
@@ -168,7 +173,7 @@ export const EmptySinImagen: Story = {
         label="Aún no tienes movimientos"
         supporting="Cuando realices tu primera operación aparecerá aquí."
         actions={
-          <Button emphasis="ghost" size="sm">
+          <Button emphasis="ghost" size="xs">
             Cómo empezar
           </Button>
         }
@@ -195,10 +200,92 @@ export const SuccessTransaccion: Story = {
         content={<TxnDetail />}
         actions={
           <>
-            <Button emphasis="primary" icon={<CheckmarkFilled />}>
+            <Button emphasis="primary" size="sm" icon={<CheckmarkFilled />}>
               Ver inversión
             </Button>
-            <Button emphasis="ghost">Volver al inicio</Button>
+            <Button emphasis="ghost" size="sm">
+              Volver al inicio
+            </Button>
+          </>
+        }
+      />
+    </Screen>
+  ),
+};
+
+// ── Sticky con scroll — contenido más alto que la pantalla ────────────────
+// La botonera queda fija al pie; el cuerpo (media + texto + content) scrollea.
+
+export const StickyScroll: Story = {
+  name: 'Sticky — cuerpo scrollea, botonera fija (high · sm)',
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div
+      style={{
+        blockSize: 460,
+        inlineSize: 360,
+        display: 'flex',
+        border: '1px solid var(--semantic-color-border-subtle)',
+        borderRadius: 16,
+        overflow: 'hidden',
+        background: 'var(--semantic-color-bg-surface)',
+      }}
+    >
+      <SystemFeedback
+        emphasis="high"
+        state="success"
+        size="sm"
+        transaction
+        media={<MediaBand />}
+        label="Confirma los datos de tu transferencia"
+        supporting="Revisa cada campo antes de continuar. Este movimiento no se puede revertir una vez confirmado."
+        content={
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <TxnDetail />
+            <TxnDetail />
+            <TxnDetail />
+          </div>
+        }
+        actions={
+          <>
+            <Button emphasis="primary" size="sm">
+              Confirmar transferencia
+            </Button>
+            <Button emphasis="ghost" size="sm">
+              Cancelar
+            </Button>
+          </>
+        }
+      />
+    </div>
+  ),
+};
+
+// ── Welcome back — 3 acciones apiladas (Figma node 5667-12435) ────────────
+
+export const WelcomeBack: Story = {
+  name: 'Welcome back — 3 acciones (high · sm · sticky)',
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <Screen>
+      <SystemFeedback
+        emphasis="high"
+        state="empty"
+        size="sm"
+        media={<MediaBand />}
+        label="Bienvenido de nuevo, Marco Antonio"
+        supporting="Encontramos una cuenta asociada a mar•••@gmail.com. Elige cómo quieres iniciar sesión."
+        actions={
+          <>
+            <Button emphasis="ghost" size="sm">
+              Contactar a soporte
+            </Button>
+            <Button emphasis="secondary" size="sm">
+              ¿Olvidaste tu contraseña?
+            </Button>
+            <Button emphasis="primary" size="sm">
+              Iniciar sesión
+            </Button>
           </>
         }
       />
@@ -221,7 +308,7 @@ export const Informativo: Story = {
         label="No pudimos cargar la información"
         supporting="Revisa tu conexión e inténtalo de nuevo."
         actions={
-          <Button emphasis="primary" icon={<Renew />}>
+          <Button emphasis="primary" size="sm" icon={<Renew />}>
             Reintentar
           </Button>
         }
@@ -247,10 +334,12 @@ export const SuccessMd: Story = {
       content={<TxnDetail />}
       actions={
         <>
-          <Button emphasis="primary" icon={<CheckmarkFilled />}>
+          <Button emphasis="primary" size="md" icon={<CheckmarkFilled />}>
             Ver inversión
           </Button>
-          <Button emphasis="ghost">Volver al inicio</Button>
+          <Button emphasis="ghost" size="md">
+            Volver al inicio
+          </Button>
         </>
       }
     />
@@ -268,7 +357,11 @@ export const SuccessMdSinContenido: Story = {
       media={<MediaBand />}
       label="Tu solicitud fue enviada"
       supporting="Te avisaremos por correo cuando haya novedades."
-      actions={<Button emphasis="primary">Entendido</Button>}
+      actions={
+        <Button emphasis="primary" size="md">
+          Entendido
+        </Button>
+      }
     />
   ),
 };

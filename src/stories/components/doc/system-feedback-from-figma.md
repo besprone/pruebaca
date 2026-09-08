@@ -25,7 +25,7 @@ Combina, en un **orden vertical fijo**:
   media={<Ilustracion />}
   label="No encontramos resultados"
   supporting="Prueba con otro término o ajusta los filtros."
-  actions={<Button emphasis="primary">Ajustar filtros</Button>}
+  actions={<Button emphasis="primary" size="sm">Ajustar filtros</Button>}
 />
 ```
 
@@ -35,12 +35,12 @@ Combina, en un **orden vertical fijo**:
 | `size` | `sm` (def.) · `md` | **solo afecta a `high`.** `sm` se adapta al ancho (móvil, label `Headline/sm`); `md` limita a **480px** centrado (web, label `Display/sm`). En `low` se ignora (siempre compacto) |
 | `state` | `empty` (def.) · `success` | tipo semántico — **no cambia el layout.** Se expone como `data-state` para estilos/analítica del consumidor |
 | `transaction` | `boolean` (def. `false`) | marca el feedback como transaccional — **no cambia el layout.** Se expone como `data-transaction`; el detalle va en `content` |
-| `media` | `ReactNode` | slot visual. `high` → banda a lo ancho de 160px con recorte `object-fit: cover`; `low` → cuadro de 56px. Pasá la imagen ya con el aspect ratio correcto si no querés que recorte |
+| `media` | `ReactNode` | slot visual. `high` → banda a lo ancho de 160px con recorte `object-fit: cover`; `low` → cuadro de 56px. Acepta cualquier nodo — imagen, ilustración, o un `_building_blocks_img_component` con `type="feedbackState"` (fondo acuarela por estado + icono centrado, `size="lg"` para `high` / `size="sm"` para `low`) — ver nota abajo |
 | `label` | `ReactNode` | mensaje principal, una línea corta. `Body/lg-se` (`low`) · `Headline/sm-se` (`high sm`) · `Display/sm` peso 600 (`high md`) · color `text/primary` |
 | `supporting` | `ReactNode` | texto secundario breve. `Body/md` (`low` · `high sm`) · `Body/lg` (`high md`) · color `text/secondary` |
 | `content` | `ReactNode` | slot contextual a lo ancho, entre el texto y las acciones. Orientado a `high` |
-| `actions` | `ReactNode` | grupo de CTAs. `high` → apiladas a lo ancho (`> *` a `width: 100%`); `low` → fila compacta centrada, gap 8 |
-| `sticky` | `boolean` (def. `true`) | **solo `high` + `sm`:** el cuerpo crece y se centra verticalmente, y las acciones quedan al pie (patrón de pantalla completa). El contenedor padre debe tener alto. Ignorado en `md` y en `low` |
+| `actions` | `ReactNode` | grupo de CTAs (los pasa el consumidor). `high` → apiladas a lo ancho (`> *` a `width: 100%`); `low` → fila compacta centrada, gap 8. **Tamaño de `Button` por `size`:** `low` → `Button size="xs"` · `high sm` → `Button size="sm"` · `high md` → `Button size="md"`. En apilado, el primario va **último** (más cerca del pulgar) |
+| `sticky` | `boolean` (def. `true`) | **solo `high` + `sm`:** la botonera queda **siempre al pie**. Si el contenido cabe, el cuerpo lo centra; si no cabe, el cuerpo scrollea por dentro y la botonera **no se mueve**. El contenedor padre debe tener alto. Ignorado en `md` y en `low` |
 
 `forwardRef<HTMLDivElement>`. Cualquier slot ausente (`null`/no pasado) se
 omite y el layout se reacomoda sin dejar huecos.
@@ -109,21 +109,34 @@ contents` en los wrappers que sobran:
 | supporting | 14 / 20 / 500 | `Typography/Body/md` |
 | `__actions` | fila, wrap, centrada, gap 8 | `internalLayout/space-100` |
 
-## `sticky` (pantalla completa)
+## `sticky` — botonera fija al pie (pantalla completa)
 
 Solo `high` + `sm`. Con `data-sticky` (default):
 
 ```css
-.system-feedback[data-sticky]                        { min-block-size: 100%; }
-.system-feedback[data-sticky] .system-feedback__body { flex: 1 1 auto; justify-content: center; }
+.system-feedback[data-sticky]                          { block-size: 100%; min-block-size: 0; }
+.system-feedback[data-sticky] .system-feedback__body   { flex: 1 1 auto; min-block-size: 0;
+                                                          overflow-y: auto; justify-content: safe center; }
+.system-feedback[data-sticky] .system-feedback__actions { flex-shrink: 0; }
 ```
 
-El `__body` crece y centra su contenido; `__actions` queda como último
-hermano de flujo, pinneado al pie. **El contenedor padre debe tener alto**
-(un `100dvh`, un frame de pantalla, etc.). Si el contenido supera el alto
-disponible, el consumidor decide si el `__body` scrollea — el patrón no lo
-impone. Pasá `sticky={false}` para que el contenido fluya desde arriba
-(útil en secciones embebidas, no pantallas).
+`.system-feedback` llena el alto del padre (`block-size: 100%`) y es un flex
+column; `__body` toma el espacio sobrante y **scrollea por dentro**
+(`overflow-y: auto` + `min-block-size: 0`, imprescindible para que el
+overflow funcione dentro de un flex column); `__actions` (`flex-shrink: 0`)
+queda **fija al pie**, nunca se comprime ni scrollea.
+
+- Contenido **cabe** → `justify-content: safe center` lo centra vertical­mente
+  en el cuerpo.
+- Contenido **no cabe** → `safe` alinea al inicio (sin recortar arriba) y el
+  cuerpo scrollea; la botonera no se mueve.
+
+**El contenedor padre debe tener alto** — un `100dvh`, un frame de pantalla,
+o un flex parent que estire este nodo. Sin alto definido, `block-size: 100%`
+se ignora y el patrón degrada a flujo normal (botonera tras el contenido).
+Pasá `sticky={false}` para forzar ese flujo desde arriba (secciones
+embebidas, no pantallas). `md` nunca es sticky (tarjeta centrada de 480px,
+la botonera fluye tras el contenido).
 
 ## `box-sizing`
 
@@ -148,6 +161,27 @@ por los slots.
   `supporting` breve.
 - `success` transaccional → priorizar confirmación + siguiente paso (CTA
   claro) y el detalle en `content`.
+
+## Slot `media` con `feedbackState`
+
+El slot visual de Figma es `_building_blocks_img_component`, con dos `type`:
+
+- **`slot`** (`state="default"`) — placeholder gris para una imagen/ilustración
+  final. Tamaños `xxs` 24 · `xs` 48 · `sm` 56 · `md` 80 · `lg` 328×160.
+- **`feedbackState`** — ilustración pre-compuesta: fondo acuarela (un PNG por
+  estado) + halo blur blanco + icono centrado (~100px, slot). `state`:
+  `success` (verde) · `info` (azul) · `error` (rojo) · `warning` (ámbar) ·
+  `empty` (gris). Mismos tamaños que `slot`.
+
+`SystemFeedback` no lo instancia — `media` es un slot y acepta cualquier
+nodo. La correspondencia es: `emphasis="high"` → `feedbackState size="lg"`
+(la banda de 160px); `emphasis="low"` → `feedbackState size="sm"` (56px). El
+`state` del `feedbackState` normalmente espeja el `state` de `SystemFeedback`
+(pero son props independientes — el patrón no lo fuerza).
+
+> `_building_blocks_img_component` se construye como componente propio
+> aparte (`type` slot + `feedbackState`, 5 estados × 5 tamaños, assets
+> acuarela). Hasta entonces, las stories usan un placeholder de banda.
 
 ## Accesibilidad
 
