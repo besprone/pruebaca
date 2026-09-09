@@ -174,23 +174,15 @@
 }
 
 /* ── acciones ───────────────────────────────────────────────────────────── */
-.system-feedback__actions {
-  display: flex;
-  inline-size: 100%;
-}
+/* La dirección / gap / alineación / ancho de los botones los resuelve
+   `ButtonActions` (`surface="screen"` en high, `"feedbackState"` en low —
+   ver ButtonActions.css). Acá sólo el padding del borde (Figma
+   "stickyCTAContainer") y el comportamiento sticky. */
+
 /* sticky: la botonera nunca se comprime ni scrollea — queda fija al pie
    mientras el cuerpo scrollea por dentro. */
 .system-feedback[data-sticky] .system-feedback__actions {
   flex-shrink: 0;
-}
-/* high: apiladas a lo ancho, contenedor con su padding (Figma "stickyCTAContainer") */
-.system-feedback[data-emphasis='high'] .system-feedback__actions {
-  flex-direction: column;
-  align-items: center;
-  gap: var(--layout-stack-block); /* 16px */
-}
-.system-feedback[data-emphasis='high'] .system-feedback__actions > * {
-  inline-size: 100%;
 }
 .system-feedback[data-emphasis='high'][data-size='sm'] .system-feedback__actions {
   padding: var(--layout-stack-block) var(--layout-container-inline)
@@ -199,12 +191,7 @@
 .system-feedback[data-emphasis='high'][data-size='md'] .system-feedback__actions {
   padding-block-start: var(--layout-stack-block); /* 16px */
 }
-/* low: fila compacta centrada (link / ghost buttons) */
+/* low: la botonera se ajusta al contenido y la centra `.system-feedback` */
 .system-feedback[data-emphasis='low'] .system-feedback__actions {
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
   inline-size: auto;
-  gap: var(--internalLayout-space-100); /* 8px */
 }

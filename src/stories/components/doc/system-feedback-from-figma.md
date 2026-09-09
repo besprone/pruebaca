@@ -39,7 +39,7 @@ Combina, en un **orden vertical fijo**:
 | `label` | `ReactNode` | mensaje principal, una línea corta. `Body/lg-se` (`low`) · `Headline/sm-se` (`high sm`) · `Display/sm` peso 600 (`high md`) · color `text/primary` |
 | `supporting` | `ReactNode` | texto secundario breve. `Body/md` (`low` · `high sm`) · `Body/lg` (`high md`) · color `text/secondary` |
 | `content` | `ReactNode` | slot contextual a lo ancho, entre el texto y las acciones. Orientado a `high` |
-| `actions` | `ReactNode` | grupo de CTAs (los pasa el consumidor). `high` → apiladas a lo ancho (`> *` a `width: 100%`); `low` → fila compacta centrada, gap 8. **Tamaño de `Button` por `size`:** `low` → `Button size="xs"` · `high sm` → `Button size="sm"` · `high md` → `Button size="md"`. En apilado, el primario va **último** (más cerca del pulgar) |
+| `actions` | `ReactNode` | 1–3 `<Button>` (los pasa el consumidor). `SystemFeedback` los envuelve en `<ButtonActions>` — `surface="screen"` (apiladas a lo ancho) en `high`, `surface="feedbackState"` (fila centrada, gap 8) en `low`. **Tamaño de `Button` por `size`:** `low` → `Button size="xs"` · `high sm` → `Button size="sm"` · `high md` → `Button size="md"`. En apilado, el primario va **último** (más cerca del pulgar) |
 | `sticky` | `boolean` (def. `true`) | **solo `high` + `sm`:** la botonera queda **siempre al pie**. Si el contenido cabe, el cuerpo lo centra; si no cabe, el cuerpo scrollea por dentro y la botonera **no se mueve**. El contenedor padre debe tener alto. Ignorado en `md` y en `low` |
 
 `forwardRef<HTMLDivElement>`. Cualquier slot ausente (`null`/no pasado) se
@@ -54,8 +54,15 @@ omite y el layout se reacomoda sin dejar huecos.
     .system-feedback__text-group           (high sm: wrapper px16 gap24 · high md + low: display:contents)
       .system-feedback__text               label + supporting · text-align: center
       .system-feedback__content            slot contextual a lo ancho
-  .system-feedback__actions                grupo de CTAs
+  ButtonActions.system-feedback__actions   botonera — surface screen (high) / feedbackState (low)
 ```
+
+La botonera es un `<ButtonActions>` (componente propio, Figma
+`patterns_buttons_actions`). `SystemFeedback` sólo elige el `surface` según
+`emphasis` y le añade, vía la clase `system-feedback__actions`, el padding
+del "stickyCTAContainer" y el `flex-shrink: 0` del modo sticky — la
+dirección / gap / ancho de los botones los pone `ButtonActions[data-surface]`.
+Ver `button-actions-from-figma.md`.
 
 El truco para una sola estructura DOM en los 3 tratamientos es `display:
 contents` en los wrappers que sobran:
@@ -83,7 +90,7 @@ contents` en los wrappers que sobran:
 | supporting | 14 / 20 / 500 | `Typography/Body/md` |
 | `media` | a lo ancho × 160 | — |
 | `__actions` padding | 16 / 16 / 24 | igual que `__body` (nodo "stickyCTAContainer") |
-| `__actions` gap | 16 | `layout/stack/block` |
+| `__actions` layout | column · gap 16 · botones a lo ancho | `ButtonActions surface="screen"` (`componentSpacing/space-200`) |
 
 ### `high` · `md` (web, 480px máx.)
 
@@ -96,6 +103,7 @@ contents` en los wrappers que sobran:
 | label | 28 / 36 / 600 | `Display/sm` + peso 600 de `headline-sm-semiemphasized` (el pipeline no exporta `display-sm-semiemphasized`, mismo workaround que AppBar) |
 | supporting | 16 / 24 / 500 | `Typography/Body/lg` |
 | `__actions` padding | 16 / 0 / 0 | solo `layout/stack/block` arriba |
+| `__actions` layout | column · gap 16 · botones a lo ancho | `ButtonActions surface="screen"` |
 
 ### `low` (compacto en línea)
 
@@ -107,7 +115,7 @@ contents` en los wrappers que sobran:
 | `__text` gap | 4 | `internalLayout/space-50` |
 | label | 16 / 24 / 600 | `Typography/Body/lg-semiemphasized` |
 | supporting | 14 / 20 / 500 | `Typography/Body/md` |
-| `__actions` | fila, wrap, centrada, gap 8 | `internalLayout/space-100` |
+| `__actions` layout | fila · wrap · centrada · gap 8 | `ButtonActions surface="feedbackState"` (`internalLayout/space-100`) |
 
 ## `sticky` — botonera fija al pie (pantalla completa)
 

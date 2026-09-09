@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
+import { ButtonActions } from '../ButtonActions/ButtonActions';
 import './SystemFeedback.css';
 
 export type SystemFeedbackEmphasis = 'low' | 'high';
@@ -48,8 +49,11 @@ export type SystemFeedbackProps = {
    */
   content?: ReactNode;
   /**
-   * Grupo de CTAs — un `Button` primario + opcional secundario / link. `high`
-   * → apiladas a lo ancho; `low` → fila compacta centrada.
+   * 1–3 `<Button>` — el primario suele ir último (más cerca del pulgar).
+   * `SystemFeedback` los envuelve en `<ButtonActions>`: `surface="screen"`
+   * (apiladas a lo ancho) en `high`, `surface="feedbackState"` (fila centrada)
+   * en `low`. Tamaño de `Button` por `size`: `low` → `xs` · `high sm` → `sm` ·
+   * `high md` → `md`.
    */
   actions?: ReactNode;
   /**
@@ -121,7 +125,14 @@ export const SystemFeedback = forwardRef<HTMLDivElement, SystemFeedbackProps>(
             </div>
           )}
         </div>
-        {actions != null && <div className="system-feedback__actions">{actions}</div>}
+        {actions != null && (
+          <ButtonActions
+            surface={emphasis === 'high' ? 'screen' : 'feedbackState'}
+            className="system-feedback__actions"
+          >
+            {actions}
+          </ButtonActions>
+        )}
       </div>
     );
   },
