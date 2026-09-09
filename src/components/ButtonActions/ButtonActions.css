@@ -30,6 +30,14 @@
 .button-actions[data-surface='screen'] > * {
   inline-size: 100%;
 }
+/* El `Button` lleva padding vertical de área táctil FUERA de la píldora
+   (4px sm · 8px xs · 0 md). Apiladas, ese padding sumaba al gap → se veían a
+   ~24px en vez de 16. Se absorbe con margin negativo: el gap queda entre las
+   píldoras visibles (como los wrappers de altura fija de Figma) y el área
+   táctil se conserva. */
+.button-actions[data-surface='screen'] > .button {
+  margin-block: calc(var(--button-block-inset, 0px) * -1);
+}
 
 /* ── dialog — fila alineada a la derecha (footer de diálogo) ─────────────── */
 .button-actions[data-surface='dialog'] {
