@@ -7,7 +7,9 @@ import { ColorSwatches } from './ColorSwatches';
 
 # Color
 
-Tokens de color alineados con variables Figma **Calipso 2.0** — colección `Color` (modos light / inverse) y `_ Color · brand` (marcas kubo / maestro). Nombres `ref/*` y `semantic/color/*`. CSS generado en `src/styles/colors-from-figma.css` a partir de `src/tokens/figma-color-tokens.ts` (valores del tema light, marca kubo).
+Tokens de color alineados con variables Figma **Calipso 2.0** — colección `Color` (modos light / inverse) y `_ Color · brand` (marcas kubo / maestro). Nombres `ref/*` y `semantic/color/*`.
+
+`src/styles/colors-from-figma.css` (generado desde `src/tokens/figma-color-tokens.ts`) trae `:root` = **kubo light** + un bloque `[data-brand="maestro"]` que redefine solo las 26 familias de marca. En Storybook el toggle **Marca** de la toolbar cambia entre kubo y maestro en vivo (resuelto en `.storybook/preview.ts` mezclando `semantic-theme-aliases.ts` + `brand-aliases.ts`). El swatch board de abajo tiene su propio selector kubo/maestro.
 
 Para regenerar el CSS tras editar el mapa TS:
 

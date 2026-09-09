@@ -4,25 +4,48 @@ import { themes } from "@storybook/theming";
 
 import "../src/styles/tokens.css";
 import { figmaPathToCssVar } from "../src/tokens/figma-path-to-css";
-import { resolveThemeAliasValue, semanticThemeAliases } from "../src/stories/foundations/semantic-theme-aliases";
+import {
+  resolveThemeAliasValue,
+  semanticThemeAliases,
+  type SemanticFamily,
+} from "../src/tokens/semantic-theme-aliases";
+import { brandThemeAliases, type Brand } from "../src/tokens/brand-aliases";
 
-function applySemanticThemeLight() {
+type ThemeMode = "light" | "inverse";
+
+/**
+ * Resuelve cada `--semantic-color-*` para la marca + modo dados y lo aplica
+ * sobre `:root`. Mezcla la capa independiente de marca (`semanticThemeAliases`)
+ * con la dependiente de marca (`brandThemeAliases[brand]`).
+ */
+function applySemanticTheme(brand: Brand, mode: ThemeMode = "light") {
   if (typeof document === "undefined") return;
   const root = document.documentElement;
+  const families: SemanticFamily[] = ["text", "bg", "border", "icon"];
 
-  for (const familyMap of Object.values(semanticThemeAliases)) {
-    for (const [semanticPath, aliases] of Object.entries(familyMap)) {
+  for (const family of families) {
+    const merged = {
+      ...semanticThemeAliases[family],
+      ...brandThemeAliases[brand][family],
+    };
+    for (const [semanticPath, aliases] of Object.entries(merged)) {
       const cssVar = figmaPathToCssVar(semanticPath);
-      const alias = aliases.light;
-      root.style.setProperty(cssVar, resolveThemeAliasValue(alias));
+      root.style.setProperty(cssVar, resolveThemeAliasValue(aliases[mode]));
     }
   }
 
-  root.setAttribute("data-theme-mode", "light");
+  root.setAttribute("data-theme-mode", mode);
+  root.setAttribute("data-brand", brand);
 }
 
-function ThemeRoot({ Story }: { Story: Parameters<NonNullable<Preview["decorators"]>[number]>[0] }) {
-  applySemanticThemeLight();
+function ThemeRoot({
+  Story,
+  brand,
+}: {
+  Story: Parameters<NonNullable<Preview["decorators"]>[number]>[0];
+  brand: Brand;
+}) {
+  applySemanticTheme(brand, "light");
   return createElement(
     "div",
     {
@@ -37,9 +60,25 @@ function ThemeRoot({ Story }: { Story: Parameters<NonNullable<Preview["decorator
 }
 
 const preview: Preview = {
+  globalTypes: {
+    brand: {
+      description: "Marca activa (tematización por marca)",
+      defaultValue: "kubo",
+      toolbar: {
+        title: "Marca",
+        icon: "paintbrush",
+        items: [
+          { value: "kubo", title: "kubo" },
+          { value: "maestro", title: "maestro" },
+        ],
+        dynamicTitle: true,
+      },
+    },
+  },
   decorators: [
-    (Story) => {
-      return createElement(ThemeRoot, { Story });
+    (Story, context) => {
+      const brand = (context.globals.brand as Brand) ?? "kubo";
+      return createElement(ThemeRoot, { Story, brand });
     },
   ],
   parameters: {
