@@ -1,0 +1,155 @@
+/* ── ImgSlot ───────────────────────────────────────────────────────────────
+   Slot visual de los patrones. Figma: `_building_blocks_img_component`.
+
+   type="slot"          → contenedor reservado (placeholder gris o `children`).
+   type="feedbackState" → acuarela teñida + halo blanco difuminado + icono.
+                          Por estado sólo cambia el color de la acuarela y el
+                          icono/color (una sola textura compartida, se re-tiñe).
+
+   <div.img-slot data-type data-state data-size>
+     .img-slot__wash      textura (mask) pintada con `--_wash`
+     .img-slot__halo      círculo `bg/surface` con blur
+     .img-slot__icon      glifo central, color `--_accent`
+   ────────────────────────────────────────────────────────────────────────── */
+
+.img-slot {
+  box-sizing: border-box;
+  position: relative;
+  display: block;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* ── tamaños ────────────────────────────────────────────────────────────── */
+/* xxs/xs/sm/md cuadrados · lg banda a lo ancho × 160.
+   `--_focal` = lado del halo y del icono · `--_blur` = blur del halo. */
+.img-slot[data-size='xxs'] {
+  inline-size: 24px;
+  block-size: 24px;
+  --_focal: 16px;
+  --_blur: 3px;
+}
+.img-slot[data-size='xs'] {
+  inline-size: 48px;
+  block-size: 48px;
+  --_focal: 32px;
+  --_blur: 6px;
+}
+.img-slot[data-size='sm'] {
+  inline-size: 56px;
+  block-size: 56px;
+  --_focal: 40px;
+  --_blur: 7.7px;
+}
+.img-slot[data-size='md'] {
+  inline-size: 80px;
+  block-size: 80px;
+  --_focal: 56px;
+  --_blur: 11px;
+}
+.img-slot[data-size='lg'] {
+  inline-size: 100%;
+  block-size: 160px;
+  --_focal: 100px;
+  --_blur: 12.8px;
+}
+
+/* ── estado → acuarela + acento ────────────────────────────────────────── */
+.img-slot[data-type='feedbackState'] {
+  --_wash: var(--semantic-color-bg-neutralSoft);
+  --_accent: var(--semantic-color-icon-disabled);
+}
+.img-slot[data-state='success'] {
+  --_wash: var(--semantic-color-bg-successSoft);
+  --_accent: var(--semantic-color-icon-success);
+}
+.img-slot[data-state='info'] {
+  --_wash: var(--semantic-color-bg-infoSoft);
+  --_accent: var(--semantic-color-icon-info);
+}
+.img-slot[data-state='error'] {
+  --_wash: var(--semantic-color-bg-dangerSoft);
+  --_accent: var(--semantic-color-icon-danger);
+}
+.img-slot[data-state='warning'] {
+  --_wash: var(--semantic-color-bg-warningSoft);
+  --_accent: var(--semantic-color-icon-warning);
+}
+.img-slot[data-state='empty'] {
+  --_wash: var(--semantic-color-bg-neutralSoft);
+  --_accent: var(--semantic-color-icon-disabled);
+}
+
+/* ── acuarela ──────────────────────────────────────────────────────────── */
+/* Una textura compartida (success/info/error/warning en Figma son el MISMO
+   PNG); se usa como `mask` y se pinta con `--_wash`, así el color es 100%
+   token. `empty` usa una textura más tenue. */
+.img-slot__wash {
+  position: absolute;
+  inset: 0;
+  background-color: var(--_wash);
+  -webkit-mask: url(./watercolor.webp) center / cover no-repeat;
+  mask: url(./watercolor.webp) center / cover no-repeat;
+}
+.img-slot[data-state='empty'] .img-slot__wash {
+  -webkit-mask-image: url(./watercolor-empty.webp);
+  mask-image: url(./watercolor-empty.webp);
+}
+
+/* ── halo ──────────────────────────────────────────────────────────────── */
+.img-slot__halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  inline-size: var(--_focal);
+  block-size: var(--_focal);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--semantic-color-bg-surface);
+  filter: blur(var(--_blur));
+}
+
+/* ── icono ─────────────────────────────────────────────────────────────── */
+.img-slot__icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  inline-size: var(--_focal);
+  block-size: var(--_focal);
+  transform: translate(-50%, -50%);
+  display: block;
+  color: var(--_accent);
+}
+.img-slot__icon > * {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+/* ── type="slot" (placeholder / imagen final) ─────────────────────────── */
+.img-slot[data-type='slot'] {
+  display: grid;
+  place-items: center;
+  background: var(--semantic-color-bg-neutralSoft);
+  color: var(--semantic-color-icon-disabled);
+}
+.img-slot__media {
+  display: contents;
+}
+.img-slot__media > * {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+.img-slot__placeholder {
+  display: grid;
+  place-items: center;
+  inline-size: 40%;
+  block-size: 40%;
+}
+.img-slot__placeholder > * {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
