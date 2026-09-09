@@ -82,18 +82,37 @@
 
 /* ── acuarela ──────────────────────────────────────────────────────────── */
 /* Una textura compartida (success/info/error/warning en Figma son el MISMO
-   PNG); se usa como `mask` y se pinta con `--_wash`, así el color es 100%
-   token. `empty` usa una textura más tenue. */
+   PNG); se usa como `mask` (su silueta) y se pinta con `--_wash`, así el
+   color es 100% token. `empty` usa una textura gris aparte. Tres tamaños de
+   textura (sm 56² · md 80² · lg 228×160) — `sm` cubre también `xs`/`xxs`. */
 .img-slot__wash {
   position: absolute;
   inset: 0;
   background-color: var(--_wash);
-  -webkit-mask: url(./watercolor.webp) center / cover no-repeat;
-  mask: url(./watercolor.webp) center / cover no-repeat;
+  -webkit-mask: url(./watercolor-sm.webp) center / cover no-repeat;
+  mask: url(./watercolor-sm.webp) center / cover no-repeat;
 }
+.img-slot[data-size='md'] .img-slot__wash {
+  -webkit-mask-image: url(./watercolor-md.webp);
+  mask-image: url(./watercolor-md.webp);
+}
+.img-slot[data-size='lg'] .img-slot__wash {
+  -webkit-mask-image: url(./watercolor-lg.webp);
+  mask-image: url(./watercolor-lg.webp);
+}
+/* estado empty → textura gris (después de las reglas de tamaño; los combos
+   estado+tamaño ganan por especificidad extra) */
 .img-slot[data-state='empty'] .img-slot__wash {
-  -webkit-mask-image: url(./watercolor-empty.webp);
-  mask-image: url(./watercolor-empty.webp);
+  -webkit-mask-image: url(./watercolor-empty-sm.webp);
+  mask-image: url(./watercolor-empty-sm.webp);
+}
+.img-slot[data-state='empty'][data-size='md'] .img-slot__wash {
+  -webkit-mask-image: url(./watercolor-empty-md.webp);
+  mask-image: url(./watercolor-empty-md.webp);
+}
+.img-slot[data-state='empty'][data-size='lg'] .img-slot__wash {
+  -webkit-mask-image: url(./watercolor-empty-lg.webp);
+  mask-image: url(./watercolor-empty-lg.webp);
 }
 
 /* ── halo ──────────────────────────────────────────────────────────────── */
