@@ -35,7 +35,7 @@ Combina, en un **orden vertical fijo**:
 | `size` | `sm` (def.) · `md` | **solo afecta a `high`.** `sm` se adapta al ancho (móvil, label `Headline/sm`); `md` limita a **480px** centrado (web, label `Display/sm`). En `low` se ignora (siempre compacto) |
 | `state` | `empty` (def.) · `success` | tipo semántico — **no cambia el layout.** Se expone como `data-state` para estilos/analítica del consumidor |
 | `transaction` | `boolean` (def. `false`) | marca el feedback como transaccional — **no cambia el layout.** Se expone como `data-transaction`; el detalle va en `content` |
-| `media` | `ReactNode` | slot visual. `high` → banda a lo ancho de 160px con recorte `object-fit: cover`; `low` → cuadro de 56px. Acepta cualquier nodo — imagen, ilustración, o un `_building_blocks_img_component` con `type="feedbackState"` (fondo acuarela por estado + icono centrado, `size="lg"` para `high` / `size="sm"` para `low`) — ver nota abajo |
+| `media` | `ReactNode` | slot visual. `high` → banda a lo ancho de 160px con recorte `object-fit: cover`; `low` → cuadro de 56px. Acepta cualquier nodo — el uso típico es `<ImgSlot type="feedbackState" state size="lg\|sm" />` (ver nota abajo) |
 | `label` | `ReactNode` | mensaje principal, una línea corta. `Body/lg-se` (`low`) · `Headline/sm-se` (`high sm`) · `Display/sm` peso 600 (`high md`) · color `text/primary` |
 | `supporting` | `ReactNode` | texto secundario breve. `Body/md` (`low` · `high sm`) · `Body/lg` (`high md`) · color `text/secondary` |
 | `content` | `ReactNode` | slot contextual a lo ancho, entre el texto y las acciones. Orientado a `high` |
@@ -170,26 +170,22 @@ por los slots.
 - `success` transaccional → priorizar confirmación + siguiente paso (CTA
   claro) y el detalle en `content`.
 
-## Slot `media` con `feedbackState`
+## Slot `media` con `ImgSlot`
 
-El slot visual de Figma es `_building_blocks_img_component`, con dos `type`:
+El slot visual es el componente `ImgSlot` (Figma `_building_blocks_img_component`),
+`type="slot"` (placeholder / imagen final) o `type="feedbackState"` (acuarela
+teñida + halo + icono, color e icono por `state`). Ver `img-slot-from-figma.md`.
 
-- **`slot`** (`state="default"`) — placeholder gris para una imagen/ilustración
-  final. Tamaños `xxs` 24 · `xs` 48 · `sm` 56 · `md` 80 · `lg` 328×160.
-- **`feedbackState`** — ilustración pre-compuesta: fondo acuarela (un PNG por
-  estado) + halo blur blanco + icono centrado (~100px, slot). `state`:
-  `success` (verde) · `info` (azul) · `error` (rojo) · `warning` (ámbar) ·
-  `empty` (gris). Mismos tamaños que `slot`.
+`SystemFeedback` **no lo instancia** — `media` es un slot y acepta cualquier
+nodo. El uso típico:
 
-`SystemFeedback` no lo instancia — `media` es un slot y acepta cualquier
-nodo. La correspondencia es: `emphasis="high"` → `feedbackState size="lg"`
-(la banda de 160px); `emphasis="low"` → `feedbackState size="sm"` (56px). El
-`state` del `feedbackState` normalmente espeja el `state` de `SystemFeedback`
-(pero son props independientes — el patrón no lo fuerza).
+- `emphasis="high"` → `<ImgSlot type="feedbackState" state={…} size="lg" />` (banda de 160px)
+- `emphasis="low"` → `<ImgSlot type="feedbackState" state={…} size="sm" />` (56px)
 
-> `_building_blocks_img_component` se construye como componente propio
-> aparte (`type` slot + `feedbackState`, 5 estados × 5 tamaños, assets
-> acuarela). Hasta entonces, las stories usan un placeholder de banda.
+El `state` del `ImgSlot` normalmente espeja el `state` de `SystemFeedback`,
+pero son props independientes — el patrón no lo fuerza. Las stories lo usan
+así (`SuccessTransaccion` → `success`, `WelcomeBack` → `info`, `EmptyBusqueda`
+→ `empty`).
 
 ## Accesibilidad
 

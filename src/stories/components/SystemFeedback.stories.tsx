@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Search, CheckmarkFilled, Renew } from '@carbon/icons-react';
+import { CheckmarkFilled, Renew } from '@carbon/icons-react';
 import { SystemFeedback } from '../../components/SystemFeedback';
 import type {
   SystemFeedbackEmphasis,
@@ -8,6 +8,8 @@ import type {
   SystemFeedbackSize,
 } from '../../components/SystemFeedback';
 import { Button } from '../../components/Button/Button';
+import { ImgSlot } from '../../components/ImgSlot';
+import type { ImgSlotState } from '../../components/ImgSlot';
 
 const meta: Meta<typeof SystemFeedback> = {
   title: 'Components/SystemFeedback',
@@ -39,40 +41,14 @@ const meta: Meta<typeof SystemFeedback> = {
 export default meta;
 type Story = StoryObj<typeof SystemFeedback>;
 
-/** Banda ilustrativa de marcador de posición (equivale al `_building_blocks_img_component` de Figma). */
-const MediaBand = () => (
-  <div
-    aria-hidden="true"
-    style={{
-      display: 'grid',
-      placeItems: 'center',
-      inlineSize: '100%',
-      blockSize: '100%',
-      background: 'var(--semantic-color-bg-brandSoft)',
-      color: 'var(--semantic-color-text-secondary)',
-      font: '600 14px/1 var(--typography-font-family)',
-    }}
-  >
-    Ilustración
-  </div>
+/** `media` real para `emphasis="high"` — banda `feedbackState` de 160px. */
+const MediaBand = ({ state = 'success' }: { state?: ImgSlotState }) => (
+  <ImgSlot type="feedbackState" state={state} size="lg" />
 );
 
-/** Icono de 56px para el tratamiento `low`. */
-const MediaIcon = () => (
-  <div
-    aria-hidden="true"
-    style={{
-      display: 'grid',
-      placeItems: 'center',
-      inlineSize: '100%',
-      blockSize: '100%',
-      borderRadius: '50%',
-      background: 'var(--semantic-color-bg-brandSoft)',
-      color: 'var(--semantic-color-text-brand)',
-    }}
-  >
-    <Search size={24} />
-  </div>
+/** `media` real para `emphasis="low"` — `feedbackState` de 56px. */
+const MediaIcon = ({ state = 'empty' }: { state?: ImgSlotState }) => (
+  <ImgSlot type="feedbackState" state={state} size="sm" />
 );
 
 /** Detalle de transacción de ejemplo para el slot `content`. */
@@ -236,7 +212,7 @@ export const StickyScroll: Story = {
         state="success"
         size="sm"
         transaction
-        media={<MediaBand />}
+        media={<MediaBand state="info" />}
         label="Confirma los datos de tu transferencia"
         supporting="Revisa cada campo antes de continuar. Este movimiento no se puede revertir una vez confirmado."
         content={
@@ -272,7 +248,7 @@ export const WelcomeBack: Story = {
         emphasis="high"
         state="empty"
         size="sm"
-        media={<MediaBand />}
+        media={<MediaBand state="info" />}
         label="Bienvenido de nuevo, Marco Antonio"
         supporting="Encontramos una cuenta asociada a mar•••@gmail.com. Elige cómo quieres iniciar sesión."
         actions={
