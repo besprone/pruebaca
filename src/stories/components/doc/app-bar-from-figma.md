@@ -31,7 +31,7 @@ on-scroll son responsabilidad del consumidor.
 | `leading` | `ReactNode` | slot izquierdo: `IconButton` (back/menú) o `Brand` |
 | `headline` / `supporting` | `ReactNode` | título + texto secundario (ellipsis, una línea) |
 | `showHeadline` | `boolean` | fuerza mostrar/ocultar el bloque de texto. Default: `true` si hay `headline`/`supporting` |
-| `trailing` | `ReactNode` | slot derecho (`flex:1`, `justify-end`): hasta 3 `IconButton`, un `Button`, un `SearchField`, un `Avatar`/`AvatarAction` |
+| `trailing` | `ReactNode` | slot derecho (`justify-end`): hasta 3 `IconButton`, un `Button`, un `SearchField`, un `Avatar`/`AvatarAction`. **En `inline` con bloque de texto se queda a su ancho de contenido** (`flex: 0 0 auto`) para no truncar el headline; en `stacked` o `inline` sin texto crece (`flex: 1 1 auto`) para alinear a la derecha / expandir el `SearchField` |
 | `aria-label` | `string` | nombre del `<header>` |
 
 `forwardRef<HTMLElement>` (el `<header>`).
@@ -43,7 +43,7 @@ on-scroll son responsabilidad del consumidor.
   <div.app-bar__row>              (display:contents en inline)
     .app-bar__leading  slot
     .app-bar__text     headline + supporting   (solo layout=inline)
-    .app-bar__trailing slot · flex:1 · justify-end · gap 4
+    .app-bar__trailing slot · justify-end · gap 0 · flex 0 0 auto en inline+texto, 1 1 auto si no
   .app-bar__text                  (solo layout=stacked, a lo ancho)
 ```
 
