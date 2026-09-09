@@ -33,10 +33,13 @@ Dos modos por `type`:
 
 ## `feedbackState` — color e icono por estado
 
-Una sola textura de acuarela (`watercolor.webp`) para
-`success`/`info`/`error`/`warning` — en Figma son el **mismo PNG**; `empty`
-usa una más tenue (`watercolor-empty.webp`). Se usa como **`mask`** y se
-pinta con el token de fondo del estado, así el color es 100% token:
+Una sola textura de acuarela para `success`/`info`/`error`/`warning` (en
+Figma son el **mismo PNG**); `empty` usa una textura gris aparte. Se usa
+como **`mask`** (su silueta) y se pinta con el token de fondo del estado,
+así el color es 100% token. Assets `webp` en tres tamaños —
+`watercolor-{sm,md,lg}.webp` (56² · 80² · 228×160) y
+`watercolor-empty-{sm,md,lg}.webp` — el CSS elige por `data-size` (`sm`
+cubre también `xs`/`xxs`):
 
 | `state` | acuarela (`--_wash`) | icono / acento (`--_accent`) | glifo por defecto |
 |---|---|---|---|
