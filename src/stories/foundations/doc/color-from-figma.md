@@ -36,9 +36,18 @@ Son pigmentos del sistema. **No** se aplican directamente en la UI; alimentan la
 
 ## Marca (kubo · maestro)
 
-En Figma la colección **`_ Color · brand`** tiene dos modos de marca — **kubo** y **maestro**. Solo tres familias semánticas dependen de la marca: **`brand`**, **`accentPrimary`** y **`accentSecondary`** (con sus variantes `Soft` / `Muted` / `Strong` / `on*`). El resto de la semántica (`neutral`, feedback, `text/bg/border` estructurales) es igual en las dos marcas.
+En Figma la colección **`_ Color · brand`** tiene dos modos de marca — **kubo** y **maestro**. Solo tres familias semánticas dependen de la marca: **`brand`**, **`accentPrimary`** y **`accentSecondary`** (con sus variantes `Soft` / `Muted` / `Strong` / `on*`) — **26 tokens**. El resto de la semántica (`neutral`, feedback, `text/bg/border` estructurales) es igual en las dos marcas.
 
-Este repo **shippea kubo**. Los `--semantic-color-*` y `colors-from-figma.css` están resueltos con kubo; `figma-color-tokens.ts` y `semantic-theme-aliases.ts` lo dicen en el encabezado. maestro todavía no está en el repo (escalas `ref/accent/yellow` y `ref/accent/red` + el modo maestro): entra cuando se aborde la tematización por marca.
+**Cómo se resuelve en el repo:**
+
+- `src/tokens/brand-aliases.ts` — `brandThemeAliases: { kubo, maestro }`, los 26 tokens con su `ref` por submodo `light` / `inverse` (espejo de la colección de Figma).
+- `src/tokens/semantic-theme-aliases.ts` — las ~90 familias **independientes de marca** (movido desde `src/stories/foundations/`).
+- `colors-from-figma.css`: `:root` = kubo light + bloque `[data-brand="maestro"]` que redefine solo esos 26 (para consumidores sin JS).
+- `.storybook/preview.ts`: toggle **Marca** en la toolbar → resuelve `brandThemeAliases[marca][fam][path] ?? semanticThemeAliases[fam][path]` y lo aplica sobre `:root` en vivo.
+
+**Escalas nuevas:** `ref/accent/yellow/50..900` (maestro `accentPrimary`) y `ref/accent/red/50..900` (maestro `accentSecondary`).
+
+**Hueco conocido:** `text/linkDefault | linkHover | linkPressed` **no** están en la colección `_ Color · brand`, así que en maestro se quedan en `ref/green/700 | 800 | 900` (verde de kubo). Sobre el tema oscurecido de maestro se ve mal — falta agregarlos a la colección en Figma.
 
 | Rol | Ref en **kubo** | Ref en **maestro** |
 | --- | --- | --- |

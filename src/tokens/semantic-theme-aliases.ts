@@ -1,17 +1,20 @@
-import { figmaColorTokens } from "../../tokens/figma-color-tokens";
+import { figmaColorTokens } from "./figma-color-tokens";
 
-type ThemeAlias = { light: string; inverse: string };
+export type ThemeAlias = { light: string; inverse: string };
 export type SemanticFamily = "text" | "bg" | "border" | "icon";
 
 /**
  * Mapa 1:1 de los temas nativos de Figma (colección `Color`, modos light / inverse)
  * para las capas semánticas text / bg / border / icon.
  *
- * Los tokens dependientes de marca (familias brand, accentPrimary, accentSecondary, neutral)
- * están resueltos con la marca kubo: brand → ref/green,
- * accentPrimary → ref/accent/mint, accentSecondary → ref/accent/orchid.
+ * **Solo tokens independientes de marca.** Las 26 familias dependientes de
+ * marca (`brand*`, `accentPrimary*`, `accentSecondary*`) viven en su propia
+ * colección de Figma (`_ Color · brand`, modos kubo / maestro) y en este repo
+ * están en `brand-aliases.ts`. El resolver de `.storybook/preview.ts` mezcla
+ * ambos: `brandThemeAliases[marca][fam][path] ?? semanticThemeAliases[fam][path]`.
  *
- * En runtime, `.storybook/preview.ts` aplica la columna `light` sobre `:root`.
+ * En runtime, `.storybook/preview.ts` aplica la columna `light` (o `inverse`)
+ * sobre `:root` para la marca activa.
  */
 export const semanticThemeAliases: Record<SemanticFamily, Record<string, ThemeAlias>> = {
   text: {
@@ -20,12 +23,6 @@ export const semanticThemeAliases: Record<SemanticFamily, Record<string, ThemeAl
     "semantic/color/text/tertiary": { light: "ref/neutral/400", inverse: "ref/neutral/200" },
     "semantic/color/text/inverse": { light: "ref/neutral/200", inverse: "ref/neutral/900" },
     "semantic/color/text/disabled": { light: "ref/neutral/400", inverse: "ref/neutral/600" },
-    "semantic/color/text/brand": { light: "ref/green/700", inverse: "ref/green/50" },
-    "semantic/color/text/onBrand": { light: "ref/neutral/0", inverse: "ref/neutral/900" },
-    "semantic/color/text/accentPrimary": { light: "ref/accent/mint/700", inverse: "ref/accent/mint/400" },
-    "semantic/color/text/accentSecondary": { light: "ref/accent/orchid/700", inverse: "ref/accent/orchid/200" },
-    "semantic/color/text/onAccentPrimary": { light: "ref/accent/mint/900", inverse: "ref/neutral/900" },
-    "semantic/color/text/onAccentSecondary": { light: "ref/accent/orchid/900", inverse: "ref/neutral/900" },
     "semantic/color/text/danger": { light: "ref/error/600", inverse: "ref/error/200" },
     "semantic/color/text/dangerStrong": { light: "ref/error/700", inverse: "ref/error/300" },
     "semantic/color/text/onDanger": { light: "ref/neutral/0", inverse: "ref/neutral/900" },
@@ -47,9 +44,6 @@ export const semanticThemeAliases: Record<SemanticFamily, Record<string, ThemeAl
     "semantic/color/bg/subtle": { light: "ref/neutral/100", inverse: "ref/whiteAlpha/100" },
     "semantic/color/bg/disabled": { light: "ref/neutral/300", inverse: "ref/neutral/700" },
     "semantic/color/bg/inverse": { light: "ref/neutral/900", inverse: "ref/neutral/0" },
-    "semantic/color/bg/brand": { light: "ref/green/700", inverse: "ref/green/400" },
-    "semantic/color/bg/brandSoft": { light: "ref/green/100", inverse: "ref/whiteAlpha/100" },
-    "semantic/color/bg/brandMuted": { light: "ref/green/50", inverse: "ref/whiteAlpha/50" },
     "semantic/color/bg/neutral": { light: "ref/neutral/800", inverse: "ref/neutral/0" },
     "semantic/color/bg/neutralSoft": { light: "ref/neutral/100", inverse: "ref/blackAlpha/200" },
     "semantic/color/bg/neutralMuted": { light: "ref/neutral/50", inverse: "ref/blackAlpha/50" },
@@ -65,12 +59,6 @@ export const semanticThemeAliases: Record<SemanticFamily, Record<string, ThemeAl
     "semantic/color/bg/info": { light: "ref/info/500", inverse: "ref/info/400" },
     "semantic/color/bg/infoSoft": { light: "ref/info/200", inverse: "ref/info/200" },
     "semantic/color/bg/infoMuted": { light: "ref/info/100", inverse: "ref/info/100" },
-    "semantic/color/bg/accentPrimary": { light: "ref/accent/mint/300", inverse: "ref/accent/mint/400" },
-    "semantic/color/bg/accentPrimarySoft": { light: "ref/accent/mint/200", inverse: "ref/accent/mint/300" },
-    "semantic/color/bg/accentPrimaryMuted": { light: "ref/accent/mint/100", inverse: "ref/accent/mint/200" },
-    "semantic/color/bg/accentSecondary": { light: "ref/accent/orchid/300", inverse: "ref/accent/orchid/400" },
-    "semantic/color/bg/accentSecondarySoft": { light: "ref/accent/orchid/200", inverse: "ref/accent/orchid/300" },
-    "semantic/color/bg/accentSecondaryMuted": { light: "ref/accent/orchid/100", inverse: "ref/accent/orchid/200" },
     "semantic/color/bg/overlay": { light: "rgba(0,0,0,0/40)", inverse: "rgba(0,0,0,0/40)" },
   },
   border: {
@@ -79,11 +67,6 @@ export const semanticThemeAliases: Record<SemanticFamily, Record<string, ThemeAl
     "semantic/color/border/strong": { light: "ref/neutral/300", inverse: "ref/neutral/400" },
     "semantic/color/border/emphasis": { light: "ref/neutral/400", inverse: "ref/neutral/300" },
     "semantic/color/border/inverse": { light: "ref/neutral/0", inverse: "ref/neutral/0" },
-    "semantic/color/border/brand": { light: "ref/green/700", inverse: "ref/green/200" },
-    "semantic/color/border/accentPrimary": { light: "ref/accent/mint/400", inverse: "ref/accent/mint/500" },
-    "semantic/color/border/accentPrimaryStrong": { light: "ref/accent/mint/600", inverse: "ref/accent/mint/300" },
-    "semantic/color/border/accentSecondary": { light: "ref/accent/orchid/400", inverse: "ref/accent/orchid/400" },
-    "semantic/color/border/accentSecondaryStrong": { light: "ref/accent/orchid/600", inverse: "ref/accent/orchid/300" },
     "semantic/color/border/focus": { light: "ref/info/400", inverse: "ref/info/500" },
     "semantic/color/border/info": { light: "ref/info/300", inverse: "ref/info/400" },
     "semantic/color/border/success": { light: "ref/success/300", inverse: "ref/success/400" },
@@ -99,14 +82,8 @@ export const semanticThemeAliases: Record<SemanticFamily, Record<string, ThemeAl
     "semantic/color/icon/tertiary": { light: "ref/neutral/400", inverse: "ref/neutral/200" },
     "semantic/color/icon/disabled": { light: "ref/neutral/400", inverse: "ref/neutral/600" },
     "semantic/color/icon/inverse": { light: "ref/neutral/200", inverse: "ref/neutral/900" },
-    "semantic/color/icon/brand": { light: "ref/green/700", inverse: "ref/green/50" },
-    "semantic/color/icon/onBrand": { light: "ref/neutral/0", inverse: "ref/neutral/900" },
     "semantic/color/icon/neutral": { light: "ref/neutral/800", inverse: "ref/neutral/50" },
     "semantic/color/icon/onNeutral": { light: "ref/neutral/0", inverse: "ref/neutral/800" },
-    "semantic/color/icon/accentPrimary": { light: "ref/accent/mint/700", inverse: "ref/accent/mint/400" },
-    "semantic/color/icon/onAccentPrimary": { light: "ref/accent/mint/900", inverse: "ref/accent/mint/900" },
-    "semantic/color/icon/accentSecondary": { light: "ref/accent/orchid/700", inverse: "ref/accent/orchid/200" },
-    "semantic/color/icon/onAccentSecondary": { light: "ref/accent/orchid/900", inverse: "ref/neutral/800" },
     "semantic/color/icon/success": { light: "ref/success/700", inverse: "ref/green/200" },
     "semantic/color/icon/onSuccess": { light: "ref/neutral/0", inverse: "ref/neutral/900" },
     "semantic/color/icon/warning": { light: "ref/warning/800", inverse: "ref/warning/200" },

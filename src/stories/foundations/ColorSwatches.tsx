@@ -1,7 +1,13 @@
-import type { CSSProperties, ReactNode } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 
 import { figmaColorTokens, figmaPathToCssVar } from "../../tokens/figma-color-tokens";
-import { resolveThemeAliasValue, semanticThemeAliases, type SemanticFamily } from "./semantic-theme-aliases";
+import {
+  resolveThemeAliasValue,
+  semanticThemeAliases,
+  type SemanticFamily,
+  type ThemeAlias,
+} from "../../tokens/semantic-theme-aliases";
+import { brandThemeAliases, type Brand } from "../../tokens/brand-aliases";
 
 type Grouped = Record<string, Record<string, string>>;
 
@@ -164,7 +170,7 @@ function ThemeModeGrid({
 }: {
   family: SemanticFamily;
   mode: "light" | "inverse";
-  entries: Record<string, { light: string; inverse: string }>;
+  entries: Record<string, ThemeAlias>;
 }) {
   const rows = Object.entries(entries).sort(([a], [b]) => a.localeCompare(b));
   return (
@@ -244,38 +250,51 @@ function ThemeModeGrid({
   );
 }
 
-function SemanticThemeBoard() {
+function SemanticThemeBoard({ brand }: { brand: Brand }) {
   const families: SemanticFamily[] = ["text", "bg", "border", "icon"];
   return (
     <div style={{ marginBottom: 28 }}>
       <h3 style={{ fontFamily: "system-ui, sans-serif", fontSize: 16, margin: "0 0 10px", color: "#222" }}>
-        Semantic por tema (Light / Inverse)
+        Semantic por tema (Light / Inverse) · marca <strong>{brand}</strong>
       </h3>
       <p style={{ fontFamily: "system-ui, sans-serif", color: "#444", lineHeight: 1.5 }}>
-        Vista en grid por familia, similar al frame de Figma: cada token semántico se resuelve por modo nativo.
+        Vista en grid por familia, similar al frame de Figma: cada token semántico se resuelve por modo
+        nativo. Las familias <code style={inlineCode}>brand*</code>,{" "}
+        <code style={inlineCode}>accentPrimary*</code> y <code style={inlineCode}>accentSecondary*</code>{" "}
+        vienen de la colección <code style={inlineCode}>_ Color · brand</code> (modo{" "}
+        <strong>{brand}</strong>); el resto es independiente de marca.
       </p>
-      {families.map((family) => (
-        <div key={family} style={{ marginBottom: 22 }}>
-          <h3 style={{ fontFamily: "system-ui, sans-serif", fontSize: 14, margin: "0 0 8px", color: "#333" }}>
-            {family}
-          </h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 12 }}>
-            <ThemeModeGrid family={family} mode="light" entries={semanticThemeAliases[family]} />
-            <ThemeModeGrid family={family} mode="inverse" entries={semanticThemeAliases[family]} />
+      {families.map((family) => {
+        const merged: Record<string, ThemeAlias> = {
+          ...semanticThemeAliases[family],
+          ...brandThemeAliases[brand][family],
+        };
+        return (
+          <div key={family} style={{ marginBottom: 22 }}>
+            <h3 style={{ fontFamily: "system-ui, sans-serif", fontSize: 14, margin: "0 0 8px", color: "#333" }}>
+              {family}
+            </h3>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 12 }}>
+              <ThemeModeGrid family={family} mode="light" entries={merged} />
+              <ThemeModeGrid family={family} mode="inverse" entries={merged} />
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
 
 export function ColorSwatches() {
   const { ref } = groupTokens();
+  const [brand, setBrand] = useState<Brand>("kubo");
   const refOrder = [
     "green",
     "neutral",
     "accent/mint",
     "accent/orchid",
+    "accent/yellow",
+    "accent/red",
     "success",
     "error",
     "warning",
@@ -295,12 +314,45 @@ export function ColorSwatches() {
         (text/bg/border/icon), además de los tokens que terminan en <code style={inlineCode}>/inverse</code>.
       </p>
       <p style={{ fontFamily: "system-ui, sans-serif", color: "#444", lineHeight: 1.5 }}>
-        Las familias <code style={inlineCode}>brand</code>, <code style={inlineCode}>accentPrimary</code> y{" "}
-        <code style={inlineCode}>accentSecondary</code> dependen de la marca (aquí resueltas con{" "}
-        <strong>kubo</strong>: brand&nbsp;=&nbsp;green, accentPrimary&nbsp;=&nbsp;mint,
-        accentSecondary&nbsp;=&nbsp;orchid). <code style={inlineCode}>neutral</code> es el gris de sistema
-        para chips/tags y no cambia con la marca. Detalle y equivalencias kubo/maestro en "Notas de Figma".
+        Las familias <code style={inlineCode}>brand*</code>, <code style={inlineCode}>accentPrimary*</code> y{" "}
+        <code style={inlineCode}>accentSecondary*</code> dependen de la marca (colección{" "}
+        <code style={inlineCode}>_ Color · brand</code>): <strong>kubo</strong> = green / mint / orchid ·{" "}
+        <strong>maestro</strong> = neutral / yellow / red. <code style={inlineCode}>neutral</code> es el gris
+        de sistema para chips/tags y no cambia con la marca. <code style={inlineCode}>link*</code> tampoco
+        está en esa colección: se queda en el verde de kubo también en maestro (hueco de Figma).
       </p>
+
+      <div
+        style={{
+          display: "inline-flex",
+          gap: 4,
+          padding: 4,
+          margin: "8px 0 24px",
+          border: "1px solid #dfe1e5",
+          borderRadius: 10,
+          fontFamily: "system-ui, sans-serif",
+        }}
+      >
+        {(["kubo", "maestro"] as Brand[]).map((b) => (
+          <button
+            key={b}
+            type="button"
+            onClick={() => setBrand(b)}
+            style={{
+              border: "none",
+              borderRadius: 7,
+              padding: "6px 14px",
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+              background: brand === b ? "#1f6f21" : "transparent",
+              color: brand === b ? "#fff" : "#333",
+            }}
+          >
+            {b}
+          </button>
+        ))}
+      </div>
 
       <Section title="Ref (paleta base)">
         {refOrder
@@ -316,7 +368,7 @@ export function ColorSwatches() {
       </Section>
 
       <Section title="Semantic (roles UI)">
-        <SemanticThemeBoard />
+        <SemanticThemeBoard brand={brand} />
       </Section>
     </div>
   );
