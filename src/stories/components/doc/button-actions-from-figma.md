@@ -41,6 +41,28 @@ de `gap 8` con botones al contenido, cambiando sólo la alineación
 (`dialog` derecha · `card` izquierda · `feedbackState` centro) — salvo
 `bottomSheet` que reparte 50/50.
 
+### El gap de `screen` es entre PÍLDORAS, no entre cajas táctiles
+
+`Button` lleva un padding vertical de área táctil **fuera** de la píldora
+visible (`4px` en `sm`, `8px` en `xs`, `0` en `md`). Apiladas, ese padding
+se sumaba al `gap: 16` y los botones se veían a ~24px. `ButtonActions` lo
+absorbe con un margin negativo en `surface="screen"`:
+
+```css
+.button-actions[data-surface='screen'] > .button {
+  margin-block: calc(var(--button-block-inset, 0px) * -1);
+}
+```
+
+`--button-block-inset` es un contrato que `Button` publica (= su padding
+vertical de área táctil). Con esto el `gap 16` queda **entre las píldoras
+visibles** —igual que los wrappers de altura fija (`h-40` / `h-32`) que usa
+Figma para cada botón dentro de `patterns_buttons_actions`— y el área
+táctil del `Button` se conserva (sólo cambia su caja de flujo). En `md`
+(`--button-block-inset: 0`) el margin es `0`, sin efecto. Sólo se aplica a
+`screen` (apilado sin wrap); las filas no tienen este problema porque el
+`Button` no tiene padding horizontal.
+
 `size` y `emphasis` de la variante de Figma **no** son props de la botonera —
 describen los `<Button>` que van dentro. Correspondencia de tamaños que usa
 `SystemFeedback`: `low` → `Button size="xs"` · `high sm` → `Button size="sm"`
