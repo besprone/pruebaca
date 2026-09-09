@@ -127,12 +127,18 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
     }
 
     setProgress(progress.current); // sincroniza el DOM al punto de partida
+    let exited = false;
     const cancel = springTo(progress.current, target, (p) => {
-      if (!alive) return;
+      if (!alive || exited) return;
       setProgress(p);
-      if (p === target) {
-        if (open) setPhase('open');
-        else onExitedRef.current?.();
+      if (open) {
+        if (p === target) setPhase('open');
+      } else if (p <= target) {
+        // ya invisible (opacity 0) — el rebote posterior del muelle solo
+        // retrasa el desmontaje dejando el overlay capturando clics.
+        exited = true;
+        cancelSpring.current?.();
+        onExitedRef.current?.();
       }
     });
     cancelSpring.current = cancel;

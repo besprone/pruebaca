@@ -134,12 +134,19 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(function
     }
 
     setTransform(currentPct.current); // sincroniza el DOM al punto de partida
+    let exited = false;
     const cancel = springTo(currentPct.current, target, (y) => {
-      if (!alive) return;
+      if (!alive || exited) return;
       setTransform(y);
-      if (y === target) {
-        if (open) setPhase('open');
-        else onExitedRef.current?.();
+      if (open) {
+        if (y === target) setPhase('open');
+      } else if (y >= target) {
+        // el sheet ya cruzó fuera de pantalla — el rebote posterior del muelle
+        // (ζ≈0.75) es invisible y solo retrasa el desmontaje dejando el overlay
+        // capturando clics. Se corta acá.
+        exited = true;
+        cancelSpring.current?.();
+        onExitedRef.current?.();
       }
     });
     cancelSpring.current = cancel;
