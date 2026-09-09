@@ -8,10 +8,9 @@ Dos modos por `type`:
   **final** que pasa el consumidor por `children`. Sin `children` pinta un
   placeholder gris (con `icon` opcional centrado). Es "área reservada para
   contenido visual dinámico", no una imagen de producto en sí.
-- **`feedbackState`** — ilustración **pre-armada**: fondo acuarela teñido +
-  halo blanco difuminado + icono central. Por `state` **sólo cambia el color
-  de la acuarela y el icono/su color** — la textura de la acuarela es una
-  sola, compartida.
+- **`feedbackState`** — ilustración **pre-armada**: acuarela (imagen natural,
+  **sin filtros de color**) + halo blanco difuminado + icono central. Por
+  `state` **sólo cambia el icono** (glifo por defecto + su color).
 
 ## API
 
@@ -31,23 +30,28 @@ Dos modos por `type`:
 
 `forwardRef<HTMLDivElement>`, `data-type` / `data-state` / `data-size`.
 
-## `feedbackState` — color e icono por estado
+## `feedbackState` — sólo el icono cambia por estado
 
-Una sola textura de acuarela para `success`/`info`/`error`/`warning` (en
-Figma son el **mismo PNG**); `empty` usa una textura gris aparte. Se usa
-como **`mask`** (su silueta) y se pinta con el token de fondo del estado,
-así el color es 100% token. Assets `webp` en tres tamaños —
-`watercolor-{sm,md,lg}.webp` (56² · 80² · 228×160) y
-`watercolor-empty-{sm,md,lg}.webp` — el CSS elige por `data-size` (`sm`
-cubre también `xs`/`xxs`):
+La acuarela va **tal cual, sin filtros de color**: `success`/`info`/`error`/
+`warning` usan la **misma** textura (con su color natural), `empty` una gris
+aparte. Lo único que cambia por `state` es el **icono** — el glifo por
+defecto y su color (`--_accent`).
 
-| `state` | acuarela (`--_wash`) | icono / acento (`--_accent`) | glifo por defecto |
-|---|---|---|---|
-| `success` | `bg/successSoft` | `icon/success` (`#1f6f40`) | `CheckmarkFilled` |
-| `info` | `bg/infoSoft` | `icon/info` (`#1e5d86`) | `InformationFilled` |
-| `error` | `bg/dangerSoft` | `icon/danger` (`#b83a3a`) | `ErrorFilled` |
-| `warning` | `bg/warningSoft` | `icon/warning` (`#74480c`) | `WarningAltFilled` |
-| `empty` | `bg/neutralSoft` | `icon/disabled` (`#9a9ba1`) | `Image` |
+Assets `webp` en tres tamaños — `watercolor-{sm,md,lg}.webp` (56² · 80² ·
+228×160) y `watercolor-empty-{sm,md,lg}.webp` — el CSS elige por `data-size`
+(`sm` cubre también `xs`/`xxs`). Se pintan como `background-image` con
+**`background-size: contain`**: la acuarela se ajusta al **alto** del
+contenedor y el ancho queda proporcional (en `lg`, la textura de 228×160
+queda centrada con aire a los lados, como en Figma; en los cuadrados el
+asset ya es cuadrado, así que llena sin recorte).
+
+| `state` | icono / acento (`--_accent`) | glifo por defecto |
+|---|---|---|
+| `success` | `icon/success` (`#1f6f40`) | `CheckmarkFilled` |
+| `info` | `icon/info` (`#1e5d86`) | `InformationFilled` |
+| `error` | `icon/danger` (`#b83a3a`) | `ErrorFilled` |
+| `warning` | `icon/warning` (`#74480c`) | `WarningAltFilled` |
+| `empty` | `icon/disabled` (`#9a9ba1`) | `Image` |
 
 En Figma el icono por defecto es la marca kubo re-teñida en los 5 estados;
 acá se usan glifos de estado porque comunican mejor sin depender de la
@@ -56,12 +60,6 @@ marca. Para replicar Figma, pasá `icon={<Brand type="secondary" />}`.
 Halo: círculo `bg/surface` con `filter: blur()`. `--_focal` (lado del halo
 y del icono) y `--_blur` escalan con `size`: `xxs` 16/3 · `xs` 32/6 · `sm`
 40/7.7 · `md` 56/11 · `lg` 100/12.8 (los dos últimos, de Figma).
-
-> La `mask` colorea la **silueta** de la acuarela con un color plano (bordes
-> suaves de la textura). El original de Figma tiene variación pictórica
-> multitono; a la escala de uso (detrás del halo) la silueta teñida lee
-> igual y queda 100% tokenizada. Si en algún caso se necesita el detalle
-> exacto, el consumidor pasa su propia ilustración por `type="slot"`.
 
 ## Uso en `SystemFeedback`
 

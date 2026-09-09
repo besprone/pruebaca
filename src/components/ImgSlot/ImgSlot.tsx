@@ -23,15 +23,17 @@ export type ImgSlotProps = {
   /**
    * `slot` (def.) — contenedor reservado para una imagen/ilustración final
    * (se pasa por `children`); sin `children` pinta un placeholder. `feedbackState`
-   * — ilustración pre-armada: fondo acuarela teñido + halo + icono centrado.
+   * — ilustración pre-armada: acuarela (imagen natural, sin filtros) + halo +
+   * icono centrado.
    */
   type?: ImgSlotType;
   /**
-   * Estado del `feedbackState` — sólo cambia el color de la acuarela y el
-   * icono por defecto. `default` es para `type="slot"`. Default `default`.
+   * Estado del `feedbackState` — **sólo cambia el icono** (glifo por defecto y
+   * su color); la acuarela no se tiñe. `default` es para `type="slot"`.
+   * Default `default`.
    */
   state?: ImgSlotState;
-  /** `xxs` 24 · `xs` 48 · `sm` 56 · `md` 80 (cuadrados) · `lg` banda a lo ancho × 160. Default `lg`. */
+  /** `xxs` 24 · `xs` 48 · `sm` 56 · `md` 80 (cuadrados) · `lg` banda × 160 (la acuarela se ajusta al alto, ancho proporcional). Default `lg`. */
   size?: ImgSlotSize;
   /**
    * Icono central del `feedbackState` (o del placeholder `slot`). Sin pasarlo,
@@ -61,9 +63,9 @@ const DEFAULT_ICON: Record<
  *
  * Dos modos: `type="slot"` es un contenedor reservado para contenido visual
  * dinámico (una imagen final que pasa el consumidor); `type="feedbackState"`
- * es una ilustración pre-armada (acuarela + halo + icono) cuyo color e icono
- * dependen del `state`. Pensado para el slot `media` de `SystemFeedback`
- * (`size="lg"` en `high`, `size="sm"` en `low`).
+ * es una ilustración pre-armada (acuarela sin filtros + halo + icono) donde
+ * el `state` sólo cambia el icono. Pensado para el slot `media` de
+ * `SystemFeedback` (`size="lg"` en `high`, `size="sm"` en `low`).
  */
 export const ImgSlot = forwardRef<HTMLDivElement, ImgSlotProps>(function ImgSlot(
   { type = 'slot', state = 'default', size = 'lg', icon, children, className, ...props },
