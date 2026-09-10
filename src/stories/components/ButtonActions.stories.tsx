@@ -143,3 +143,80 @@ export const PorSurface: Story = {
     </div>
   ),
 };
+
+// ── sticky (stickyCTAContainer) ───────────────────────────────────────────
+
+const Phone = ({ children }: { children: ReactNode }) => (
+  <div
+    style={{
+      inlineSize: 360,
+      blockSize: 520,
+      overflowY: 'auto',
+      display: 'flex',
+      flexDirection: 'column',
+      border: '1px solid var(--semantic-color-border-subtle)',
+      borderRadius: 16,
+      background: 'var(--semantic-color-bg-surface)',
+    }}
+  >
+    {children}
+  </div>
+);
+
+const Filler = ({ n }: { n: number }) => (
+  <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+    {Array.from({ length: n }, (_, i) => (
+      <p
+        key={i}
+        style={{
+          margin: 0,
+          padding: 12,
+          borderRadius: 10,
+          background: 'var(--semantic-color-bg-canvas)',
+          font: '500 14px/20px var(--typography-font-family)',
+        }}
+      >
+        Contenido {i + 1}
+      </p>
+    ))}
+  </div>
+);
+
+export const Sticky: Story = {
+  name: 'sticky — stickyCTAContainer (divider auto)',
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
+      <div>
+        <p style={label}>divider="auto" — scrollea para ver el borde</p>
+        <Phone>
+          <Filler n={12} />
+          <div style={{ marginBlockStart: 'auto' }}>
+            <ButtonActions surface="screen" sticky>
+              <Button emphasis="ghost" size="sm">
+                Cancelar
+              </Button>
+              <Button emphasis="primary" size="sm" icon={<CheckmarkFilled />}>
+                Confirmar
+              </Button>
+            </ButtonActions>
+          </div>
+        </Phone>
+      </div>
+
+      <div>
+        <p style={label}>divider="always"</p>
+        <Phone>
+          <Filler n={3} />
+          <div style={{ marginBlockStart: 'auto' }}>
+            <ButtonActions surface="screen" sticky divider="always">
+              <Button emphasis="primary" size="sm">
+                Continuar
+              </Button>
+            </ButtonActions>
+          </div>
+        </Phone>
+      </div>
+    </div>
+  ),
+};
