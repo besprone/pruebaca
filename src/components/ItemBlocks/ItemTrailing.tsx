@@ -64,8 +64,16 @@ export function ItemTrailing({
           </span>
         ))}
 
-      {type === 'checkbox' && <Checkbox {...control} />}
-      {type === 'radio' && <Radio {...control} />}
+      {type === 'checkbox' && (
+        <span className="item-trailing__control">
+          <Checkbox {...control} />
+        </span>
+      )}
+      {type === 'radio' && (
+        <span className="item-trailing__control">
+          <Radio {...control} />
+        </span>
+      )}
       {type === 'switch' && <Switch {...control} />}
 
       {type === 'badge' && children}
