@@ -10,7 +10,16 @@ export type ItemTrailingType = 'icon' | 'checkbox' | 'radio' | 'switch' | 'badge
 
 type ControlProps = Pick<
   InputHTMLAttributes<HTMLInputElement>,
-  'checked' | 'defaultChecked' | 'disabled' | 'name' | 'value' | 'required' | 'aria-label' | 'aria-labelledby'
+  | 'checked'
+  | 'defaultChecked'
+  | 'disabled'
+  | 'name'
+  | 'value'
+  | 'required'
+  | 'aria-label'
+  | 'aria-labelledby'
+  | 'aria-hidden'
+  | 'tabIndex'
 > & { onChange?: (e: ChangeEvent<HTMLInputElement>) => void };
 
 export type ItemTrailingProps = {

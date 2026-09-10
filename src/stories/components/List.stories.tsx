@@ -6,11 +6,10 @@ import {
   Money,
   ChartLine,
   Document,
-  RadioButton,
-  RadioButtonChecked,
 } from '@carbon/icons-react';
 import { List } from '../../components/List';
 import { ListItem } from '../../components/List/ListItem';
+import { ItemTrailing } from '../../components/ItemBlocks';
 
 const meta: Meta<typeof List> = {
   title: 'Components/List',
@@ -167,7 +166,18 @@ export const Seleccion: Story = {
                 key={o.value}
                 label={o.label}
                 selected={checked}
-                trailing={checked ? <RadioButtonChecked /> : <RadioButton />}
+                trailing={
+                  <ItemTrailing
+                    type="radio"
+                    control={{
+                      checked,
+                      onChange: () => setValue(o.value),
+                      name: 'ordenar-por',
+                      tabIndex: -1,
+                      'aria-hidden': true,
+                    }}
+                  />
+                }
                 interactive
                 role="radio"
                 aria-checked={checked}
