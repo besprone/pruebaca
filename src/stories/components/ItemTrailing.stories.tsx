@@ -1,9 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
-import { OverflowMenuVertical } from '@carbon/icons-react';
+import { Checkmark, OverflowMenuVertical } from '@carbon/icons-react';
 import { ItemTrailing } from '../../components/ItemBlocks';
 import type { ItemTrailingType } from '../../components/ItemBlocks';
 import { Badge } from '../../components/Badge/Badge';
+import { List } from '../../components/List';
+import { ListItem } from '../../components/List/ListItem';
 
 const TYPES: ItemTrailingType[] = ['icon', 'checkbox', 'radio', 'switch', 'badge', 'text'];
 
@@ -41,6 +43,68 @@ export const Playground: Story = {
       </ItemTrailing>
     </div>
   ),
+};
+
+export const EnFila: Story = {
+  name: 'En fila — el control no infla la altura',
+  parameters: { controls: { disable: true } },
+  render: () => {
+    const [sel, setSel] = useState('a');
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20, width: 340 }}>
+        <List type="standard">
+          <ListItem
+            label="Con checkmark (SVG 24)"
+            trailing={<Checkmark aria-hidden="true" />}
+            interactive
+          />
+          <ListItem
+            label="Con radio en trailing"
+            trailing={
+              <ItemTrailing
+                type="radio"
+                control={{
+                  checked: sel === 'a',
+                  onChange: () => setSel('a'),
+                  name: 'enfila',
+                  'aria-label': 'Opción A',
+                }}
+              />
+            }
+            interactive
+            onClick={() => setSel('a')}
+          />
+          <ListItem
+            label="Con radio en trailing"
+            trailing={
+              <ItemTrailing
+                type="radio"
+                control={{
+                  checked: sel === 'b',
+                  onChange: () => setSel('b'),
+                  name: 'enfila',
+                  'aria-label': 'Opción B',
+                }}
+              />
+            }
+            interactive
+            onClick={() => setSel('b')}
+          />
+          <ListItem
+            label="Con checkbox en trailing"
+            trailing={
+              <ItemTrailing type="checkbox" control={{ defaultChecked: true, 'aria-label': 'Marcar' }} />
+            }
+            interactive
+          />
+        </List>
+        <p style={{ fontFamily: 'monospace', fontSize: 11, color: 'var(--semantic-color-text-secondary)', margin: 0 }}>
+          Todas las filas miden 56px — el área táctil de 48 del control desborda
+          la caja de 24 sin empujar.
+        </p>
+      </div>
+    );
+  },
 };
 
 export const Todos: Story = {
