@@ -191,16 +191,14 @@ export const Sticky: Story = {
         <p style={label}>divider="auto" — scrollea para ver el borde</p>
         <Phone>
           <Filler n={12} />
-          <div style={{ marginBlockStart: 'auto' }}>
-            <ButtonActions surface="screen" sticky>
-              <Button emphasis="ghost" size="sm">
-                Cancelar
-              </Button>
-              <Button emphasis="primary" size="sm" icon={<CheckmarkFilled />}>
-                Confirmar
-              </Button>
-            </ButtonActions>
-          </div>
+          <ButtonActions surface="screen" sticky>
+            <Button emphasis="ghost" size="sm">
+              Cancelar
+            </Button>
+            <Button emphasis="primary" size="sm" icon={<CheckmarkFilled />}>
+              Confirmar
+            </Button>
+          </ButtonActions>
         </Phone>
       </div>
 
@@ -208,15 +206,50 @@ export const Sticky: Story = {
         <p style={label}>divider="always"</p>
         <Phone>
           <Filler n={3} />
-          <div style={{ marginBlockStart: 'auto' }}>
-            <ButtonActions surface="screen" sticky divider="always">
-              <Button emphasis="primary" size="sm">
-                Continuar
-              </Button>
-            </ButtonActions>
-          </div>
+          <ButtonActions surface="screen" sticky divider="always">
+            <Button emphasis="primary" size="sm">
+              Continuar
+            </Button>
+          </ButtonActions>
         </Phone>
       </div>
+    </div>
+  ),
+};
+
+// ── sticky con barra alta (microcopy) — el sentinel puede caer tapado ──────
+// Repro del hallazgo del DS: con una barra más alta (microcopy + botón) el
+// contenido puede terminar DENTRO de esa altura desde el fondo del scroll —
+// tapado por la barra sticky — y aun así contar como "visible" si el
+// IntersectionObserver no descuenta el alto real de la barra del root.
+
+export const StickyMicrocopy: Story = {
+  name: 'sticky — barra alta con microcopy (divider auto)',
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div>
+      <p style={label}>
+        Barra con microcopy (~más alta) — el borde debe aparecer mientras haya contenido sin
+        scrollear y desaparecer al llegar al final, sin importar cuánto mida la barra.
+      </p>
+      <Phone>
+        <Filler n={8} />
+        <ButtonActions surface="screen" sticky>
+          <p
+            style={{
+              margin: '0 0 4px',
+              textAlign: 'center',
+              font: '500 12px/16px var(--typography-font-family)',
+              color: 'var(--semantic-color-text-tertiary)',
+            }}
+          >
+            Al continuar aceptas los términos del contrato.
+          </p>
+          <Button emphasis="primary" size="sm">
+            Confirmar
+          </Button>
+        </ButtonActions>
+      </Phone>
     </div>
   ),
 };
