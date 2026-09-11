@@ -17,6 +17,10 @@
   cursor: pointer;
   font-family: var(--typography-font-family);
   font-weight: var(--typography-body-sm-semiemphasized-weight); /* 600 */
+  /* `BannerLayout.__body` es una columna flex — sin esto, `align-items:
+     stretch` (default) estira el chip al ancho completo del contenedor en
+     vez de dejarlo a lo ancho de su propio contenido (texto + padding). */
+  align-self: flex-start;
 }
 
 .cta-affordance[data-size='sm'] {
