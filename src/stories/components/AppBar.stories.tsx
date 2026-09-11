@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Menu, Settings, ChartLine, View, Search, Close, Notification } from '@carbon/icons-react';
 import { AppBar } from '../../components/AppBar/AppBar';
 import type { AppBarSize, AppBarLayout, AppBarConfiguration } from '../../components/AppBar/AppBar';
@@ -208,45 +207,20 @@ export const Colapso: Story = {
 };
 
 function ScrollDemo() {
-  const [scrolled, setScrolled] = useState(false);
-  const [atTop, setAtTop] = useState(true);
-  const ref = useRef<HTMLDivElement>(null);
-  const lastY = useRef(0);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const onScroll = () => {
-      const y = el.scrollTop;
-      setAtTop(y <= 0);
-      // colapsa al bajar; se expande solo al llegar al top
-      if (y > lastY.current && y > 24) setScrolled(true);
-      if (y <= 0) setScrolled(false);
-      lastY.current = y;
-    };
-    el.addEventListener('scroll', onScroll);
-    return () => el.removeEventListener('scroll', onScroll);
-  }, []);
   return (
-    <div ref={ref} style={{ height: '100vh', overflowY: 'auto', background: 'var(--semantic-color-bg-canvas)' }}>
+    // `overflow-anchor: none` — requerido por `collapseOnScroll`, ver su
+    // JSDoc en AppBar.tsx: sin esto, el navegador "compensa" el cambio de
+    // alto de la barra (stacked→inline) corrigiendo el scrollTop, y el
+    // scroll pega un salto hacia el tope justo cuando la barra colapsa.
+    <div style={{ height: '100vh', overflowY: 'auto', overflowAnchor: 'none', background: 'var(--semantic-color-bg-canvas)' }}>
       <div style={{ position: 'sticky', top: 0, zIndex: 1 }}>
-        {scrolled ? (
-          <AppBar
-            size="sm"
-            elevation="raised"
-            leading={<IconButton emphasis="ghost" size="lg" aria-label="Volver" icon={<ArrowLeft />} />}
-            headline="Confirma tu información"
-            supporting="Revisa que tus datos sean correctos antes de continuar."
-          />
-        ) : (
-          <AppBar
-            size="lg"
-            layout="stacked"
-            elevation={atTop ? 'flat' : 'raised'}
-            leading={<IconButton emphasis="ghost" size="lg" aria-label="Volver" icon={<ArrowLeft />} />}
-            headline="Confirma tu información"
-            supporting="Revisa que tus datos sean correctos antes de continuar. Estos datos se obtuvieron de tu identificación."
-          />
-        )}
+        <AppBar
+          size="lg"
+          collapseOnScroll
+          leading={<IconButton emphasis="ghost" size="lg" aria-label="Volver" icon={<ArrowLeft />} />}
+          headline="Confirma tu información"
+          supporting="Revisa que tus datos sean correctos antes de continuar. Estos datos se obtuvieron de tu identificación."
+        />
       </div>
       <div style={{ padding: 24, fontFamily: 'var(--typography-font-family)', color: 'var(--semantic-color-text-secondary)' }}>
         {Array.from({ length: 50 }, (_, i) => (
