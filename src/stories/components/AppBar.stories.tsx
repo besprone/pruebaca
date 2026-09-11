@@ -237,11 +237,14 @@ export const EnContexto: Story = {
   render: () => <ScrollDemo />,
 };
 
-// ── repro: colapsar libera más scroll del que sobra ─────────────────────────
-// Si lo que el colapso libera (alto expandida − alto colapsada) es MAYOR que
-// el scroll restante en ese momento, el navegador ajusta `scrollTop` a un
-// valor menor (o 0) al colapsar — y sin histéresis eso se leía como "volví al
-// tope", re-expandiendo, lo que liberaba el mismo scroll de nuevo: parpadeo.
+// ── el scroll restante no alcanza a cubrir lo que el colapso liberaría ──────
+// Si lo que el colapso libera (alto expandido − alto colapsado) es MAYOR que
+// el scroll restante en ese momento, colapsar dejaría al contenedor sin
+// overflow — sin este chequeo eso producía parpadeo (colapsa→el navegador
+// ajusta scrollTop a 0→se lee como "volví al tope"→expande→libera el mismo
+// scroll→vuelve a empezar) o, peor, una barra colapsada sin forma de volver a
+// expandirse (nada que scrollear para "llegar al tope"). No colapsar en este
+// caso no pierde nada: el contenido ya cabía sin necesitar esos px.
 // Contenedor corto + supporting de 2 líneas para que la condición se dé.
 
 function ScrollFlickerDemo() {
@@ -275,7 +278,49 @@ function ScrollFlickerDemo() {
 }
 
 export const EnContextoContenidoCorto: Story = {
-  name: 'En contexto (scroll corto — sin parpadeo)',
+  name: 'En contexto (scroll corto — nunca colapsa)',
   parameters: { controls: { disable: true } },
   render: () => <ScrollFlickerDemo />,
+};
+
+// ── mismo alto de barra, pero con scroll suficiente — sí colapsa ────────────
+// Mismo `size`/contenido de barra que la story anterior (mismos 88px que
+// liberaría el colapso), pero con más contenido: el scroll restante alcanza
+// a cubrirlo, así que colapsa normalmente al bajar y expande al volver al
+// tope — confirma que el chequeo no bloquea el colapso quando sí corresponde.
+
+function ScrollEnoughDemo() {
+  return (
+    <div
+      style={{
+        height: 560,
+        maxWidth: 420,
+        overflowY: 'auto',
+        overflowAnchor: 'none',
+        background: 'var(--semantic-color-bg-canvas)',
+        border: '1px solid var(--semantic-color-border-default)',
+      }}
+    >
+      <div style={{ position: 'sticky', top: 0, zIndex: 1 }}>
+        <AppBar
+          size="sm"
+          collapseOnScroll
+          leading={<IconButton emphasis="ghost" size="lg" aria-label="Volver" icon={<ArrowLeft />} />}
+          headline="Confirma tu información"
+          supporting="Revisa que tus datos sean correctos antes de continuar. Estos datos se obtuvieron de tu identificación."
+        />
+      </div>
+      <div style={{ padding: 24, fontFamily: 'var(--typography-font-family)', color: 'var(--semantic-color-text-secondary)' }}>
+        {Array.from({ length: 16 }, (_, i) => (
+          <p key={i}>Fila de contenido {i + 1}.</p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export const EnContextoScrollSuficiente: Story = {
+  name: 'En contexto (scroll suficiente — sí colapsa)',
+  parameters: { controls: { disable: true } },
+  render: () => <ScrollEnoughDemo />,
 };
