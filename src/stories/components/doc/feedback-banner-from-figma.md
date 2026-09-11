@@ -29,10 +29,26 @@ la `Card` subyacente.
   .feedback-banner__row         icono + cuerpo · gap 16 · padding 16
     .feedback-banner__icon      20px · color icon/<type>
     .feedback-banner__body      columna · gap 8 (bloque de texto ↔ acciones)
-      .feedback-banner__headline    Body/md-emphasized (700) · text/primary
-      .feedback-banner__supporting  Body/sm (500) · text/secondary · gap 2 con headline
+      .feedback-banner__text         columna · gap 2 (headline ↔ supporting)
+        .feedback-banner__headline     Body/md-emphasized (700) · text/primary
+        .feedback-banner__supporting   Body/sm (500) · text/secondary
       .feedback-banner__actions     <ButtonActions surface="dialog"> — fila derecha, gap 8
 ```
+
+`.feedback-banner__text` es un wrapper propio para headline+supporting —
+necesario porque el `gap` del padre (8, entre bloque de texto y acciones) y
+el gap headline↔supporting (2) son valores distintos; ponerlo como `margin`
+en `__supporting` en vez de un wrapper con su propio `gap` los suma en vez de
+reemplazarlos (8 + 2 = 10 en vez de 2 — bug real, corregido).
+
+`.feedback-banner__actions` también absorbe el `--button-block-inset` del
+`Button` (el padding vertical de área táctil fuera de la píldora — ver
+`Button.css` / PR #97) con `margin-block: calc(var(--button-block-inset,0px) * -1)`
+en `.feedback-banner__actions .button`. `ButtonActions[data-surface="screen"]`
+ya hace esto para sus propios consumidores, pero `surface="dialog"` no —
+sin este absorbedor local, el `xs` de las acciones (inset 8px) deja 24px
+entre la píldora visible y el borde inferior de la card en vez de los 16px
+del padding.
 
 | `type` | fondo (`bg/`) | icono | rol ARIA |
 |---|---|---|---|
