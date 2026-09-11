@@ -6,9 +6,10 @@
    .feedback-banner[data-type]     = <Card> (bg teñido, ver abajo)
      .feedback-banner__row         fila: icono + cuerpo · gap 16 · padding 16
        .feedback-banner__icon      20px, color icon/<type>
-       .feedback-banner__body      columna: (headline·supporting gap 2) · actions · gap 8
-         .feedback-banner__headline    Body/md-emphasized (700) · text/primary
-         .feedback-banner__supporting  Body/sm · text/secondary
+       .feedback-banner__body      columna: text · actions · gap 8
+         .feedback-banner__text        columna: headline · supporting · gap 2
+           .feedback-banner__headline    Body/md-emphasized (700) · text/primary
+           .feedback-banner__supporting  Body/sm · text/secondary
          .feedback-banner__actions     <ButtonActions surface="dialog"> — fila derecha, gap 8
 ──────────────────────────────────────────────────────────────────────────── */
 
@@ -62,6 +63,16 @@
   min-inline-size: 0;
 }
 
+/* headline + supporting en su propio grupo (gap 2) — separado del gap-8 que
+   ya pone `.feedback-banner__body` entre el bloque de texto y las acciones.
+   Ponerlo como margin en `__supporting` en vez de esto sumaba con el gap del
+   padre (8 + 2 = 10) en vez de reemplazarlo. */
+.feedback-banner__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--internalLayout-space-25); /* 2px */
+}
+
 .feedback-banner__headline {
   margin: 0;
   color: var(--semantic-color-text-primary);
@@ -70,16 +81,25 @@
   font-weight: var(--typography-body-md-emphasized-weight); /* 700 */
 }
 .feedback-banner__supporting {
-  margin: var(--internalLayout-space-25) 0 0; /* 2px — headline ↔ supporting */
+  margin: 0;
   color: var(--semantic-color-text-secondary);
   font-size: var(--typography-body-sm-size); /* 12 */
   line-height: var(--typography-body-sm-line-height); /* 17 */
   font-weight: var(--typography-body-sm-weight); /* 500 */
 }
 
-/* `.feedback-banner__actions` no necesita reglas propias — `ButtonActions
-   surface="dialog"` ya es fila/derecha/gap-8.
-   Ghost de acciones: verde de marca en info/success (default de `Button`);
+/* `ButtonActions surface="dialog"` ya es fila/derecha/gap-8, pero solo
+   `surface="screen"` absorbe el `--button-block-inset` del `Button` (el
+   padding vertical de área táctil FUERA de la píldora — ver PR #97). Acá
+   igual hace falta: sin esto, el `xs` de las acciones (inset 8px) deja 24px
+   entre la píldora visible y el borde de la card en vez de los 16px del
+   padding — se absorbe localmente en vez de tocar `ButtonActions` (que
+   Dialog/BottomSheet también consumen con otros tamaños, ya verificados). */
+.feedback-banner__actions .button {
+  margin-block: calc(var(--button-block-inset, 0px) * -1);
+}
+
+/* Ghost de acciones: verde de marca en info/success (default de `Button`);
    en error/warning se recolorea a `text/neutral` — así lo tiene el propio
    Figma (instancia por instancia, no una regla derivable de un único token). */
 .feedback-banner[data-type='error'] .feedback-banner__actions .button[data-emphasis='ghost'],

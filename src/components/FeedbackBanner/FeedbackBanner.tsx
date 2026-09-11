@@ -70,8 +70,10 @@ export function FeedbackBanner({
           <Icon />
         </span>
         <div className="feedback-banner__body">
-          <p className="feedback-banner__headline">{headline}</p>
-          {supporting != null && <p className="feedback-banner__supporting">{supporting}</p>}
+          <div className="feedback-banner__text">
+            <p className="feedback-banner__headline">{headline}</p>
+            {supporting != null && <p className="feedback-banner__supporting">{supporting}</p>}
+          </div>
           {actions != null && (
             <ButtonActions surface="dialog" className="feedback-banner__actions">
               {actions}
