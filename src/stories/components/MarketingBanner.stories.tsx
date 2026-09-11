@@ -15,7 +15,7 @@ const demoSvg =
 const demoIllustration = <img src={`data:image/svg+xml;utf8,${encodeURIComponent(demoSvg)}`} alt="" style={{ display: 'block' }} />;
 
 const meta: Meta<typeof MarketingBanner> = {
-  title: 'Components/MarketingBanner',
+  title: 'Components/Banner/MarketingBanner',
   component: MarketingBanner,
   parameters: { layout: 'padded' },
   argTypes: {

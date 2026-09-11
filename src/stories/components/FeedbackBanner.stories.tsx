@@ -6,7 +6,7 @@ import { Button } from '../../components/Button/Button';
 const TYPES: FeedbackBannerType[] = ['info', 'success', 'error', 'warning'];
 
 const meta: Meta<typeof FeedbackBanner> = {
-  title: 'Components/FeedbackBanner',
+  title: 'Components/Banner/FeedbackBanner',
   component: FeedbackBanner,
   parameters: { layout: 'padded' },
   argTypes: {
