@@ -1,14 +1,16 @@
 ## FeedbackBanner
 
 Patrón de comunicación de estado dentro del dashboard. Figma:
-`pattern_app_feedback_banner`. Instancia `Card` (`elevation="flat"`, estática)
-con el fondo teñido según `type`, y compone icono + headline + supporting +
-acciones dentro.
+`pattern_app_feedback_banner`. Vive en `src/components/Banner/` junto con
+`MarketingBanner` (ver `marketing-banner-from-figma.md`) — ambos instancian
+`Card` (`elevation="flat"`, estática) + `BannerLayout` (el shell interno
+compartido, `_building_blocks_layout_banner` en Figma; no se exporta). Acá
+solo se define el fondo/icono teñidos por `type` y las acciones.
 
-No reemplaza a `SystemFeedback` (pantalla/sección completa) ni al patrón de
-banner promocional (`pattern_app_marketing_banner`) — no usar para contenido
-promocional, y no apilar varios banners del mismo peso visual sin jerarquía
-clara.
+No reemplaza a `SystemFeedback` (pantalla/sección completa) ni a
+`MarketingBanner` (contenido y tono distintos, no intercambiables) — no usar
+para contenido promocional, y no apilar varios banners del mismo peso visual
+sin jerarquía clara.
 
 ## Propiedades
 
@@ -26,20 +28,18 @@ la `Card` subyacente.
 
 ```
 .feedback-banner[data-type]     = <Card elevation="flat">, bg teñido por type
-  .feedback-banner__row         icono + cuerpo · gap 16 · padding 16
-    .feedback-banner__icon      20px · color icon/<type>
-    .feedback-banner__body      columna · gap 8 (bloque de texto ↔ acciones)
-      .feedback-banner__text         columna · gap 2 (headline ↔ supporting)
-        .feedback-banner__headline     Body/md-emphasized (700) · text/primary
-        .feedback-banner__supporting   Body/sm (500) · text/secondary
-      .feedback-banner__actions     <ButtonActions surface="dialog"> — fila derecha, gap 8
+  <BannerLayout                 shell interno compartido — ver BannerLayout.css
+    leading={.feedback-banner__icon}    20px · color icon/<type>
+    headline / supporting               tokens fijos, ver BannerLayout
+    bottomRow={.feedback-banner__actions}  <ButtonActions surface="dialog">
+  />
 ```
 
-`.feedback-banner__text` es un wrapper propio para headline+supporting —
-necesario porque el `gap` del padre (8, entre bloque de texto y acciones) y
-el gap headline↔supporting (2) son valores distintos; ponerlo como `margin`
-en `__supporting` en vez de un wrapper con su propio `gap` los suma en vez de
-reemplazarlos (8 + 2 = 10 en vez de 2 — bug real, corregido).
+El gap headline↔supporting (2px, aislado del gap 8 texto↔acciones) y el resto
+del layout viven en `BannerLayout` — ver su propio archivo para el detalle
+(incluida la razón por la que headline+supporting necesitan su propio wrapper
+con `gap`, no un `margin` suelto). Acá solo lo específico de `FeedbackBanner`:
+el icono (`leading`) y las acciones (`bottomRow`).
 
 `.feedback-banner__actions` también absorbe el `--button-block-inset` del
 `Button` (el padding vertical de área táctil fuera de la píldora — ver
@@ -76,19 +76,18 @@ un token semántico único. `FeedbackBanner.css` reproduce esa asimetría con un
 override scoped por `[data-type='error'|'warning']` sobre
 `.button[data-emphasis='ghost'] { --_text-color: text/neutral }`.
 
-## Alcance — qué NO construye este componente
+## Alcance
 
-- **`_building_blocks_layout_banner`** (el shell genérico compartido con
-  `pattern_app_marketing_banner`, con `orientation`/`size` y flags
-  `eyebrow`/`indicator`/`trailing`/`affordance`) — la config fija del feedback
-  banner (`Show headline/leading/actions: true`, el resto `false`) se
-  implementó directo, sin construir el shell genérico completo. Si se
-  necesita `pattern_app_marketing_banner` más adelante, evaluar extraer un
-  shell compartido en ese momento en vez de generalizar de antemano.
-- **`_building_blocks_app_banner_cta_affordance`** (el botón CTA único
-  `brand`/`neutral` de la marketing banner) — el feedback banner no lo usa;
-  sus acciones son el slot genérico `actions` (`ButtonActions`), no ese
-  building block.
+`_building_blocks_app_banner_cta_affordance` (el chip CTA único de
+`MarketingBanner`) no aplica acá — las acciones de `FeedbackBanner` son el
+slot genérico `actions` (`ButtonActions`, 1–2 botones ghost), no ese building
+block.
+
+`BannerLayout` (el shell compartido) solo expone los slots que
+`FeedbackBanner`/`MarketingBanner` usan hoy (`leading`/`eyebrow`/`bottomRow`/
+`trailing`) — no todos los flags de `_building_blocks_layout_banner` en
+Figma (`indicator`, `actions` como slot separado de `bottomRow`). Ver
+`BannerLayout.tsx` si un tercer patrón necesita algo distinto.
 
 ## Accesibilidad
 

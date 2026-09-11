@@ -1,16 +1,13 @@
 /* ── FeedbackBanner ───────────────────────────────────────────────────────
    Patrón de comunicación de estado del dashboard. Figma: `pattern_app_feedback_banner`.
-   Instancia `Card` (radio/elevación/superficie) — acá solo se define el
-   contenido interno y el fondo teñido por `type`.
+   Instancia `Card` (radio/elevación/superficie) + `BannerLayout` (shell
+   interno, ver BannerLayout.css) — acá solo el fondo/icono teñidos por `type`
+   y los ajustes propios de las acciones.
 
-   .feedback-banner[data-type]     = <Card> (bg teñido, ver abajo)
-     .feedback-banner__row         fila: icono + cuerpo · gap 16 · padding 16
+   .feedback-banner[data-type]   = <Card>, bg teñido (ver abajo)
+     <BannerLayout leading bottomRow>
        .feedback-banner__icon      20px, color icon/<type>
-       .feedback-banner__body      columna: text · actions · gap 8
-         .feedback-banner__text        columna: headline · supporting · gap 2
-           .feedback-banner__headline    Body/md-emphasized (700) · text/primary
-           .feedback-banner__supporting  Body/sm · text/secondary
-         .feedback-banner__actions     <ButtonActions surface="dialog"> — fila derecha, gap 8
+       .feedback-banner__actions   <ButtonActions surface="dialog">
 ──────────────────────────────────────────────────────────────────────────── */
 
 .feedback-banner[data-type='info'] .card__surface {
@@ -24,14 +21,6 @@
 }
 .feedback-banner[data-type='warning'] .card__surface {
   background-color: var(--semantic-color-bg-warningMuted);
-}
-
-.feedback-banner__row {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--componentSpacing-space-200); /* 16px */
-  padding: var(--componentSpacing-space-200); /* 16px */
-  font-family: var(--typography-font-family);
 }
 
 .feedback-banner__icon {
@@ -53,39 +42,6 @@
 }
 .feedback-banner[data-type='warning'] .feedback-banner__icon {
   color: var(--semantic-color-icon-warning);
-}
-
-.feedback-banner__body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--internalLayout-space-100); /* 8px — bloque de texto ↔ acciones */
-  flex: 1 1 0;
-  min-inline-size: 0;
-}
-
-/* headline + supporting en su propio grupo (gap 2) — separado del gap-8 que
-   ya pone `.feedback-banner__body` entre el bloque de texto y las acciones.
-   Ponerlo como margin en `__supporting` en vez de esto sumaba con el gap del
-   padre (8 + 2 = 10) en vez de reemplazarlo. */
-.feedback-banner__text {
-  display: flex;
-  flex-direction: column;
-  gap: var(--internalLayout-space-25); /* 2px */
-}
-
-.feedback-banner__headline {
-  margin: 0;
-  color: var(--semantic-color-text-primary);
-  font-size: var(--typography-body-md-emphasized-size); /* 14 */
-  line-height: var(--typography-body-md-emphasized-line-height); /* 20 */
-  font-weight: var(--typography-body-md-emphasized-weight); /* 700 */
-}
-.feedback-banner__supporting {
-  margin: 0;
-  color: var(--semantic-color-text-secondary);
-  font-size: var(--typography-body-sm-size); /* 12 */
-  line-height: var(--typography-body-sm-line-height); /* 17 */
-  font-weight: var(--typography-body-sm-weight); /* 500 */
 }
 
 /* `ButtonActions surface="dialog"` ya es fila/derecha/gap-8, pero solo

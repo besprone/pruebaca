@@ -2,6 +2,7 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import { Information, CheckmarkOutline, Warning, WarningAlt } from '@carbon/icons-react';
 import { Card } from '../Card/Card';
 import { ButtonActions } from '../ButtonActions/ButtonActions';
+import { BannerLayout } from './BannerLayout';
 import './FeedbackBanner.css';
 
 export type FeedbackBannerType = 'info' | 'success' | 'error' | 'warning';
@@ -40,10 +41,10 @@ export type FeedbackBannerProps = {
 /**
  * FeedbackBanner — patrón de comunicación de estado dentro del dashboard.
  * Figma: `pattern_app_feedback_banner`. Instancia `Card` (`elevation="flat"`,
- * estática) con el fondo teñido según `type`; **no** reemplaza a
- * `SystemFeedback` (pantalla/sección completa) ni al patrón de banner
- * promocional (`pattern_app_marketing_banner`, fuera de alcance de este
- * componente).
+ * estática) + `BannerLayout` (shell interno compartido con `MarketingBanner`)
+ * con el fondo teñido según `type`; **no** reemplaza a `SystemFeedback`
+ * (pantalla/sección completa) ni al patrón de banner promocional
+ * (`MarketingBanner` — contenido y tono son distintos, no intercambiables).
  *
  * No usar para contenido promocional ni para apilar varios banners del
  * mismo peso visual sin jerarquía clara.
@@ -65,22 +66,22 @@ export function FeedbackBanner({
       role={ROLE[type]}
       className={['feedback-banner', className].filter(Boolean).join(' ')}
     >
-      <div className="feedback-banner__row">
-        <span className="feedback-banner__icon" aria-hidden="true">
-          <Icon />
-        </span>
-        <div className="feedback-banner__body">
-          <div className="feedback-banner__text">
-            <p className="feedback-banner__headline">{headline}</p>
-            {supporting != null && <p className="feedback-banner__supporting">{supporting}</p>}
-          </div>
-          {actions != null && (
+      <BannerLayout
+        leading={
+          <span className="feedback-banner__icon" aria-hidden="true">
+            <Icon />
+          </span>
+        }
+        headline={headline}
+        supporting={supporting}
+        bottomRow={
+          actions != null && (
             <ButtonActions surface="dialog" className="feedback-banner__actions">
               {actions}
             </ButtonActions>
-          )}
-        </div>
-      </div>
+          )
+        }
+      />
     </Card>
   );
 }
