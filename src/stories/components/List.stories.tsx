@@ -9,7 +9,7 @@ import {
 } from '@carbon/icons-react';
 import { List } from '../../components/List';
 import { ListItem } from '../../components/List/ListItem';
-import { ItemTrailing } from '../../components/ItemBlocks';
+import { ItemLeading, ItemTrailing } from '../../components/ItemBlocks';
 
 const meta: Meta<typeof List> = {
   title: 'Components/List',
@@ -203,6 +203,40 @@ export const Estados: Story = {
       <ListItem leading={<Wallet />} label="Selected" supporting="bg/brandSoft" trailing={<ChevronRight />} selected />
       <ListItem leading={<Wallet />} label="Disabled" supporting="no interactivo" trailing={<ChevronRight />} disabled />
       <ListItem leading={<Wallet />} label="Selected + disabled" supporting="overlay disabled" trailing={<ChevronRight />} selected disabled />
+    </List>
+  ),
+};
+
+// ── Disabled — leading/trailing vía ItemLeading/ItemTrailing ───────────
+// `leading`/`trailing` arriba son íconos crudos (heredan `color` del overlay
+// disabled sin problema); un `<ItemLeading>`/`<ItemTrailing>` real fija su
+// propio `color` (icon/secondary · icon/brand), que gana sobre el heredado —
+// sin las reglas específicas en ListItem.css, esta fila quedaba con el
+// chevron/label sin atenuar, activa a la vista pese a `disabled`.
+
+export const DisabledTrailingLeading: Story = {
+  name: 'Disabled — vía ItemLeading/ItemTrailing',
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <List type="segmented" aria-label="Disabled con building blocks">
+      <ListItem
+        leading={<ItemLeading type="icon" icon={<Wallet />} />}
+        label="Activa"
+        trailing={<ItemTrailing type="icon" />}
+        interactive
+      />
+      <ListItem
+        leading={<ItemLeading type="icon" icon={<Wallet />} />}
+        label="Deshabilitada — chevron"
+        trailing={<ItemTrailing type="icon" />}
+        disabled
+      />
+      <ListItem
+        leading={<ItemLeading type="icon" icon={<Wallet />} />}
+        label="Deshabilitada — texto"
+        trailing={<ItemTrailing type="text">$1,200</ItemTrailing>}
+        disabled
+      />
     </List>
   ),
 };
