@@ -213,15 +213,13 @@ function ScrollDemo() {
     // alto de la barra (stacked→inline) corrigiendo el scrollTop, y el
     // scroll pega un salto hacia el tope justo cuando la barra colapsa.
     <div style={{ height: '100vh', overflowY: 'auto', overflowAnchor: 'none', background: 'var(--semantic-color-bg-canvas)' }}>
-      <div style={{ position: 'sticky', top: 0, zIndex: 1 }}>
-        <AppBar
-          size="lg"
-          collapseOnScroll
-          leading={<IconButton emphasis="ghost" size="lg" aria-label="Volver" icon={<ArrowLeft />} />}
-          headline="Confirma tu información"
-          supporting="Revisa que tus datos sean correctos antes de continuar. Estos datos se obtuvieron de tu identificación."
-        />
-      </div>
+      <AppBar
+        size="lg"
+        collapseOnScroll
+        leading={<IconButton emphasis="ghost" size="lg" aria-label="Volver" icon={<ArrowLeft />} />}
+        headline="Confirma tu información"
+        supporting="Revisa que tus datos sean correctos antes de continuar. Estos datos se obtuvieron de tu identificación."
+      />
       <div style={{ padding: 24, fontFamily: 'var(--typography-font-family)', color: 'var(--semantic-color-text-secondary)' }}>
         {Array.from({ length: 50 }, (_, i) => (
           <p key={i}>Fila de contenido {i + 1} — baja para colapsar la barra, sube al top para expandirla.</p>
@@ -259,15 +257,13 @@ function ScrollFlickerDemo() {
         border: '1px solid var(--semantic-color-border-default)',
       }}
     >
-      <div style={{ position: 'sticky', top: 0, zIndex: 1 }}>
-        <AppBar
-          size="sm"
-          collapseOnScroll
-          leading={<IconButton emphasis="ghost" size="lg" aria-label="Volver" icon={<ArrowLeft />} />}
-          headline="Confirma tu información"
-          supporting="Revisa que tus datos sean correctos antes de continuar. Estos datos se obtuvieron de tu identificación."
-        />
-      </div>
+      <AppBar
+        size="sm"
+        collapseOnScroll
+        leading={<IconButton emphasis="ghost" size="lg" aria-label="Volver" icon={<ArrowLeft />} />}
+        headline="Confirma tu información"
+        supporting="Revisa que tus datos sean correctos antes de continuar. Estos datos se obtuvieron de tu identificación."
+      />
       <div style={{ padding: 24, fontFamily: 'var(--typography-font-family)', color: 'var(--semantic-color-text-secondary)' }}>
         {Array.from({ length: 10 }, (_, i) => (
           <p key={i}>Fila de contenido {i + 1}.</p>
@@ -301,15 +297,13 @@ function ScrollEnoughDemo() {
         border: '1px solid var(--semantic-color-border-default)',
       }}
     >
-      <div style={{ position: 'sticky', top: 0, zIndex: 1 }}>
-        <AppBar
-          size="sm"
-          collapseOnScroll
-          leading={<IconButton emphasis="ghost" size="lg" aria-label="Volver" icon={<ArrowLeft />} />}
-          headline="Confirma tu información"
-          supporting="Revisa que tus datos sean correctos antes de continuar. Estos datos se obtuvieron de tu identificación."
-        />
-      </div>
+      <AppBar
+        size="sm"
+        collapseOnScroll
+        leading={<IconButton emphasis="ghost" size="lg" aria-label="Volver" icon={<ArrowLeft />} />}
+        headline="Confirma tu información"
+        supporting="Revisa que tus datos sean correctos antes de continuar. Estos datos se obtuvieron de tu identificación."
+      />
       <div style={{ padding: 24, fontFamily: 'var(--typography-font-family)', color: 'var(--semantic-color-text-secondary)' }}>
         {Array.from({ length: 16 }, (_, i) => (
           <p key={i}>Fila de contenido {i + 1}.</p>
