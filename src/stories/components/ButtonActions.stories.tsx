@@ -20,6 +20,7 @@ const meta: Meta<typeof ButtonActions> = {
         'feedbackState',
       ] satisfies ButtonActionsSurface[],
     },
+    microcopy: { control: 'text' },
     children: { control: false },
   },
 };
@@ -234,17 +235,7 @@ export const StickyMicrocopy: Story = {
       </p>
       <Phone>
         <Filler n={8} />
-        <ButtonActions surface="screen" sticky>
-          <p
-            style={{
-              margin: '0 0 4px',
-              textAlign: 'center',
-              font: '500 12px/16px var(--typography-font-family)',
-              color: 'var(--semantic-color-text-tertiary)',
-            }}
-          >
-            Al continuar aceptas los términos del contrato.
-          </p>
+        <ButtonActions surface="screen" sticky microcopy="Completa los bloques para enviar.">
           <Button emphasis="primary" size="sm">
             Confirmar
           </Button>
