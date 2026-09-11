@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { FeedbackBanner } from '../../components/FeedbackBanner/FeedbackBanner';
-import type { FeedbackBannerType } from '../../components/FeedbackBanner/FeedbackBanner';
+import { FeedbackBanner } from '../../components/Banner';
+import type { FeedbackBannerType } from '../../components/Banner';
 import { Button } from '../../components/Button/Button';
 
 const TYPES: FeedbackBannerType[] = ['info', 'success', 'error', 'warning'];
