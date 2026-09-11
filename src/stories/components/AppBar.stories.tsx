@@ -236,3 +236,46 @@ export const EnContexto: Story = {
   parameters: { controls: { disable: true } },
   render: () => <ScrollDemo />,
 };
+
+// ── repro: colapsar libera más scroll del que sobra ─────────────────────────
+// Si lo que el colapso libera (alto expandida − alto colapsada) es MAYOR que
+// el scroll restante en ese momento, el navegador ajusta `scrollTop` a un
+// valor menor (o 0) al colapsar — y sin histéresis eso se leía como "volví al
+// tope", re-expandiendo, lo que liberaba el mismo scroll de nuevo: parpadeo.
+// Contenedor corto + supporting de 2 líneas para que la condición se dé.
+
+function ScrollFlickerDemo() {
+  return (
+    <div
+      style={{
+        height: 560,
+        maxWidth: 420,
+        overflowY: 'auto',
+        overflowAnchor: 'none',
+        background: 'var(--semantic-color-bg-canvas)',
+        border: '1px solid var(--semantic-color-border-default)',
+      }}
+    >
+      <div style={{ position: 'sticky', top: 0, zIndex: 1 }}>
+        <AppBar
+          size="sm"
+          collapseOnScroll
+          leading={<IconButton emphasis="ghost" size="lg" aria-label="Volver" icon={<ArrowLeft />} />}
+          headline="Confirma tu información"
+          supporting="Revisa que tus datos sean correctos antes de continuar. Estos datos se obtuvieron de tu identificación."
+        />
+      </div>
+      <div style={{ padding: 24, fontFamily: 'var(--typography-font-family)', color: 'var(--semantic-color-text-secondary)' }}>
+        {Array.from({ length: 10 }, (_, i) => (
+          <p key={i}>Fila de contenido {i + 1}.</p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export const EnContextoContenidoCorto: Story = {
+  name: 'En contexto (scroll corto — sin parpadeo)',
+  parameters: { controls: { disable: true } },
+  render: () => <ScrollFlickerDemo />,
+};
