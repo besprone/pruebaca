@@ -3,9 +3,11 @@ import { useState } from 'react';
 import { Wallet } from '@carbon/icons-react';
 import { ItemLeading } from '../../components/ItemBlocks';
 import type { ItemLeadingType, ItemLeadingSize } from '../../components/ItemBlocks';
+import type { StatusBadgeStatus } from '../../components/ItemBlocks/StatusBadge';
 
-const TYPES: ItemLeadingType[] = ['icon', 'img', 'avatar', 'number', 'checkbox', 'radiobutton', 'paymentStatus'];
+const TYPES: ItemLeadingType[] = ['icon', 'img', 'avatar', 'number', 'checkbox', 'radiobutton', 'paymentStatus', 'statusBadge'];
 const SIZES: ItemLeadingSize[] = ['xs', 'sm', 'md', 'lg', 'xl'];
+const STATUSES: StatusBadgeStatus[] = ['pending', 'processing', 'completed', 'failed'];
 
 const meta: Meta<typeof ItemLeading> = {
   title: 'Components/Item blocks/Leading',
@@ -14,6 +16,7 @@ const meta: Meta<typeof ItemLeading> = {
   argTypes: {
     type: { control: 'inline-radio', options: TYPES },
     size: { control: 'inline-radio', options: SIZES },
+    status: { control: 'inline-radio', options: STATUSES },
     icon: { control: false },
     img: { control: false },
     avatar: { control: false },
@@ -65,6 +68,7 @@ export const Playground: Story = {
         avatarProps={{ type: 'img', src: demoSrc, alt: 'Foto de perfil' }}
         paymentStatus={demoTimeline}
         number={args.number ?? '3'}
+        status={args.status ?? 'pending'}
       />
       <span style={{ fontFamily: 'monospace', fontSize: 11, color: 'var(--semantic-color-text-secondary)' }}>
         {args.type} · {args.size}
@@ -91,6 +95,7 @@ export const Tipos: Story = {
       ['checkbox', <ItemLeading type="checkbox" control={{ checked: chk, onChange: (e) => setChk(e.target.checked), 'aria-label': 'Seleccionar' }} />],
       ['radiobutton', <ItemLeading type="radiobutton" control={{ checked: rad, onChange: () => setRad(true), name: 'l', 'aria-label': 'Elegir' }} />],
       ['paymentStatus (slot)', <ItemLeading type="paymentStatus" paymentStatus={demoTimeline} />],
+      ['statusBadge', <ItemLeading type="statusBadge" status="completed" />],
     ];
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: 340 }}>
@@ -122,6 +127,21 @@ export const Tamanos: Story = {
         ))}
         <span style={legend}>avatar · xs→xl</span>
       </div>
+    </div>
+  ),
+};
+
+export const Estados: Story = {
+  name: 'Estados (statusBadge)',
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: 260 }}>
+      {STATUSES.map((s) => (
+        <div key={s} style={frame}>
+          <ItemLeading type="statusBadge" status={s} />
+          <span style={legend}>{s}</span>
+        </div>
+      ))}
     </div>
   ),
 };
